@@ -17,7 +17,7 @@ const FALLBACK_PROMO_POSTER_VARIANT_ID =
 
 export function getPromoPosterVariantId() {
   return (
-    process.env[PROMO_POSTER_VARIANT_ENV_KEY]?.trim() ??
+    process.env[PROMO_POSTER_VARIANT_ENV_KEY]?.trim() ||
     FALLBACK_PROMO_POSTER_VARIANT_ID
   );
 }
