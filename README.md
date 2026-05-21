@@ -117,21 +117,32 @@ Unlocked codes and signup submissions are stored in `localStorage` only.
 
 ## Deployment
 
-Deploy through the existing hosting project only after a manual review. This work should not be pushed to production automatically.
+Deploy through GitHub Actions and Vercel only. Netlify is intentionally disabled
+for this project after the agent-credit/preview scaffold failure. Do not publish
+Netlify previews to production.
 
-Vercel defaults:
+Vercel production lane:
 
-1. Build command: `npm run build`
-2. Install command: `npm ci`
-3. Output directory: Vercel default for Next.js
-4. Domain: production storefront domain
+1. Push reviewed changes to `main`.
+2. Run `npm run release:check`.
+3. Trigger `Actions -> Vercel production deploy`.
+4. Type `DEPLOY ACTION REPLAY`.
+5. Wait for the workflow smoke test to pass.
 
-Netlify config is in `netlify.toml`:
+Current public-domain blocker:
 
-1. Build command: `npm run build`
-2. Publish directory: `.next`
-3. Next.js adapter: `@netlify/plugin-nextjs`
-4. Production deploys should remain manual until storefront checkout is reverified.
+```text
+IONOS DNS must point @ and www to 76.76.21.21.
+```
+
+Run this after DNS changes:
+
+```bash
+npm run release:live
+```
+
+`netlify.toml` remains only as a fail-fast guard so old Netlify workflows cannot
+quietly publish a broken storefront.
 
 ## Shopify Notes
 

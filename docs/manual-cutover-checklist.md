@@ -19,6 +19,8 @@ Good:
 - All required `SHOPIFY_*` env vars are present in Vercel Production and Preview.
 - GitHub Actions can now deploy Vercel previews and manual production releases
   without Netlify Agent.
+- Netlify repo deploys are intentionally disabled by `netlify.toml` so old
+  previews cannot replace the storefront.
 - Local `main` tracks `origin/main`; stale local initial branch is preserved as
   `codex/local-main-pre-release-backup`.
 
@@ -27,6 +29,7 @@ Blocked:
 - GitHub sudo-mode code is required only to finish native Vercel Git Integration.
 - IONOS DNS still points public traffic to Netlify.
 - Netlify currently returns `503 Site not available` for `https://shopactionreplay.com/shop`.
+- Do not spend more credits on Netlify Agent. The remaining fix is DNS.
 
 ## Step 1: Optional Finish Vercel Git Integration
 

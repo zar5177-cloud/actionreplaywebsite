@@ -28,7 +28,7 @@ Run against current production:
 npm run test:smoke:prod
 ```
 
-Run against a Vercel or Netlify preview:
+Run against a Vercel preview:
 
 ```bash
 SMOKE_BASE_URL=https://YOUR-PREVIEW-URL npm run test:smoke
@@ -259,31 +259,21 @@ https://actionreplaywebsite-zach-relichs-projects.vercel.app
 
 Use the current production deployment listed above for go-live checks.
 
-## Netlify Setup
+## Netlify Retirement Guard
 
-Dashboard:
+Netlify is no longer an approved deploy target for Action Replay. The old
+Netlify project may remain visible for audit/history, but it must not publish
+preview agent output to production.
 
-https://app.netlify.com/projects/shopactionreplay
-
-Current production:
-
-https://shopactionreplay.com
-
-Settings:
+`netlify.toml` intentionally fails the build with a short message. This is a
+guardrail, not a broken config. Production deploys now happen through:
 
 ```text
-Build command: npm run build
-Publish directory: .next
-Next.js runtime: @netlify/plugin-nextjs from netlify.toml
-Do not use output: "export"
-Do not use drag-and-drop static uploads
+GitHub Actions -> Vercel production deploy
 ```
 
-Before publishing any Netlify preview:
-
-```bash
-SMOKE_BASE_URL=https://YOUR-NETLIFY-PREVIEW-URL npm run test:smoke
-```
+If someone asks for a Netlify publish, refuse the publish and send them to the
+IONOS DNS cutover section instead.
 
 ## Shopify Verification Prompt
 
@@ -304,12 +294,14 @@ Confirm:
 Return only pass/fail plus any mismatched variant IDs by env var name. Do not print token values.
 ```
 
-## Netlify Agent Prompt
+## Retired Netlify Agent Prompt
 
 ```text
-Do not publish this preview until it passes the release guard.
+Do not use Netlify Agent for Action Replay. Do not publish this preview.
 
-This repo already has a production storefront. Do not replace it with a minimal scaffold, one-page CRT demo, direct checkout URL, or public-token Storefront implementation.
+This repo already has a Vercel-backed production storefront. Do not replace it
+with a minimal scaffold, one-page CRT demo, direct checkout URL, or public-token
+Storefront implementation.
 
 Preserve:
 - cart drawer
@@ -320,13 +312,14 @@ Preserve:
 - env-based Galaxy Tee variant IDs
 - no NEXT_PUBLIC_SHOPIFY_* variables
 
-Before suggesting Publish to production, run:
+Before suggesting any deployment, run:
 npm run release:check
 
 Then run:
-SMOKE_BASE_URL=<preview-url> npm run test:smoke
+SMOKE_BASE_URL=<vercel-preview-url> npm run test:smoke
 
-Only recommend publishing if both pass.
+Only use the GitHub Actions -> Vercel production deploy workflow after both
+pass. Never publish from Netlify.
 ```
 
 ## Vercel Agent Prompt

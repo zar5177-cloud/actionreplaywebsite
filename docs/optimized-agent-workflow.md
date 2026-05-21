@@ -15,6 +15,7 @@ Use this stack instead:
 - Manual production deploys run through a typed-confirmation GitHub workflow.
 - Vercel Git Integration is optional cleanup, not a release blocker.
 - Netlify is not allowed to publish agent previews for this project.
+- `netlify.toml` is a fail-fast retirement guard, not a hosting config.
 
 The rule is simple: agents edit branches, CI judges branches, Vercel CLI
 deploys branches, and production requires an explicit manual trigger.
@@ -181,8 +182,8 @@ Do not use Netlify Agent for:
 - production publish recommendations
 - repeated preview rebuilding
 
-Netlify can host if configured from Git, but Netlify Agent is no longer part of
-the build workflow.
+Netlify should not host this storefront. The old project exists only as a
+historical artifact until DNS is moved away from it.
 
 ## Claude Code Setup
 

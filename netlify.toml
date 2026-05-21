@@ -1,9 +1,6 @@
 [build]
-command = "npm run build"
+command = "printf 'Netlify deploys are disabled for Action Replay. Use GitHub Actions -> Vercel production deploy.\\n' && exit 1"
 publish = ".next"
 
 [build.environment]
 NEXT_TELEMETRY_DISABLED = "1"
-
-[[plugins]]
-package = "@netlify/plugin-nextjs"
