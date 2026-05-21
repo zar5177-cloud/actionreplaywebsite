@@ -172,8 +172,15 @@ Current expected result before GitHub sudo verification:
 
 ```text
 ready: true
-warnings: ["Vercel Git Integration is not connected; GitHub Actions Vercel CLI deploys are the release path."]
+warnings:
+- Vercel Git Integration is not connected; GitHub Actions Vercel CLI deploys are the release path.
+- Vercel Authentication protects generated deployment URLs only; custom domains remain public after DNS cutover.
 ```
+
+This means raw generated deployment URLs such as
+`https://actionreplaywebsite-*.vercel.app` may show a Vercel login page without
+the automation bypass header. That is acceptable. The public storefront is the
+custom domain after DNS points to Vercel.
 
 IONOS DNS cutover:
 
@@ -357,7 +364,7 @@ Only promote after smoke tests pass.
 1. `npm run release:check` passes locally.
 2. GitHub Actions `Release guard` passes on the PR or `main`.
 3. `npm run vercel:check` passes. Native Vercel Git Integration may remain a warning because GitHub Actions Vercel CLI deploys are the release path.
-4. Vercel production deployment smoke test passes with `SMOKE_BASE_URL`.
+4. Vercel production deployment smoke test passes with `SMOKE_BASE_URL` and the automation bypass header.
 5. DNS at IONOS points `shopactionreplay.com` and `www.shopactionreplay.com` to `76.76.21.21`.
 6. `npm run domain:check` passes after DNS propagation.
 7. `npm run test:smoke:prod` passes after DNS propagation.

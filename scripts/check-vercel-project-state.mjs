@@ -131,6 +131,16 @@ if (!project.link && !project.gitRepository) {
     "Vercel Git Integration is not connected; GitHub Actions Vercel CLI deploys are the release path.",
   );
 }
+if (project.ssoProtection?.deploymentType === "all") {
+  errors.push(
+    "Vercel Authentication protects all deployments, including custom domains. Set Deployment Protection to exclude custom domains before DNS cutover.",
+  );
+}
+if (project.ssoProtection?.deploymentType === "all_except_custom_domains") {
+  warnings.push(
+    "Vercel Authentication protects generated deployment URLs only; custom domains remain public after DNS cutover.",
+  );
+}
 
 for (const target of REQUIRED_TARGETS) {
   for (const key of REQUIRED_ENV) {
@@ -162,6 +172,7 @@ const summary = {
     nodeVersion: project.nodeVersion,
     outputDirectory: project.outputDirectory,
     gitConnected: Boolean(project.link || project.gitRepository),
+    ssoProtection: project.ssoProtection?.deploymentType ?? null,
     envCount: project.env?.length ?? 0,
   },
   domains: domains.map((domain) => ({

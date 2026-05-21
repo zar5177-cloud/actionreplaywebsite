@@ -16,6 +16,8 @@ Good:
   https://actionreplaywebsite-d858j19xc-zach-relichs-projects.vercel.app
 - Vercel production deployment passed storefront smoke tests from GitHub Actions.
 - `shopactionreplay.com` and `www.shopactionreplay.com` are attached to Vercel.
+- Vercel Authentication is set to protect generated deployment URLs but exclude
+  custom domains, so the public domain should be accessible after DNS cutover.
 - All required `SHOPIFY_*` env vars are present in Vercel Production and Preview.
 - GitHub Actions can now deploy Vercel previews and manual production releases
   without Netlify Agent.
