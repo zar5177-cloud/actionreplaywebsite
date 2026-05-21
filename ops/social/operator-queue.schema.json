@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://actionreplay.io/schemas/operator-queue.schema.json",
+  "title": "Action Replay Social Operator Queue",
+  "type": "object",
+  "required": ["schema", "generated_at", "items"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "action-replay-social-operator-queue.v1"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "operator": {
+      "type": "string"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "platform",
+          "account",
+          "action_type",
+          "status",
+          "requires_human_approval",
+          "risk_level"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string",
+            "enum": ["instagram", "email", "tiktok", "x", "threads", "site", "shopify"]
+          },
+          "account": {
+            "type": "string"
+          },
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "post_draft",
+              "story_draft",
+              "reel_draft",
+              "reply_draft",
+              "dm_draft",
+              "repost_draft",
+              "email_draft",
+              "analysis",
+              "metric_log",
+              "outreach_draft",
+              "asset_request"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "drafted",
+              "needs_assets",
+              "needs_review",
+              "approved",
+              "posted_by_human",
+              "sent_by_human",
+              "rejected",
+              "archived"
+            ]
+          },
+          "requires_human_approval": {
+            "type": "boolean",
+            "const": true
+          },
+          "risk_level": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          },
+          "asset_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "copy": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "blocked_if": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "scheduled_window": {
+            "type": "string"
+          },
+          "result": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

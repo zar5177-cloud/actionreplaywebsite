@@ -40,6 +40,16 @@ yarn-error.log*
 .env*
 !.env.example
 
+# local secrets and account access material
+/.secrets/
+/ops/access/*.local.json
+/ops/access/*.secret.json
+/ops/access/*.vault.json
+/ops/access/recovery-codes/
+/ops/social/private/
+/ops/social/exports/
+/ops/social/live-queues/*.local.json
+
 # vercel
 .vercel
 
