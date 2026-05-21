@@ -25,13 +25,19 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browser
+        if: github.event_name != 'schedule'
         run: npx playwright install --with-deps chromium
 
-      - name: Run go-live verification
-        run: npm run live-domain:check
+      - name: Run live domain guard
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            npm run live-domain:passive
+          else
+            npm run live-domain:check
+          fi
 
       - name: Preserve checkout screenshot
-        if: always()
+        if: always() && github.event_name != 'schedule'
         uses: actions/upload-artifact@v4
         with:
           name: live-shopify-checkout-pair

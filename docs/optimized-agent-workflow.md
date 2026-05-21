@@ -139,9 +139,11 @@ Current Vercel state, verified 2026-05-21:
   `https://actionreplaywebsite-11hb6oee7-zach-relichs-projects.vercel.app`
 - PR #1 is merged to `main`; the `main` Release guard passed.
 - Public DNS now points to Vercel. Apex and `www` both resolve to `76.76.21.21`.
-- The scheduled Live domain guard runs twice per hour and verifies public DNS,
-  production storefront smoke tests, Shopify checkout handoff, and the tee +
-  poster pair credit.
+- The scheduled Live domain guard runs twice per hour as a passive DNS/public
+  `/shop` check only. It must not create Shopify carts or checkout sessions,
+  because that pollutes Shopify checkout-abandonment analytics. Manual
+  workflow_dispatch or local `npm run go-live:check` runs the full checkout
+  handoff and tee + poster pair credit verification.
 - GitHub Actions Vercel CLI secrets are set and can deploy without Netlify Agent.
 - Vercel Git Integration is connected. Keep GitHub Actions Vercel CLI deploys as
   the controlled production release path so preview output is tested before any
