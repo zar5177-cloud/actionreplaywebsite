@@ -143,8 +143,9 @@ Minimum:
 - Vercel Runtime Logs
 - Vercel Web Analytics
 - Vercel Speed Insights
-- scheduled GitHub `Live domain guard`
-- checkout screenshot artifact on failures
+- scheduled GitHub `Live domain guard` in passive mode only, so monitoring does
+  not create abandoned Shopify checkouts
+- checkout screenshot artifact on manual full-check failures
 
 Better:
 
