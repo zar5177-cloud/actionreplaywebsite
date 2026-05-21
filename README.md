@@ -147,6 +147,12 @@ Run this after DNS changes:
 npm run go-live:check
 ```
 
+Or let the terminal wait for DNS propagation and verify automatically:
+
+```bash
+npm run go-live:watch
+```
+
 `netlify.toml` remains only as a fail-fast guard so old Netlify workflows cannot
 quietly publish a broken storefront.
 

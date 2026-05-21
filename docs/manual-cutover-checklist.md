@@ -95,7 +95,7 @@ Do not change Shopify DNS for `store.shopactionreplay.com`.
 Run:
 
 ```bash
-npm run domain:watch
+npm run go-live:watch
 ```
 
 Expected final result:
@@ -118,7 +118,8 @@ Then run the manual GitHub workflow:
 GitHub -> Actions -> Live domain guard -> Run workflow
 ```
 
-Both must pass.
+Both must pass. The GitHub workflow runs the same `npm run go-live:check`
+sequence from a clean runner.
 
 Expected current status before DNS changes:
 

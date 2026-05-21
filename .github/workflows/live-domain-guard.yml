@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NEXT_TELEMETRY_DISABLED: "1"
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -24,8 +25,5 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
-      - name: Check live DNS cutover
-        run: npm run domain:check
-
-      - name: Run production smoke tests
-        run: npm run test:smoke:prod
+      - name: Run go-live verification
+        run: npm run go-live:check

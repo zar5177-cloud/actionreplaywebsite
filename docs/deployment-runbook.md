@@ -232,6 +232,12 @@ To keep checking until DNS flips:
 npm run domain:watch
 ```
 
+To wait for DNS and then run the complete go-live verifier automatically:
+
+```bash
+npm run go-live:watch
+```
+
 One-command go-live verification after DNS flips:
 
 ```bash
@@ -243,6 +249,9 @@ The same live-domain gate can be run from GitHub Actions:
 ```text
 Actions -> Live domain guard -> Run workflow
 ```
+
+That workflow runs `npm run go-live:check`, including Vercel project readiness,
+the public Vercel alias smoke test, live DNS, and live production smoke.
 
 Current pre-cutover status, verified 2026-05-21:
 
