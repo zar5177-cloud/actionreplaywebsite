@@ -119,6 +119,10 @@ Current Vercel state, verified 2026-05-21:
 - Project settings are already synced: Next.js, `npm ci`, `npm run build`, default output, Node 22.x.
 - All required `SHOPIFY_*` variables are already synced to Production and Preview.
 - Deployment Protection has automation bypass entries.
+- `shopactionreplay.com` and `www.shopactionreplay.com` are attached to the Vercel project.
+- Vercel production deployment is ready and passed smoke tests:
+  `https://actionreplaywebsite-954l0elz5-zach-relichs-projects.vercel.app`
+- Public DNS still points to Netlify/IONOS records. Netlify currently returns `usage_exceeded` 503.
 - GitHub connection is still the manual blocker. `vercel git connect` and the public REST project update both failed until the Vercel GitHub app is granted access to `zar5177-cloud/actionreplaywebsite`.
 
 Repeat Vercel project/env setup after secret changes:
@@ -307,13 +311,12 @@ Return only a confirmation that no Netlify preview will be published.
 
 1. Stop using Netlify Agent for this site.
 2. Open PR #1 and keep it as the release artifact.
-3. Connect Vercel Git Integration to `zar5177-cloud/actionreplaywebsite`.
-4. Let Vercel generate a PR preview.
-5. Run `SMOKE_BASE_URL=<preview-url> npm run test:smoke`.
-6. Inspect `/shop` and the Galaxy Tee product page manually.
-7. Merge PR #1.
-8. Promote or let `main` deploy.
-9. Move the live domain only after production smoke passes.
+3. Finish GitHub sudo-mode verification and connect Vercel Git Integration to `zar5177-cloud/actionreplaywebsite`.
+4. In IONOS DNS, replace Netlify records with `A @ 76.76.21.21` and `A www 76.76.21.21`.
+5. Wait for DNS to resolve to `76.76.21.21`.
+6. Run `npm run test:smoke:prod`.
+7. Inspect `/shop` and the Galaxy Tee product page manually.
+8. Merge PR #1 after the domain smoke passes.
 
 ## Budget Rule
 

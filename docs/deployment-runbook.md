@@ -108,12 +108,49 @@ Current Vercel state, verified 2026-05-21:
 - Project settings are configured for Next.js, `npm ci`, `npm run build`, default output, Node 22.x.
 - All required `SHOPIFY_*` variables are synced to Production and Preview.
 - Deployment Protection has automation bypass entries.
+- `shopactionreplay.com` and `www.shopactionreplay.com` are added to the Vercel project.
+- Vercel production deployment is ready and smoke-tested:
+  `https://actionreplaywebsite-954l0elz5-zach-relichs-projects.vercel.app`
 - GitHub repo connection is not connected yet. Vercel CLI/API failed until the Vercel GitHub app is granted access to `zar5177-cloud/actionreplaywebsite`.
+- Public DNS still points to Netlify/IONOS records, and Netlify is returning `usage_exceeded` 503.
 
 Repeat the Vercel settings/env sync any time `.env.local` changes:
 
 ```bash
 npm run vercel:sync-shopify-env
+```
+
+IONOS DNS cutover:
+
+```text
+Registrar: IONOS
+Nameservers: ns1018.ui-dns.de, ns1051.ui-dns.com, ns1110.ui-dns.biz, ns1116.ui-dns.org
+
+Replace the current Netlify records with:
+
+A      @      76.76.21.21
+A      www    76.76.21.21
+```
+
+Current bad records to remove/replace:
+
+```text
+A      @      75.2.60.5
+CNAME  www    shopactionreplay.netlify.app
+```
+
+After DNS propagates:
+
+```bash
+dig +short shopactionreplay.com A
+dig +short www.shopactionreplay.com A
+npm run test:smoke:prod
+```
+
+Expected DNS answer:
+
+```text
+76.76.21.21
 ```
 
 After the first preview deployment, test it:
@@ -247,8 +284,9 @@ Only promote after smoke tests pass.
 1. `npm run release:check` passes locally.
 2. GitHub Actions `Release guard` passes on the PR or `main`.
 3. Vercel Git Integration is connected to `zar5177-cloud/actionreplaywebsite`.
-4. Preview smoke test passes with `SMOKE_BASE_URL`.
-5. `/shop/action-replay-mewtwo-tee` redirects to `/shop/action-replay-galaxy-tee`.
-6. `/api/shopify/cart` returns checkout host `store.shopactionreplay.com`.
-7. Browser console has zero errors on `/shop` and Galaxy Tee page.
-8. Promote preview or merge to production branch.
+4. Vercel production deployment smoke test passes with `SMOKE_BASE_URL`.
+5. DNS at IONOS points `shopactionreplay.com` and `www.shopactionreplay.com` to `76.76.21.21`.
+6. `npm run test:smoke:prod` passes after DNS propagation.
+7. `/shop/action-replay-mewtwo-tee` redirects to `/shop/action-replay-galaxy-tee`.
+8. `/api/shopify/cart` returns checkout host `store.shopactionreplay.com`.
+9. Browser console has zero errors on `/shop` and Galaxy Tee page.
