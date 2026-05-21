@@ -34,8 +34,8 @@ export default async function ShopPage({
           </h1>
           <p className="mt-4 max-w-[20rem] break-words font-mono text-xs leading-6 text-zinc-300 sm:max-w-2xl sm:text-sm">
             AR-001 &quot;GALAXY&quot; tee is the only purchasable file. AR-002 remains
-            locked. The corrupted print file still exists somewhere in the
-            archive, but not as checkout.
+            locked. AR-003 is visible again because the bad print export kept
+            showing up in the folder, but not as checkout.
           </p>
         </div>
       </section>

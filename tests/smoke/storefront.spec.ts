@@ -33,6 +33,8 @@ test.describe("Action Replay storefront release gate", () => {
     await expect(page.getByText(/AR-001/i).first()).toBeVisible();
     await expect(page.getByRole("button", { name: "Retro Black" }).first()).toBeVisible();
     await expect(page.getByRole("button", { name: "White" }).first()).toBeVisible();
+    await expect(page.getByText(/AR-003 "CORRUPTED PROMO" POSTER/i).first()).toBeVisible();
+    await expect(page.getByText("PRINT FILE NOT VERIFIED").first()).toBeVisible();
 
     const bodyText = await page.locator("body").innerText();
     expect(bodyText).not.toContain("bare Next.js scaffold");
@@ -66,6 +68,23 @@ test.describe("Action Replay storefront release gate", () => {
 
     await expect(page).toHaveURL(/\/shop\/action-replay-galaxy-tee$/);
     await expect(page.getByRole("heading", { name: /AR-001 "GALAXY" TEE/i })).toBeVisible();
+    await expectNoConsoleProblems(consoleProblems);
+  });
+
+  test("corrupted promo poster is visible but not purchasable", async ({
+    page,
+  }) => {
+    const consoleProblems = collectConsoleProblems(page);
+
+    await page.goto("/shop/ar-003-corrupted-promo-poster");
+
+    await expect(
+      page.getByRole("heading", { name: /AR-003 "CORRUPTED PROMO" POSTER/i }),
+    ).toBeVisible();
+    await expect(page.getByText("PRINT FILE NOT VERIFIED").first()).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /PRINT FILE NOT VERIFIED/i }).first(),
+    ).toBeDisabled();
     await expectNoConsoleProblems(consoleProblems);
   });
 

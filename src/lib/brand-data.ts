@@ -84,9 +84,10 @@ export const liveProductSlugs = ["action-replay-galaxy-tee"] as const;
 export const visibleProductSlugs = [
   "action-replay-galaxy-tee",
   "ar-002-memory-card-tee",
+  "ar-003-corrupted-promo-poster",
 ] as const;
 
-export const hiddenProductSlugs = ["ar-003-corrupted-promo-poster"] as const;
+export const hiddenProductSlugs = [] as const;
 
 export const publicProductSlugs = [
   ...visibleProductSlugs,

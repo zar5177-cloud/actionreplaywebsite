@@ -14,6 +14,7 @@ const statusOptions: { label: string; value: StatusFilter }[] = [
   { label: "Live", value: "live" },
   { label: "Locked", value: "locked" },
   { label: "Pending", value: "coming_soon" },
+  { label: "Unverified", value: "hidden" },
 ];
 
 const sortOptions: { label: string; value: SortKey }[] = [
