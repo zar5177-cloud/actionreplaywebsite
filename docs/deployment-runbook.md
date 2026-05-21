@@ -257,9 +257,11 @@ The same live-domain gate can be run from GitHub Actions:
 Actions -> Live domain guard -> Run workflow
 ```
 
-That workflow runs `npm run go-live:check`, including Vercel project readiness,
-the public Vercel alias smoke test, live DNS, live production smoke, and the
-Shopify checkout handoff page check.
+That workflow runs `npm run live-domain:check`, including live DNS, production
+smoke tests, and the Shopify checkout handoff page check. It intentionally does
+not require a Vercel API token, so scheduled monitoring does not go blind when a
+deployment token expires. Use local `npm run go-live:check` when you also need
+Vercel project-readiness validation.
 
 The same workflow also runs automatically twice per hour and preserves the live
 Shopify checkout screenshot artifact when the check runs.

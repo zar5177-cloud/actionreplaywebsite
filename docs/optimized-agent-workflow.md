@@ -116,7 +116,9 @@ Workflows:
 
 - `Vercel CLI preview`: deploys and smoke-tests PR previews.
 - `Vercel production deploy`: manual typed confirmation, `main` only.
-- `Live domain guard`: manual DNS/live-domain verification after IONOS cutover.
+- `Live domain guard`: scheduled public DNS, production smoke, and Shopify
+  checkout handoff verification after IONOS cutover. It does not require a
+  Vercel API token.
 
 Do not remove the `SHOPIFY_*` env block from the Vercel CLI workflows. Vercel
 sensitive env vars are runtime-safe, but `vercel env pull` returns empty
@@ -137,8 +139,9 @@ Current Vercel state, verified 2026-05-21:
   `https://actionreplaywebsite-11hb6oee7-zach-relichs-projects.vercel.app`
 - PR #1 is merged to `main`; the `main` Release guard passed.
 - Public DNS now points to Vercel. Apex and `www` both resolve to `76.76.21.21`.
-- The scheduled Live domain guard runs twice per hour and verifies production,
-  Shopify checkout handoff, and the tee + poster pair credit.
+- The scheduled Live domain guard runs twice per hour and verifies public DNS,
+  production storefront smoke tests, Shopify checkout handoff, and the tee +
+  poster pair credit.
 - GitHub Actions Vercel CLI secrets are set and can deploy without Netlify Agent.
 - Vercel Git Integration is connected. Keep GitHub Actions Vercel CLI deploys as
   the controlled production release path so preview output is tested before any

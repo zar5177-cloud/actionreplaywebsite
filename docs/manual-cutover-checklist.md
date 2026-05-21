@@ -121,7 +121,8 @@ GitHub -> Actions -> Live domain guard -> Run workflow
 ```
 
 Both must pass. The GitHub workflow runs the same `npm run go-live:check`
-sequence from a clean runner.
+public-domain sequence from a clean runner: DNS, production smoke tests, and
+Shopify checkout handoff. It does not require Vercel API credentials.
 
 Expected current status:
 
