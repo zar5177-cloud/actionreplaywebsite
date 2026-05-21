@@ -124,7 +124,7 @@ test.describe("Action Replay storefront release gate", () => {
     );
   });
 
-  test("cart API accepts tee plus poster and receives Shopify 15 percent pair credit", async ({
+  test("cart API accepts tee plus poster and receives Shopify 15 percent full-cart pair credit", async ({
     request,
   }) => {
     const teeResponse = await request.post("/api/shopify/cart", {
@@ -184,8 +184,8 @@ test.describe("Action Replay storefront release gate", () => {
       "ar-003-corrupted-promo-poster",
     ]);
     expect(Number(posterPayload.cart?.undiscountedSubtotal?.amount)).toBe(90);
-    expect(Number(posterPayload.cart?.discountTotal?.amount)).toBeCloseTo(7.2, 2);
-    expect(Number(posterPayload.cart?.total?.amount)).toBeCloseTo(82.8, 2);
+    expect(Number(posterPayload.cart?.discountTotal?.amount)).toBeCloseTo(13.5, 2);
+    expect(Number(posterPayload.cart?.total?.amount)).toBeCloseTo(76.5, 2);
   });
 
   test("cart API restores tee plus poster in one server-side mutation", async ({
@@ -226,8 +226,8 @@ test.describe("Action Replay storefront release gate", () => {
       "ar-003-corrupted-promo-poster",
     ]);
     expect(Number(payload.cart?.undiscountedSubtotal?.amount)).toBe(90);
-    expect(Number(payload.cart?.discountTotal?.amount)).toBeCloseTo(7.2, 2);
-    expect(Number(payload.cart?.total?.amount)).toBeCloseTo(82.8, 2);
+    expect(Number(payload.cart?.discountTotal?.amount)).toBeCloseTo(13.5, 2);
+    expect(Number(payload.cart?.total?.amount)).toBeCloseTo(76.5, 2);
   });
 
   test("cart drawer opens after adding Galaxy Tee", async ({ page }) => {
@@ -259,8 +259,8 @@ test.describe("Action Replay storefront release gate", () => {
     const drawer = page.locator("aside").first();
     await expect(drawer).toBeVisible();
     await expect(drawer.getByText("Pair credit / 15%")).toBeVisible();
-    await expect(drawer.getByText("-$7.20").last()).toBeVisible();
-    await expect(drawer.getByText("$82.80")).toBeVisible();
+    await expect(drawer.getByText("-$13.50").last()).toBeVisible();
+    await expect(drawer.getByText("$76.50")).toBeVisible();
     await expectNoConsoleProblems(consoleProblems);
   });
 
@@ -287,8 +287,8 @@ test.describe("Action Replay storefront release gate", () => {
         .first(),
     ).toBeVisible();
     await expect(drawer.getByText("Pair credit / 15%")).toBeVisible();
-    await expect(drawer.getByText("-$7.20").last()).toBeVisible();
-    await expect(drawer.getByText("$82.80")).toBeVisible();
+    await expect(drawer.getByText("-$13.50").last()).toBeVisible();
+    await expect(drawer.getByText("$76.50")).toBeVisible();
     await expectNoConsoleProblems(consoleProblems);
   });
 
@@ -309,8 +309,8 @@ test.describe("Action Replay storefront release gate", () => {
     await expect(drawer).toBeVisible();
     await expect(drawer).toHaveCSS("width", "390px");
     await expect(drawer.getByText("Pair credit / 15%")).toBeVisible();
-    await expect(drawer.getByText("-$7.20").last()).toBeVisible();
-    await expect(drawer.getByText("$82.80")).toBeVisible();
+    await expect(drawer.getByText("-$13.50").last()).toBeVisible();
+    await expect(drawer.getByText("$76.50")).toBeVisible();
     await expect(
       drawer.getByRole("button", { name: /OPEN CHECKOUT MIRROR/i }),
     ).toBeVisible();

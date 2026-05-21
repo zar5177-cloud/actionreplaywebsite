@@ -53,8 +53,8 @@ The release guard checks:
 - hidden duplicate product
 - local browser smoke tests
 - live cart API creates a Shopify checkout URL
-- live tee + poster cart receives the Shopify 15% pair credit
-- live Shopify checkout page opens with the tee, poster, $7.20 credit, and $82.80 total
+- live tee + poster cart receives the Shopify 15% full-cart pair credit
+- live Shopify checkout page opens with the tee, poster, $13.50 credit, and $76.50 total
 
 ## Required Environment Variables
 
@@ -82,6 +82,7 @@ SHOPIFY_GALAXY_TEE_VARIANT_WHITE_L
 SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XL
 SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XXL
 SHOPIFY_PROMO_POSTER_VARIANT_24X36
+SHOPIFY_TEE_POSTER_DISCOUNT_CODE
 ```
 
 GitHub Actions also has these Vercel deployment secrets:
@@ -127,7 +128,10 @@ Production Branch: main
 Current Vercel state, verified 2026-05-21:
 
 - Project settings are configured for Next.js, `npm ci`, `npm run build`, default output, Node 22.x.
-- All required `SHOPIFY_*` variables are synced to Production and Preview.
+- All required `SHOPIFY_*` variables are synced to Production. Existing
+  Shopify product credentials are mirrored to Preview; if a branch preview must
+  verify the pair discount, add `SHOPIFY_TEE_POSTER_DISCOUNT_CODE=REPLAY15` to
+  that preview branch too.
 - Deployment Protection has automation bypass entries.
 - `shopactionreplay.com` and `www.shopactionreplay.com` are added to the Vercel project.
 - Current Vercel production deployment is ready and smoke-tested:
@@ -141,7 +145,8 @@ Current Vercel state, verified 2026-05-21:
   the controlled release path for manual production pushes.
 - Public DNS points to Vercel. Apex and `www` both resolve to `76.76.21.21`.
 - Live checkout verification currently proves the one-click tee + poster
-  `addPair` route, Shopify checkout handoff, and automatic $7.20 pair credit.
+  `addPair` route, server-applied `REPLAY15`, Shopify checkout handoff, and
+  $13.50 full-cart pair credit.
 
 ## GitHub Actions Vercel CLI Deploys
 
@@ -333,7 +338,7 @@ Confirm:
 7. action-replay-mewtwo-tee is unpublished from Headless/Storefront and archived.
 8. product(handle: "action-replay-2026-promo-poster") is visible to the Storefront API.
 9. Its 24 x 36 variant matches SHOPIFY_PROMO_POSTER_VARIANT_24X36 and is available for sale.
-10. A cart containing one Retro Black / S Galaxy tee and one 24 x 36 promo poster totals $82.80 from a $90.00 line subtotal, reflecting the Shopify 15% pair credit.
+10. A cart containing one Retro Black / S Galaxy tee and one 24 x 36 promo poster totals $76.50 from a $90.00 line subtotal, reflecting the Shopify 15% full-cart pair credit.
 
 Return only pass/fail plus any mismatched variant IDs by env var name. Do not print token values.
 ```
@@ -376,7 +381,8 @@ Already configured:
 - Build Command: npm run build
 - Output Directory: empty / Next.js default
 - Node.js: 22.x
-- SHOPIFY_* variables are present in Production and Preview
+- SHOPIFY_* variables are present in Production, including
+  SHOPIFY_TEE_POSTER_DISCOUNT_CODE=REPLAY15
 - Protection Bypass for Automation exists
 
 - Production branch: main

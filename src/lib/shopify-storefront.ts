@@ -359,10 +359,15 @@ function mapCart(cart: ShopifyCartNode | null): StorefrontCart | null {
     (total, line) => total + moneyAmount(line.subtotal),
     0,
   );
-  const discountTotal = mappedLines.reduce(
+  const lineDiscountTotal = mappedLines.reduce(
     (total, line) => total + moneyAmount(line.discountTotal),
     0,
   );
+  const cartDiscountTotal = Math.max(
+    0,
+    undiscountedSubtotal - moneyAmount(cart.cost.totalAmount),
+  );
+  const discountTotal = Math.max(lineDiscountTotal, cartDiscountTotal);
 
   return {
     id: cart.id,

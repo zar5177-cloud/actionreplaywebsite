@@ -18,6 +18,7 @@ const REQUIRED_ENV = [
   "SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XL",
   "SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XXL",
   "SHOPIFY_PROMO_POSTER_VARIANT_24X36",
+  "SHOPIFY_TEE_POSTER_DISCOUNT_CODE",
 ];
 
 const EXPECTED_VARIANTS = [
@@ -78,6 +79,7 @@ function fail(message) {
 loadDotenvLocal();
 
 const fallbackPosterVariantId = "gid://shopify/ProductVariant/48745105424640";
+const pairDiscountCode = process.env.SHOPIFY_TEE_POSTER_DISCOUNT_CODE?.trim();
 if (!process.env.SHOPIFY_PROMO_POSTER_VARIANT_24X36) {
   process.env.SHOPIFY_PROMO_POSTER_VARIANT_24X36 = fallbackPosterVariantId;
 }
@@ -241,6 +243,10 @@ const cartData = await storefrontFetch(
           id
           totalQuantity
           checkoutUrl
+          discountCodes {
+            code
+            applicable
+          }
           cost {
             totalAmount {
               amount
@@ -286,6 +292,7 @@ const cartData = await storefrontFetch(
   `,
   {
     input: {
+      discountCodes: [pairDiscountCode],
       lines: [
         {
           merchandiseId: process.env.SHOPIFY_GALAXY_TEE_VARIANT_BLACK_S,
@@ -309,6 +316,10 @@ if (cartData.cartCreate.userErrors.length) {
 }
 
 const cart = cartData.cartCreate.cart;
+const appliedPairCode = cart.discountCodes?.find(
+  (discountCode) =>
+    discountCode.code?.toUpperCase() === pairDiscountCode.toUpperCase(),
+);
 const lineSubtotal = cart.lines.nodes.reduce(
   (sum, line) => sum + moneyAmount(line.cost.subtotalAmount),
   0,
@@ -322,19 +333,26 @@ const lineDiscount = cart.lines.nodes.reduce(
     ),
   0,
 );
+const cartDiscount = Math.max(0, lineSubtotal - moneyAmount(cart.cost.totalAmount));
 
 if (cart.totalQuantity !== 2 || lineSubtotal !== 90) {
   fail(`Expected tee + poster cart subtotal 90 with quantity 2; got ${lineSubtotal}.`);
 }
 
-if (Math.abs(lineDiscount - 7.2) > 0.01) {
-  fail(`Expected Shopify 15% pair credit of 7.20; got ${lineDiscount}.`);
+if (!appliedPairCode?.applicable) {
+  fail(`Expected ${pairDiscountCode} to be applicable to the tee + poster cart.`);
 }
 
-if (Math.abs(moneyAmount(cart.cost.totalAmount) - 82.8) > 0.01) {
-  fail(`Expected pair cart total 82.80; got ${cart.cost.totalAmount.amount}.`);
+if (Math.abs(cartDiscount - 13.5) > 0.01) {
+  fail(
+    `Expected Shopify 15% full-cart pair credit of 13.50; got ${cartDiscount}. Line-level allocation was ${lineDiscount}.`,
+  );
+}
+
+if (Math.abs(moneyAmount(cart.cost.totalAmount) - 76.5) > 0.01) {
+  fail(`Expected pair cart total 76.50; got ${cart.cost.totalAmount.amount}.`);
 }
 
 console.log(
-  "Shopify Storefront verification passed: tee variants, poster variant, duplicate hiding, checkout URL, and 15% pair credit are live.",
+  "Shopify Storefront verification passed: tee variants, poster variant, duplicate hiding, checkout URL, and 15% full-cart pair credit are live.",
 );

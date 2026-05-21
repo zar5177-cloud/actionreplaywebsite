@@ -64,12 +64,19 @@ if (moneyAmount(pairCart.undiscountedSubtotal) !== 90) {
   fail(`Expected pair subtotal 90.00, got ${pairCart.undiscountedSubtotal?.amount}.`);
 }
 
-if (Math.abs(moneyAmount(pairCart.discountTotal) - 7.2) > 0.01) {
-  fail(`Expected pair credit 7.20, got ${pairCart.discountTotal?.amount}.`);
+const replay15 = pairCart.discountCodes?.find(
+  (discountCode) => discountCode.code?.toUpperCase() === "REPLAY15",
+);
+if (!replay15?.applicable) {
+  fail("Expected REPLAY15 to be applied and applicable to the tee + poster cart.");
 }
 
-if (Math.abs(moneyAmount(pairCart.total) - 82.8) > 0.01) {
-  fail(`Expected pair total 82.80, got ${pairCart.total?.amount}.`);
+if (Math.abs(moneyAmount(pairCart.discountTotal) - 13.5) > 0.01) {
+  fail(`Expected pair credit 13.50, got ${pairCart.discountTotal?.amount}.`);
+}
+
+if (Math.abs(moneyAmount(pairCart.total) - 76.5) > 0.01) {
+  fail(`Expected pair total 76.50, got ${pairCart.total?.amount}.`);
 }
 
 const checkoutUrl = new URL(pairCart.checkoutUrl);
@@ -96,8 +103,8 @@ try {
   const markers = [
     [/GALAXY|AR-001|Tee|TEE/i, "Galaxy tee"],
     [/Poster|POSTER|Promo|PROMO/i, "promo poster"],
-    [/7\.20|\$7\.20/, "$7.20 pair credit"],
-    [/82\.80|\$82\.80/, "$82.80 total"],
+    [/13\.50|\$13\.50/, "$13.50 pair credit"],
+    [/76\.50|\$76\.50/, "$76.50 total"],
     [/Contact|Email|Delivery|Shipping|Pay now|Continue/i, "checkout form"],
   ];
   const missing = markers
@@ -121,6 +128,7 @@ try {
         baseUrl,
         checkoutUrl: page.url(),
         totalQuantity: pairCart.totalQuantity,
+        discountCodes: pairCart.discountCodes,
         subtotal: pairCart.undiscountedSubtotal,
         discountTotal: pairCart.discountTotal,
         total: pairCart.total,
