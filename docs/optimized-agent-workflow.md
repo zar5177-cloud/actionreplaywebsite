@@ -134,11 +134,15 @@ Current Vercel state, verified 2026-05-21:
 - Deployment Protection has automation bypass entries.
 - `shopactionreplay.com` and `www.shopactionreplay.com` are attached to the Vercel project.
 - Current Vercel production deployment is ready and passed smoke tests:
-  `https://actionreplaywebsite-d858j19xc-zach-relichs-projects.vercel.app`
+  `https://actionreplaywebsite-11hb6oee7-zach-relichs-projects.vercel.app`
 - PR #1 is merged to `main`; the `main` Release guard passed.
-- Public DNS still points to Netlify/IONOS records. Netlify currently returns `usage_exceeded` 503.
+- Public DNS now points to Vercel. Apex and `www` both resolve to `76.76.21.21`.
+- The scheduled Live domain guard runs twice per hour and verifies production,
+  Shopify checkout handoff, and the tee + poster pair credit.
 - GitHub Actions Vercel CLI secrets are set and can deploy without Netlify Agent.
-- Vercel Git Integration is still a dashboard convenience blocker. `vercel git connect` and the public REST project update both failed until the Vercel GitHub app is granted access to `zar5177-cloud/actionreplaywebsite`.
+- Vercel Git Integration is connected. Keep GitHub Actions Vercel CLI deploys as
+  the controlled production release path so preview output is tested before any
+  operator promotes it.
 
 Repeat Vercel project/env setup after secret changes:
 
@@ -152,11 +156,11 @@ Check Vercel project readiness without changing anything:
 npm run vercel:check
 ```
 
-Current expected result before GitHub sudo verification:
+Current expected result:
 
 ```text
 ready: true
-warnings: ["Vercel Git Integration is not connected; GitHub Actions Vercel CLI deploys are the release path."]
+warnings: ["Vercel Authentication protects generated deployment URLs only; custom domains remain public after DNS cutover."]
 ```
 
 ## Tool Choice
@@ -339,13 +343,11 @@ Return only a confirmation that no Netlify preview will be published.
 
 1. Stop using Netlify Agent for this site.
 2. Keep merged PR #1 as the release artifact.
-3. Optional: finish GitHub sudo-mode verification and connect native Vercel Git Integration to `zar5177-cloud/actionreplaywebsite`.
-4. In IONOS DNS, replace Netlify records with `A @ 76.76.21.21` and `A www 76.76.21.21`.
-5. Run `npm run domain:watch` until DNS resolves to Vercel and the live storefront responds.
-6. Run `npm run release:live`.
-7. Trigger GitHub Actions -> `Live domain guard` -> Run workflow.
-8. Inspect `/shop` and the Galaxy Tee product page manually.
-9. Archive or delete the Netlify site only after the Vercel live-domain guard passes.
+3. Keep native Vercel Git Integration connected, but do not let it replace the manual production release gate.
+4. Leave IONOS DNS on `A @ 76.76.21.21` and `A www 76.76.21.21`.
+5. Let GitHub Actions -> `Live domain guard` run on schedule; trigger it manually after any Shopify product or discount change.
+6. Inspect `/shop`, the Galaxy Tee product page, and Shopify checkout after visual edits.
+7. Archive or delete the Netlify site only after saving any billing/audit receipts needed later.
 
 ## Budget Rule
 

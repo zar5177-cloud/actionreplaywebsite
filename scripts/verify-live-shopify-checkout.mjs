@@ -37,20 +37,10 @@ function moneyAmount(money) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-const teeCart = await postCart({
-  action: "add",
-  productSlug: "action-replay-galaxy-tee",
+const pairCart = await postCart({
+  action: "addPair",
   size: "S",
   color: "Retro Black",
-  quantity: 1,
-});
-
-const pairCart = await postCart({
-  action: "add",
-  cartId: teeCart.id,
-  productSlug: "ar-003-corrupted-promo-poster",
-  size: "24 x 36",
-  color: "Wrong Purple",
   quantity: 1,
 });
 

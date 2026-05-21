@@ -2,8 +2,9 @@
 
 Last verified: 2026-05-21
 
-This file is the last-mile handoff for moving Action Replay from the broken
-Netlify-hosted live domain to the verified Vercel production deployment.
+This file is the archived last-mile handoff for moving Action Replay from the
+broken Netlify-hosted live domain to the verified Vercel production deployment.
+The cutover is complete; keep this file for rollback/support context.
 
 ## Current State
 
@@ -13,8 +14,9 @@ Good:
   https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
 - Vercel project: https://vercel.com/zach-relichs-projects/actionreplaywebsite
 - Vercel production deployment:
-  https://actionreplaywebsite-d858j19xc-zach-relichs-projects.vercel.app
-- Vercel production deployment passed storefront smoke tests from GitHub Actions.
+  https://actionreplaywebsite-11hb6oee7-zach-relichs-projects.vercel.app
+- Vercel production deployment passed storefront smoke tests and live Shopify
+  checkout verification.
 - Temporary public storefront URL passed smoke tests without bypass:
   https://actionreplaywebsite.vercel.app/shop
 - `shopactionreplay.com` and `www.shopactionreplay.com` are attached to Vercel.
@@ -30,20 +32,20 @@ Good:
 
 Blocked:
 
-- GitHub sudo-mode code is required only to finish native Vercel Git Integration.
-- IONOS DNS still points public traffic to Netlify.
-- Netlify currently returns `503 Site not available` for `https://shopactionreplay.com/shop`.
-- Do not spend more credits on Netlify Agent. The remaining fix is DNS.
+- No launch blocker remains. Apex and `www` resolve to Vercel at `76.76.21.21`.
+- Do not spend more credits on Netlify Agent. Netlify remains retired for this
+  storefront.
 
-## Step 1: Optional Finish Vercel Git Integration
+## Step 1: Vercel Git Integration
 
-GitHub sent a sudo-mode verification code to:
+Native Vercel Git Integration is connected. If GitHub access ever breaks again,
+GitHub may send a sudo-mode verification code to:
 
 ```text
 z******@psu.edu
 ```
 
-After receiving the code:
+If that happens:
 
 1. Return to the open GitHub authorization tab.
 2. Enter the code.
@@ -63,10 +65,10 @@ Expected result:
 "ready": true
 ```
 
-This step is no longer required for release. GitHub Actions can deploy through
-the Vercel CLI secrets already stored on the repo.
+This is not required for release. GitHub Actions can deploy through the Vercel
+CLI secrets already stored on the repo.
 
-## Step 2: Change IONOS DNS
+## Step 2: IONOS DNS Record Of Truth
 
 Open IONOS DNS settings for:
 
@@ -74,14 +76,14 @@ Open IONOS DNS settings for:
 shopactionreplay.com
 ```
 
-Remove or replace these Netlify records:
+These old Netlify records should stay removed:
 
 ```text
 A      @      75.2.60.5
 CNAME  www    shopactionreplay.netlify.app
 ```
 
-Add these Vercel records:
+These Vercel records should stay present:
 
 ```text
 A      @      76.76.21.21
@@ -90,7 +92,7 @@ A      www    76.76.21.21
 
 Do not change Shopify DNS for `store.shopactionreplay.com`.
 
-## Step 3: Watch DNS
+## Step 3: Watch DNS If It Ever Drifts
 
 Run:
 
@@ -121,11 +123,13 @@ GitHub -> Actions -> Live domain guard -> Run workflow
 Both must pass. The GitHub workflow runs the same `npm run go-live:check`
 sequence from a clean runner.
 
-Expected current status before DNS changes:
+Expected current status:
 
 ```text
 npm run domain:check
-# fails because IONOS still points @ and www to Netlify
+# passes because @ and www resolve to Vercel
+npm run go-live:check
+# passes production smoke tests and live Shopify checkout handoff
 ```
 
 ## Copy/Paste: IONOS Support

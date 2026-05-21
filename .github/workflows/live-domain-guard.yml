@@ -2,6 +2,8 @@ name: Live domain guard
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "17,47 * * * *"
 
 jobs:
   live-domain-smoke:
@@ -27,3 +29,11 @@ jobs:
 
       - name: Run go-live verification
         run: npm run go-live:check
+
+      - name: Preserve checkout screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-shopify-checkout-pair
+          path: test-results/live-shopify-checkout-pair.png
+          if-no-files-found: ignore

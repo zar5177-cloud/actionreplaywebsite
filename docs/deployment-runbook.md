@@ -131,16 +131,17 @@ Current Vercel state, verified 2026-05-21:
 - Deployment Protection has automation bypass entries.
 - `shopactionreplay.com` and `www.shopactionreplay.com` are added to the Vercel project.
 - Current Vercel production deployment is ready and smoke-tested:
-  `https://actionreplaywebsite-d858j19xc-zach-relichs-projects.vercel.app`
+  `https://actionreplaywebsite-11hb6oee7-zach-relichs-projects.vercel.app`
 - Stable public Vercel alias is ready and smoke-tested:
   `https://actionreplaywebsite.vercel.app/shop`
 - Release PR #1 is merged to `main`; the `main` Release guard passed.
 - GitHub Actions can deploy Vercel previews and manual production releases
-  through Vercel CLI secrets. This is the working release path even before
-  Vercel Git Integration is finished.
-- Vercel Git Integration is still not connected. Finish it later for native
-  dashboard previews/comments, but do not block the storefront on it.
-- Public DNS still points to Netlify/IONOS records, and Netlify is returning `usage_exceeded` 503.
+  through Vercel CLI secrets.
+- Vercel Git Integration is connected. GitHub Actions Vercel CLI deploys remain
+  the controlled release path for manual production pushes.
+- Public DNS points to Vercel. Apex and `www` both resolve to `76.76.21.21`.
+- Live checkout verification currently proves the one-click tee + poster
+  `addPair` route, Shopify checkout handoff, and automatic $7.20 pair credit.
 
 ## GitHub Actions Vercel CLI Deploys
 
@@ -185,12 +186,11 @@ Check Vercel project readiness without mutating settings:
 npm run vercel:check
 ```
 
-Current expected result before GitHub sudo verification:
+Current expected result:
 
 ```text
 ready: true
 warnings:
-- Vercel Git Integration is not connected; GitHub Actions Vercel CLI deploys are the release path.
 - Vercel Authentication protects generated deployment URLs only; custom domains remain public after DNS cutover.
 ```
 
@@ -261,11 +261,16 @@ That workflow runs `npm run go-live:check`, including Vercel project readiness,
 the public Vercel alias smoke test, live DNS, live production smoke, and the
 Shopify checkout handoff page check.
 
-Current pre-cutover status, verified 2026-05-21:
+The same workflow also runs automatically twice per hour and preserves the live
+Shopify checkout screenshot artifact when the check runs.
+
+Current post-cutover status, verified 2026-05-21:
 
 ```text
 npm run domain:check
-# fails because shopactionreplay.com still resolves to Netlify and returns 503
+# passes: shopactionreplay.com and www.shopactionreplay.com resolve to 76.76.21.21
+npm run go-live:check
+# passes: production smoke tests and live Shopify checkout handoff are green
 ```
 
 After the first preview deployment, test it:
@@ -393,7 +398,7 @@ Only promote after smoke tests pass.
 
 1. `npm run release:check` passes locally.
 2. GitHub Actions `Release guard` passes on the PR or `main`.
-3. `npm run vercel:check` passes. Native Vercel Git Integration may remain a warning because GitHub Actions Vercel CLI deploys are the release path.
+3. `npm run vercel:check` passes. Native Vercel Git Integration is connected, but GitHub Actions Vercel CLI deploys remain the controlled release path.
 4. Vercel production deployment smoke test passes with `SMOKE_BASE_URL` and the automation bypass header.
 5. DNS at IONOS points `shopactionreplay.com` and `www.shopactionreplay.com` to `76.76.21.21`.
 6. `npm run go-live:check` passes after DNS propagation.
