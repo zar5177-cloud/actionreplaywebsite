@@ -1,0 +1,118 @@
+name: Vercel CLI preview
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  deploy-preview:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    outputs:
+      preview_url: ${{ steps.deploy.outputs.preview_url }}
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+      SHOPIFY_ADMIN_API_VERSION: ${{ secrets.SHOPIFY_ADMIN_API_VERSION }}
+      SHOPIFY_CLIENT_ID: ${{ secrets.SHOPIFY_CLIENT_ID }}
+      SHOPIFY_CLIENT_SECRET: ${{ secrets.SHOPIFY_CLIENT_SECRET }}
+      SHOPIFY_STOREFRONT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
+      SHOPIFY_PRIVATE_STOREFRONT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_PRIVATE_STOREFRONT_ACCESS_TOKEN }}
+      SHOPIFY_GALAXY_TEE_VARIANT_BLACK_S: ${{ secrets.SHOPIFY_GALAXY_TEE_VARIANT_BLACK_S }}
+      SHOPIFY_GALAXY_TEE_VARIANT_BLACK_M: ${{ secrets.SHOPIFY_GALAXY_TEE_VARIANT_BLACK_M }}
+      SHOPIFY_GALAXY_TEE_VARIANT_BLACK_L: ${{ secrets.SHOPIFY_GALAXY_TEE_VARIANT_BLACK_L }}
+      SHOPIFY_GALAXY_TEE_VARIANT_BLACK_XL: ${{ secrets.SHOPIFY_GALAXY_TEE_VARIANT_BLACK_XL }}
+      SHOPIFY_GALAXY_TEE_VARIANT_BLACK_XXL: ${{ secrets.SHOPIFY_GALAXY_TEE_VARIANT_BLACK_XXL }}
+      SHOPIFY_GALAXY_TEE_VARIANT_WHITE_S: ${{ secrets.SHOPIFY_GALAXY_TEE_VARIANT_WHITE_S }}
+      SHOPIFY_GALAXY_TEE_VARIANT_WHITE_M: ${{ secrets.SHOPIFY_GALAXY_TEE_VARIANT_WHITE_M }}
+      SHOPIFY_GALAXY_TEE_VARIANT_WHITE_L: ${{ secrets.SHOPIFY_GALAXY_TEE_VARIANT_WHITE_L }}
+      SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XL: ${{ secrets.SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XL }}
+      SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XXL: ${{ secrets.SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XXL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Pull Vercel preview environment
+        run: npx vercel@latest pull --yes --environment=preview --token="$VERCEL_TOKEN"
+
+      - name: Build Vercel preview
+        run: npx vercel@latest build --token="$VERCEL_TOKEN"
+
+      - name: Deploy Vercel preview
+        id: deploy
+        run: |
+          deploy_output="$(npx vercel@latest deploy --prebuilt --token="$VERCEL_TOKEN")"
+          preview_url="$(printf '%s\n' "$deploy_output" | grep -Eo 'https://[^[:space:]]+\.vercel\.app' | tail -n 1)"
+          if [ -z "$preview_url" ]; then
+            printf '%s\n' "$deploy_output"
+            echo "Unable to find Vercel preview URL in deploy output." >&2
+            exit 1
+          fi
+          echo "preview_url=$preview_url" >> "$GITHUB_OUTPUT"
+          echo "Preview deployed: $preview_url"
+
+  smoke-preview:
+    needs: deploy-preview
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      SMOKE_BASE_URL: ${{ needs.deploy-preview.outputs.preview_url }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Smoke test Vercel preview
+        run: npm run test:smoke
+
+  comment-preview:
+    if: github.event_name == 'pull_request'
+    needs:
+      - deploy-preview
+      - smoke-preview
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment preview URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = '${{ needs.deploy-preview.outputs.preview_url }}';
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: [
+                'Vercel preview passed smoke tests.',
+                '',
+                url,
+                '',
+                'Do not promote automatically. Production stays manual until the live domain cutover checklist is complete.'
+              ].join('\n')
+            });
