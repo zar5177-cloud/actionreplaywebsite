@@ -34,6 +34,14 @@ type AddCartRequest = {
   quantity?: unknown;
 };
 
+type AddPairCartRequest = {
+  action: "addPair";
+  cartId?: unknown;
+  size?: unknown;
+  color?: unknown;
+  quantity?: unknown;
+};
+
 type UpdateCartRequest = {
   action: "update";
   cartId?: unknown;
@@ -47,7 +55,11 @@ type RemoveCartRequest = {
   lineId?: unknown;
 };
 
-type CartRequestBody = AddCartRequest | UpdateCartRequest | RemoveCartRequest;
+type CartRequestBody =
+  | AddCartRequest
+  | AddPairCartRequest
+  | UpdateCartRequest
+  | RemoveCartRequest;
 
 function jsonError(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
@@ -139,6 +151,35 @@ async function resolveMerchandiseId(body: AddCartRequest) {
   );
 }
 
+async function resolvePairLines(body: AddPairCartRequest) {
+  const quantity = quantityValue(body.quantity);
+  const teeVariantId = await resolveMerchandiseId({
+    action: "add",
+    productSlug: GALAXY_TEE_SLUG,
+    size: body.size,
+    color: body.color,
+    quantity,
+  });
+  const posterVariantId = await resolveMerchandiseId({
+    action: "add",
+    productSlug: PROMO_POSTER_SLUG,
+    size: "24 x 36",
+    color: "Wrong Purple",
+    quantity,
+  });
+
+  return [
+    {
+      merchandiseId: teeVariantId,
+      quantity,
+    },
+    {
+      merchandiseId: posterVariantId,
+      quantity,
+    },
+  ];
+}
+
 export async function GET(request: Request) {
   const cartId = new URL(request.url).searchParams.get("cartId")?.trim();
 
@@ -177,6 +218,16 @@ export async function POST(request: Request) {
       const cart = cartId
         ? await addStorefrontCartLines({ cartId, lines: [line] })
         : await createStorefrontCart([line]);
+
+      return NextResponse.json({ cart: await syncPairDiscountCode(cart) });
+    }
+
+    if (body.action === "addPair") {
+      const cartId = stringValue(body.cartId);
+      const lines = await resolvePairLines(body);
+      const cart = cartId
+        ? await addStorefrontCartLines({ cartId, lines })
+        : await createStorefrontCart(lines);
 
       return NextResponse.json({ cart: await syncPairDiscountCode(cart) });
     }

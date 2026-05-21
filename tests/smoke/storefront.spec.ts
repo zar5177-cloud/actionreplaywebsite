@@ -188,6 +188,48 @@ test.describe("Action Replay storefront release gate", () => {
     expect(Number(posterPayload.cart?.total?.amount)).toBeCloseTo(82.8, 2);
   });
 
+  test("cart API restores tee plus poster in one server-side mutation", async ({
+    request,
+  }) => {
+    const response = await request.post("/api/shopify/cart", {
+      data: {
+        action: "addPair",
+        size: "M",
+        color: "White",
+        quantity: 1,
+      },
+    });
+
+    expect(response.status()).toBe(200);
+
+    const payload = (await response.json()) as {
+      cart?: {
+        checkoutUrl?: string;
+        totalQuantity?: number;
+        undiscountedSubtotal?: { amount: string };
+        discountTotal?: { amount: string };
+        total?: { amount: string };
+        lines?: {
+          productSlug: string;
+        }[];
+      };
+      error?: string;
+    };
+
+    expect(payload.error).toBeUndefined();
+    expect(new URL(payload.cart?.checkoutUrl ?? "").host).toBe(
+      "store.shopactionreplay.com",
+    );
+    expect(payload.cart?.totalQuantity).toBe(2);
+    expect(payload.cart?.lines?.map((line) => line.productSlug).sort()).toEqual([
+      "action-replay-galaxy-tee",
+      "ar-003-corrupted-promo-poster",
+    ]);
+    expect(Number(payload.cart?.undiscountedSubtotal?.amount)).toBe(90);
+    expect(Number(payload.cart?.discountTotal?.amount)).toBeCloseTo(7.2, 2);
+    expect(Number(payload.cart?.total?.amount)).toBeCloseTo(82.8, 2);
+  });
+
   test("cart drawer opens after adding Galaxy Tee", async ({ page }) => {
     const consoleProblems = collectConsoleProblems(page);
 
@@ -216,6 +258,34 @@ test.describe("Action Replay storefront release gate", () => {
 
     const drawer = page.locator("aside").first();
     await expect(drawer).toBeVisible();
+    await expect(drawer.getByText("Pair credit / 15%")).toBeVisible();
+    await expect(drawer.getByText("-$7.20").last()).toBeVisible();
+    await expect(drawer.getByText("$82.80")).toBeVisible();
+    await expectNoConsoleProblems(consoleProblems);
+  });
+
+  test("one-click pair restore adds selected tee and poster to the drawer", async ({
+    page,
+  }) => {
+    const consoleProblems = collectConsoleProblems(page);
+
+    await page.goto("/shop/action-replay-galaxy-tee");
+    await page.getByRole("button", { name: "White" }).first().click();
+    await page
+      .getByRole("button", { name: /RESTORE TEE \+ POSTER \/ 15%/i })
+      .click();
+
+    const drawer = page.locator("aside").first();
+    await expect(drawer).toBeVisible();
+    await expect(
+      drawer.locator("p").filter({ hasText: /AR-001.*GALAXY.*TEE/i }).first(),
+    ).toBeVisible();
+    await expect(
+      drawer
+        .locator("p")
+        .filter({ hasText: /Action Replay 2026 Promo Poster|AR-003.*PROMO.*POSTER/i })
+        .first(),
+    ).toBeVisible();
     await expect(drawer.getByText("Pair credit / 15%")).toBeVisible();
     await expect(drawer.getByText("-$7.20").last()).toBeVisible();
     await expect(drawer.getByText("$82.80")).toBeVisible();

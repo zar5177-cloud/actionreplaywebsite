@@ -8,6 +8,7 @@ import {
   productStateLabels,
   type Product,
 } from "@/lib/brand-data";
+import { GALAXY_TEE_SLUG } from "@/lib/shopify-galaxy-tee";
 import { useCart } from "./cart-context";
 
 function normalizedOption(value?: string) {
@@ -15,7 +16,7 @@ function normalizedOption(value?: string) {
 }
 
 export function ProductDetailActions({ product }: { product: Product }) {
-  const { addItem, errorMessage, isMutating } = useCart();
+  const { addItem, addPair, errorMessage, isMutating } = useCart();
   const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
   const selectedVariant = product.shopifyVariants?.find(
@@ -29,6 +30,7 @@ export function ProductDetailActions({ product }: { product: Product }) {
     isPurchasable &&
     Boolean(selectedVariant) &&
     selectedVariant?.availableForSale !== false;
+  const canAddPair = product.slug === GALAXY_TEE_SLUG && canAddToCart;
 
   return (
     <div className="mt-4 grid gap-4 sm:mt-6 sm:gap-5">
@@ -96,6 +98,23 @@ export function ProductDetailActions({ product }: { product: Product }) {
             ? productActionLabel(product)
           : productActionLabel(product)}
       </button>
+      {product.slug === GALAXY_TEE_SLUG ? (
+        <button
+          type="button"
+          onClick={() => void addPair(selectedSize, selectedColor)}
+          disabled={!canAddPair || isMutating}
+          className="flex min-h-12 w-full items-center justify-center gap-2 border border-lime-300/80 bg-lime-300 px-4 py-3 font-mono text-xs font-black uppercase leading-5 tracking-[0.14em] text-black shadow-[0_0_28px_rgba(190,242,100,0.18)] transition hover:bg-white disabled:cursor-not-allowed disabled:border-white/15 disabled:bg-white/10 disabled:text-zinc-500"
+        >
+          <ShoppingCart size={16} />
+          {isMutating ? "Restoring pair..." : "RESTORE TEE + POSTER / 15%"}
+        </button>
+      ) : null}
+      {product.slug === GALAXY_TEE_SLUG ? (
+        <p className="-mt-1 font-mono text-[11px] uppercase leading-5 tracking-[0.12em] text-lime-200/80">
+          Adds the selected tee and AR-003 print in one Shopify cart. The credit
+          appears there, not in local storage.
+        </p>
+      ) : null}
       <p className="border border-white/10 bg-black/50 p-3 font-mono text-[11px] uppercase leading-5 tracking-[0.12em] text-zinc-500">
         {product.archiveCode ?? product.slug} /{" "}
         {productStateLabels[product.productState]}

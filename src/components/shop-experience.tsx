@@ -273,8 +273,9 @@ export function ShopExperience({
               Recovered copies
             </h2>
             <p className="mt-3 max-w-2xl font-mono text-sm leading-6 text-zinc-300">
-              AR-001 is the only open checkout mirror. The other files stayed
-              in the drawer because somebody kept renaming the folder back.
+              AR-001 and AR-003 both answer the checkout mirror now. AR-002
+              stayed in the drawer because somebody kept renaming the folder
+              back.
             </p>
           </div>
           <div className="flex min-w-0 flex-wrap items-center gap-2">

@@ -75,7 +75,7 @@ function Header({ searchProducts }: { searchProducts: Product[] }) {
           <BrandMark />
           <div className="hidden items-center gap-2 border-l border-white/15 pl-5 font-mono text-xs uppercase tracking-[0.16em] text-lime-200 md:flex">
             <ShieldCheck size={18} />
-            AR-001 checkout mirror
+            AR-001 + AR-003 checkout mirror
           </div>
         </div>
 
@@ -467,7 +467,7 @@ export function SiteShell({ children, searchProducts }: SiteShellProps) {
           <div className="mx-auto grid max-w-[1600px] gap-4 md:grid-cols-[1fr_auto] md:items-center">
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.24em] text-blue-300">
-                Action Replay / AR-001 live
+                Action Replay / pair mirror live
               </p>
               <p className="mt-2 max-w-2xl font-mono text-xs leading-6 text-zinc-500">
                 Hidden archive layers are additive. The Galaxy tee and corrupted
@@ -496,7 +496,9 @@ export function SiteShell({ children, searchProducts }: SiteShellProps) {
             <div className="flex flex-wrap gap-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-zinc-500">
               <span className="border border-white/10 px-2 py-1">改造コード</span>
               <span className="border border-white/10 px-2 py-1">SHOPIFY LIVE</span>
-              <span className="border border-white/10 px-2 py-1">AR-001 ONLY</span>
+              <span className="border border-white/10 px-2 py-1">
+                AR-001 + AR-003
+              </span>
             </div>
           </div>
           <div className="mx-auto mt-5 grid max-w-[1600px] gap-2 md:grid-cols-3">

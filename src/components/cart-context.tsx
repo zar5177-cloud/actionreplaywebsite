@@ -83,6 +83,7 @@ type CartContextValue = {
   isMutating: boolean;
   errorMessage: string;
   addItem: (product: Product, size: string, color: ProductColor) => Promise<void>;
+  addPair: (size: string, color: ProductColor) => Promise<void>;
   updateQuantity: (lineId: string, quantity: number) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
   openCart: () => void;
@@ -282,7 +283,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       errorMessage,
       async addItem(product, size, color) {
         if (!isPurchasableProduct(product)) {
-          setErrorMessage("FILE LOCKED. Checkout mirror only accepts AR-001.");
+          setErrorMessage("FILE LOCKED. Checkout mirror only accepts live files.");
           setCartOpen(true);
           return;
         }
@@ -305,6 +306,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
         } catch (error) {
           setErrorMessage(
             error instanceof Error ? error.message : "Unable to add item.",
+          );
+          setCartOpen(true);
+        } finally {
+          setMutating(false);
+        }
+      },
+      async addPair(size, color) {
+        setMutating(true);
+        setErrorMessage("");
+
+        try {
+          const updatedCart = await requestCart({
+            action: "addPair",
+            cartId: cart?.id ?? readPersistedCartId(),
+            size,
+            color: color.name,
+            quantity: 1,
+          });
+          persistCartId(updatedCart);
+          setCart(updatedCart);
+          setCartOpen(true);
+        } catch (error) {
+          setErrorMessage(
+            error instanceof Error
+              ? error.message
+              : "Unable to restore the pair.",
           );
           setCartOpen(true);
         } finally {

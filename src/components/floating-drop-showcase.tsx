@@ -133,9 +133,9 @@ export function FloatingDropShowcase({
           <div className="flex items-start gap-3">
             <ShieldCheck className="mt-0.5 shrink-0 text-lime-300" size={22} />
             <p className="font-mono text-xs uppercase leading-5 tracking-[0.16em] text-zinc-300">
-              The local catalog is limited to the Galaxy tee and 2026 promo
-              locked memory card file. Checkout stays routed through AR-001
-              Shopify variants only.
+              The local catalog now has two live mirrors: AR-001 Galaxy tee and
+              AR-003 corrupted promo poster. AR-002 stays locked because the
+              slot still reports a bad memory checksum.
             </p>
           </div>
           <Image
