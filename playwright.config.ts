@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 const baseURL = process.env.SMOKE_BASE_URL || "http://127.0.0.1:3000";
 const protectionBypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+const forceVercelDns = process.env.SMOKE_FORCE_VERCEL_DNS === "1";
 
 export default defineConfig({
   testDir: "./tests/smoke",
@@ -32,7 +33,16 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: forceVercelDns
+          ? {
+              args: [
+                "--host-resolver-rules=MAP shopactionreplay.com 76.76.21.21,MAP www.shopactionreplay.com 76.76.21.21",
+              ],
+            }
+          : undefined,
+      },
     },
   ],
 });

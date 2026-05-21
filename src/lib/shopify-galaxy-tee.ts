@@ -97,12 +97,12 @@ export function getGalaxyTeeShopifyVariants({
     GALAXY_TEE_SIZES.flatMap((size) => {
       const id = process.env[variantEnvKey(colorway, size)]?.trim();
 
-      if (!id) {
+      if (!id && includeIds) {
         return [];
       }
 
       return {
-        id: includeIds ? id : `server-resolved:${colorway.envToken}:${size}`,
+        id: includeIds && id ? id : `server-resolved:${colorway.envToken}:${size}`,
         title: `${colorway.name} / ${size}`,
         availableForSale: true,
         size,
