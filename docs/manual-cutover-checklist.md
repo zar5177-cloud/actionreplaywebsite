@@ -9,15 +9,18 @@ Netlify-hosted live domain to the verified Vercel production deployment.
 
 Good:
 
-- PR: https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
+- Release PR merged to `main`:
+  https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
 - Vercel project: https://vercel.com/zach-relichs-projects/actionreplaywebsite
 - Vercel production deployment:
-  https://actionreplaywebsite-954l0elz5-zach-relichs-projects.vercel.app
-- Vercel production deployment passed storefront smoke tests.
+  https://actionreplaywebsite-d858j19xc-zach-relichs-projects.vercel.app
+- Vercel production deployment passed storefront smoke tests from GitHub Actions.
 - `shopactionreplay.com` and `www.shopactionreplay.com` are attached to Vercel.
 - All required `SHOPIFY_*` env vars are present in Vercel Production and Preview.
 - GitHub Actions can now deploy Vercel previews and manual production releases
   without Netlify Agent.
+- Local `main` tracks `origin/main`; stale local initial branch is preserved as
+  `codex/local-main-pre-release-backup`.
 
 Blocked:
 
@@ -109,6 +112,13 @@ GitHub -> Actions -> Live domain guard -> Run workflow
 ```
 
 Both must pass.
+
+Expected current status before DNS changes:
+
+```text
+npm run domain:check
+# fails because IONOS still points @ and www to Netlify
+```
 
 ## Copy/Paste: IONOS Support
 

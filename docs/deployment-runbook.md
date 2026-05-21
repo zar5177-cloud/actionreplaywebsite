@@ -9,7 +9,7 @@ Do not publish any Netlify Agent preview that describes the site as a bare Next.
 Production source of truth:
 
 - Live site: https://shopactionreplay.com/shop
-- Release PR: https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
+- Merged release PR: https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
 - Shopify product handle: `enzyme-washed-t-shirt`
 - Duplicate handle that must stay hidden: `action-replay-mewtwo-tee`
 - Checkout path: app cart drawer -> `/api/shopify/cart` -> Shopify `checkoutUrl`
@@ -119,8 +119,9 @@ Current Vercel state, verified 2026-05-21:
 - All required `SHOPIFY_*` variables are synced to Production and Preview.
 - Deployment Protection has automation bypass entries.
 - `shopactionreplay.com` and `www.shopactionreplay.com` are added to the Vercel project.
-- Vercel production deployment is ready and smoke-tested:
-  `https://actionreplaywebsite-954l0elz5-zach-relichs-projects.vercel.app`
+- Current Vercel production deployment is ready and smoke-tested:
+  `https://actionreplaywebsite-d858j19xc-zach-relichs-projects.vercel.app`
+- Release PR #1 is merged to `main`; the `main` Release guard passed.
 - GitHub Actions can deploy Vercel previews and manual production releases
   through Vercel CLI secrets. This is the working release path even before
   Vercel Git Integration is finished.
@@ -249,15 +250,14 @@ VERCEL_AUTOMATION_BYPASS_SECRET=YOUR_BYPASS_SECRET SMOKE_BASE_URL=https://YOUR-V
 
 Only move the domain after the preview passes.
 
-Current CLI-created Vercel deployment:
+Older CLI-created Vercel preview kept for audit history:
 
 ```text
 https://actionreplaywebsite-2v9s4sa0y-zach-relichs-projects.vercel.app
 https://actionreplaywebsite-zach-relichs-projects.vercel.app
 ```
 
-This deployment is currently protected by Vercel Authentication. It was verified
-with `vercel curl`, which injects a protection bypass header automatically.
+Use the current production deployment listed above for go-live checks.
 
 ## Netlify Setup
 
@@ -363,13 +363,12 @@ Only promote after smoke tests pass.
 
 1. `npm run release:check` passes locally.
 2. GitHub Actions `Release guard` passes on the PR or `main`.
-3. `npm run vercel:check` passes after GitHub sudo verification.
-4. Vercel Git Integration is connected to `zar5177-cloud/actionreplaywebsite`.
-5. Vercel production deployment smoke test passes with `SMOKE_BASE_URL`.
-6. DNS at IONOS points `shopactionreplay.com` and `www.shopactionreplay.com` to `76.76.21.21`.
-7. `npm run domain:check` passes after DNS propagation.
-8. `npm run test:smoke:prod` passes after DNS propagation.
-9. GitHub Actions `Live domain guard` passes.
-10. `/shop/action-replay-mewtwo-tee` redirects to `/shop/action-replay-galaxy-tee`.
-11. `/api/shopify/cart` returns checkout host `store.shopactionreplay.com`.
-12. Browser console has zero errors on `/shop` and Galaxy Tee page.
+3. `npm run vercel:check` passes. Native Vercel Git Integration may remain a warning because GitHub Actions Vercel CLI deploys are the release path.
+4. Vercel production deployment smoke test passes with `SMOKE_BASE_URL`.
+5. DNS at IONOS points `shopactionreplay.com` and `www.shopactionreplay.com` to `76.76.21.21`.
+6. `npm run domain:check` passes after DNS propagation.
+7. `npm run test:smoke:prod` passes after DNS propagation.
+8. GitHub Actions `Live domain guard` passes.
+9. `/shop/action-replay-mewtwo-tee` redirects to `/shop/action-replay-galaxy-tee`.
+10. `/api/shopify/cart` returns checkout host `store.shopactionreplay.com`.
+11. Browser console has zero errors on `/shop` and Galaxy Tee page.

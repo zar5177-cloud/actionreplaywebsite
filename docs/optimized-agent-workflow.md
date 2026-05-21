@@ -59,10 +59,13 @@ gh pr view 1 --json url,headRefName,statusCheckRollup
 
 ### 2. Implementation
 
-Use a branch, never a deploy agent workspace.
+Use a branch, never a deploy agent workspace. For hotfixes after PR #1, branch
+from `main`.
 
 ```bash
-git switch codex/shopify-storefront-release
+git switch main
+git pull --ff-only origin main
+git switch -c codex/<short-task-name>
 npm ci
 npm run release:check
 ```
@@ -118,8 +121,8 @@ placeholders for CI prebuilt builds. GitHub Actions secrets are the build-time
 source of truth for static Shopify product pages.
 
 Do not use GitHub Actions to auto-promote a preview. The action may deploy and
-test a preview, but production promotion stays manual until the user approves
-the exact URL.
+test a preview, but production deployment requires an explicit owner/operator
+command and the typed confirmation string.
 
 Current Vercel state, verified 2026-05-21:
 
@@ -127,8 +130,9 @@ Current Vercel state, verified 2026-05-21:
 - All required `SHOPIFY_*` variables are already synced to Production and Preview.
 - Deployment Protection has automation bypass entries.
 - `shopactionreplay.com` and `www.shopactionreplay.com` are attached to the Vercel project.
-- Vercel production deployment is ready and passed smoke tests:
-  `https://actionreplaywebsite-954l0elz5-zach-relichs-projects.vercel.app`
+- Current Vercel production deployment is ready and passed smoke tests:
+  `https://actionreplaywebsite-d858j19xc-zach-relichs-projects.vercel.app`
+- PR #1 is merged to `main`; the `main` Release guard passed.
 - Public DNS still points to Netlify/IONOS records. Netlify currently returns `usage_exceeded` 503.
 - GitHub Actions Vercel CLI secrets are set and can deploy without Netlify Agent.
 - Vercel Git Integration is still a dashboard convenience blocker. `vercel git connect` and the public REST project update both failed until the Vercel GitHub app is granted access to `zar5177-cloud/actionreplaywebsite`.
@@ -232,8 +236,8 @@ Read these first:
 - docs/optimized-agent-workflow.md
 
 Current source of truth:
-- GitHub PR #1: https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
-- Branch: codex/shopify-storefront-release
+- Merged release PR #1: https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
+- Branch: main for release state; create a new `codex/<short-task-name>` branch for follow-up changes
 - Product handle: enzyme-washed-t-shirt
 - Hidden duplicate handle: action-replay-mewtwo-tee
 
@@ -275,7 +279,7 @@ Already configured:
 Use:
 - Production Branch: main
 
-Use PR #1 as the release branch:
+PR #1 is already merged. Use `main` for production deploys:
 https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
 
 If Vercel says it cannot access the repo, grant the Vercel GitHub app access to zar5177-cloud/actionreplaywebsite and retry the connection.
@@ -305,7 +309,7 @@ Stop. Do not publish this Netlify deploy preview.
 
 Netlify Agent is not the source of truth for this project. It is seeing a stale
 or temporary workspace and has repeatedly recreated files that already exist in
-GitHub PR #1.
+the merged GitHub release.
 
 Use only:
 https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
@@ -320,7 +324,7 @@ Return only a confirmation that no Netlify preview will be published.
 
 ## Manual Links
 
-- PR #1: https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
+- Merged PR #1: https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
 - GitHub Actions secrets: https://github.com/zar5177-cloud/actionreplaywebsite/settings/secrets/actions
 - Vercel project: https://vercel.com/zach-relichs-projects/actionreplaywebsite
 - Vercel Git settings: https://vercel.com/zach-relichs-projects/actionreplaywebsite/settings/git
@@ -331,14 +335,14 @@ Return only a confirmation that no Netlify preview will be published.
 ## Next 48 Hours
 
 1. Stop using Netlify Agent for this site.
-2. Open PR #1 and keep it as the release artifact.
-3. Finish GitHub sudo-mode verification and connect Vercel Git Integration to `zar5177-cloud/actionreplaywebsite`.
+2. Keep merged PR #1 as the release artifact.
+3. Optional: finish GitHub sudo-mode verification and connect native Vercel Git Integration to `zar5177-cloud/actionreplaywebsite`.
 4. In IONOS DNS, replace Netlify records with `A @ 76.76.21.21` and `A www 76.76.21.21`.
 5. Run `npm run domain:watch` until DNS resolves to Vercel and the live storefront responds.
 6. Run `npm run release:live`.
 7. Trigger GitHub Actions -> `Live domain guard` -> Run workflow.
 8. Inspect `/shop` and the Galaxy Tee product page manually.
-9. Merge PR #1 after the domain smoke passes.
+9. Archive or delete the Netlify site only after the Vercel live-domain guard passes.
 
 ## Budget Rule
 
