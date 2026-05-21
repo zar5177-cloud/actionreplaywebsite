@@ -6,9 +6,6 @@ on:
     branches:
       - main
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-
 jobs:
   storefront-smoke:
     runs-on: ubuntu-latest
@@ -32,10 +29,10 @@ jobs:
       SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XXL: ${{ secrets.SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XXL }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
