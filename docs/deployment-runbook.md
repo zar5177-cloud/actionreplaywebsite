@@ -139,6 +139,11 @@ Actions -> Vercel CLI preview
 This deploys a Vercel preview with `npx vercel@latest`, smoke-tests it with
 Playwright, and comments on the PR after the smoke test passes.
 
+The workflow passes `SHOPIFY_*` from GitHub Actions secrets into `vercel build`.
+Do not remove that env block. Vercel sensitive env vars are available at runtime
+but are intentionally not recoverable through `vercel env pull`, so CI prebuilt
+builds need the GitHub secret values at build time for static product pages.
+
 Manual production:
 
 ```text

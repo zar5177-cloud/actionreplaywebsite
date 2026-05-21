@@ -112,6 +112,11 @@ Workflows:
 - `Vercel production deploy`: manual typed confirmation, `main` only.
 - `Live domain guard`: manual DNS/live-domain verification after IONOS cutover.
 
+Do not remove the `SHOPIFY_*` env block from the Vercel CLI workflows. Vercel
+sensitive env vars are runtime-safe, but `vercel env pull` returns empty
+placeholders for CI prebuilt builds. GitHub Actions secrets are the build-time
+source of truth for static Shopify product pages.
+
 Do not use GitHub Actions to auto-promote a preview. The action may deploy and
 test a preview, but production promotion stays manual until the user approves
 the exact URL.
