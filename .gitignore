@@ -12,6 +12,12 @@
 
 # testing
 /coverage
+/test-results
+/playwright-report
+
+# python cache
+__pycache__/
+*.pyc
 
 # next.js
 /.next/
@@ -32,6 +38,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +46,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local Netlify folder
+.netlify
+
+# Large local creative production workspaces
+/action-replay-higgsfield/
+/action-replay-openart-production/
+/tmp/
+
+# RND moderation scratch outputs
+/action-replay-higgsfield/rnd/moderation-tests/assets/generated/
+/action-replay-higgsfield/rnd/moderation-tests/outputs/
+/action-replay-higgsfield/rnd/manual-higgsfield-handoff/outputs/
+
+# Local apparel print extraction outputs
+/outputs/
+/.venv-apparel-extractor/

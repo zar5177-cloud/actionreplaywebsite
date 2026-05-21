@@ -2,25 +2,42 @@
   "name": "actionreplaywebsite",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "8.5.10"
+    }
+  },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check:shopify-env": "node scripts/check-shopify-env-safety.mjs",
+    "verify:shopify": "node scripts/verify-shopify-storefront.mjs",
+    "test:smoke": "playwright test",
+    "test:smoke:prod": "SMOKE_BASE_URL=https://shopactionreplay.com playwright test",
+    "release:check": "npm run lint && npm run build && npm run check:shopify-env && npm run verify:shopify && npm run test:smoke",
+    "rnd:moderation:fixtures": "node scripts/rnd-moderation-prepare-assets.js fixtures",
+    "rnd:moderation:variants": "node scripts/rnd-moderation-prepare-assets.js variants"
   },
   "dependencies": {
-    "next": "16.2.4",
+    "lucide-react": "^1.11.0",
+    "next": "^16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
-    "eslint-config-next": "16.2.4",
+    "eslint-config-next": "^16.2.6",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
