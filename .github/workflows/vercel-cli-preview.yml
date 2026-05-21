@@ -56,7 +56,7 @@ jobs:
       - name: Deploy Vercel preview
         id: deploy
         run: |
-          deploy_output="$(npx vercel@latest deploy --prebuilt --token="$VERCEL_TOKEN")"
+          deploy_output="$(npx vercel@latest deploy --prebuilt --archive=tgz --token="$VERCEL_TOKEN")"
           preview_url="$(printf '%s\n' "$deploy_output" | grep -Eo 'https://[^[:space:]]+\.vercel\.app' | tail -n 1)"
           if [ -z "$preview_url" ]; then
             printf '%s\n' "$deploy_output"

@@ -16,6 +16,8 @@ Use this stack instead:
 - Vercel Git Integration is optional cleanup, not a release blocker.
 - Netlify is not allowed to publish agent previews for this project.
 - `netlify.toml` is a fail-fast retirement guard, not a hosting config.
+- Vercel CLI deploys must use `--archive=tgz` with `--prebuilt` to avoid
+  excessive upload calls on generated Next.js output.
 
 The rule is simple: agents edit branches, CI judges branches, Vercel CLI
 deploys branches, and production requires an explicit manual trigger.

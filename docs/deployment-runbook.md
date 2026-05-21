@@ -163,8 +163,12 @@ confirmation: DEPLOY ACTION REPLAY
 ```
 
 This only runs on `main`. It runs `npm run release:check`, deploys with
-`vercel deploy --prebuilt --prod`, then smoke-tests the resulting Vercel
-production URL. It does not depend on Netlify Agent or the Vercel GitHub App.
+`vercel deploy --prebuilt --archive=tgz --prod`, then smoke-tests the resulting
+Vercel production URL. It does not depend on Netlify Agent or the Vercel GitHub
+App.
+
+The archive flag is intentional. It compresses prebuilt output before upload,
+reducing the number of upload calls and avoiding Vercel CLI upload rate limits.
 
 Repeat the Vercel settings/env sync any time `.env.local` changes:
 
