@@ -1,0 +1,65 @@
+name: Vercel production deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type DEPLOY ACTION REPLAY to deploy the current main branch to Vercel production.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-production:
+    if: github.ref == 'refs/heads/main' && inputs.confirmation == 'DEPLOY ACTION REPLAY'
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run local release guard
+        run: npm run release:check
+
+      - name: Pull Vercel production environment
+        run: npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
+
+      - name: Build Vercel production
+        run: npx vercel@latest build --prod --token="$VERCEL_TOKEN"
+
+      - name: Deploy Vercel production
+        id: deploy
+        run: |
+          deploy_output="$(npx vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN")"
+          production_url="$(printf '%s\n' "$deploy_output" | grep -Eo 'https://[^[:space:]]+\.vercel\.app' | tail -n 1)"
+          if [ -z "$production_url" ]; then
+            printf '%s\n' "$deploy_output"
+            echo "Unable to find Vercel production URL in deploy output." >&2
+            exit 1
+          fi
+          echo "production_url=$production_url" >> "$GITHUB_OUTPUT"
+          echo "Production deployed: $production_url"
+
+      - name: Smoke test deployed Vercel production URL
+        env:
+          SMOKE_BASE_URL: ${{ steps.deploy.outputs.production_url }}
+        run: npm run test:smoke

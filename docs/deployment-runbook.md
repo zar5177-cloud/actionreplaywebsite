@@ -48,7 +48,8 @@ The release guard checks:
 
 ## Required Environment Variables
 
-Set these in Netlify, Vercel, and GitHub Actions secrets:
+Set these in Vercel Production, Vercel Preview, and GitHub Actions secrets.
+Do not create public `NEXT_PUBLIC_SHOPIFY_*` copies.
 
 GitHub Actions secrets were set for `zar5177-cloud/actionreplaywebsite` on
 2026-05-21. If the repo is recreated or transferred, set them again.
@@ -70,6 +71,15 @@ SHOPIFY_GALAXY_TEE_VARIANT_WHITE_M
 SHOPIFY_GALAXY_TEE_VARIANT_WHITE_L
 SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XL
 SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XXL
+```
+
+GitHub Actions also has these Vercel deployment secrets:
+
+```env
+VERCEL_TOKEN
+VERCEL_ORG_ID
+VERCEL_PROJECT_ID
+VERCEL_AUTOMATION_BYPASS_SECRET
 ```
 
 ## Vercel Setup
@@ -111,8 +121,34 @@ Current Vercel state, verified 2026-05-21:
 - `shopactionreplay.com` and `www.shopactionreplay.com` are added to the Vercel project.
 - Vercel production deployment is ready and smoke-tested:
   `https://actionreplaywebsite-954l0elz5-zach-relichs-projects.vercel.app`
-- GitHub repo connection is not connected yet. Vercel CLI/API failed until the Vercel GitHub app is granted access to `zar5177-cloud/actionreplaywebsite`.
+- GitHub Actions can deploy Vercel previews and manual production releases
+  through Vercel CLI secrets. This is the working release path even before
+  Vercel Git Integration is finished.
+- Vercel Git Integration is still not connected. Finish it later for native
+  dashboard previews/comments, but do not block the storefront on it.
 - Public DNS still points to Netlify/IONOS records, and Netlify is returning `usage_exceeded` 503.
+
+## GitHub Actions Vercel CLI Deploys
+
+PR previews:
+
+```text
+Actions -> Vercel CLI preview
+```
+
+This deploys a Vercel preview with `npx vercel@latest`, smoke-tests it with
+Playwright, and comments on the PR after the smoke test passes.
+
+Manual production:
+
+```text
+Actions -> Vercel production deploy -> Run workflow
+confirmation: DEPLOY ACTION REPLAY
+```
+
+This only runs on `main`. It runs `npm run release:check`, deploys with
+`vercel deploy --prebuilt --prod`, then smoke-tests the resulting Vercel
+production URL. It does not depend on Netlify Agent or the Vercel GitHub App.
 
 Repeat the Vercel settings/env sync any time `.env.local` changes:
 
@@ -129,8 +165,8 @@ npm run vercel:check
 Current expected result before GitHub sudo verification:
 
 ```text
-ready: false
-errors: ["Vercel Git Integration is not connected."]
+ready: true
+warnings: ["Vercel Git Integration is not connected; GitHub Actions Vercel CLI deploys are the release path."]
 ```
 
 IONOS DNS cutover:

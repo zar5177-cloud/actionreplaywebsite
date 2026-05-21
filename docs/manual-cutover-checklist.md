@@ -16,14 +16,16 @@ Good:
 - Vercel production deployment passed storefront smoke tests.
 - `shopactionreplay.com` and `www.shopactionreplay.com` are attached to Vercel.
 - All required `SHOPIFY_*` env vars are present in Vercel Production and Preview.
+- GitHub Actions can now deploy Vercel previews and manual production releases
+  without Netlify Agent.
 
 Blocked:
 
-- GitHub sudo-mode code is required to finish Vercel Git Integration.
+- GitHub sudo-mode code is required only to finish native Vercel Git Integration.
 - IONOS DNS still points public traffic to Netlify.
 - Netlify currently returns `503 Site not available` for `https://shopactionreplay.com/shop`.
 
-## Step 1: Finish Vercel Git Integration
+## Step 1: Optional Finish Vercel Git Integration
 
 GitHub sent a sudo-mode verification code to:
 
@@ -50,6 +52,9 @@ Expected result:
 ```text
 "ready": true
 ```
+
+This step is no longer required for release. GitHub Actions can deploy through
+the Vercel CLI secrets already stored on the repo.
 
 ## Step 2: Change IONOS DNS
 

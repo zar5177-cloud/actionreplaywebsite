@@ -11,12 +11,13 @@ Use this stack instead:
 - GitHub is the source of truth.
 - Local Codex or local Claude Code does code changes.
 - GitHub Actions runs release gates.
-- Vercel Git Integration creates previews for PRs.
-- Manual approval promotes to production.
+- GitHub Actions deploys Vercel previews through the Vercel CLI.
+- Manual production deploys run through a typed-confirmation GitHub workflow.
+- Vercel Git Integration is optional cleanup, not a release blocker.
 - Netlify is not allowed to publish agent previews for this project.
 
-The rule is simple: agents edit branches, CI judges branches, Vercel deploys
-branches, and a human promotes production.
+The rule is simple: agents edit branches, CI judges branches, Vercel CLI
+deploys branches, and production requires an explicit manual trigger.
 
 ## Why Netlify Agent Keeps Failing Here
 
@@ -103,12 +104,13 @@ VERCEL_AUTOMATION_BYPASS_SECRET=<secret> SMOKE_BASE_URL=<preview-url> npm run te
 
 ### 4. Deployment
 
-Use Vercel Git Integration after PR #1 is connected.
+Use GitHub Actions Vercel CLI workflows.
 
-Vercel should create:
+Workflows:
 
-- Preview deployments for PR branches.
-- Production deployments only after merge to `main`.
+- `Vercel CLI preview`: deploys and smoke-tests PR previews.
+- `Vercel production deploy`: manual typed confirmation, `main` only.
+- `Live domain guard`: manual DNS/live-domain verification after IONOS cutover.
 
 Do not use GitHub Actions to auto-promote a preview. The action may deploy and
 test a preview, but production promotion stays manual until the user approves
@@ -123,7 +125,8 @@ Current Vercel state, verified 2026-05-21:
 - Vercel production deployment is ready and passed smoke tests:
   `https://actionreplaywebsite-954l0elz5-zach-relichs-projects.vercel.app`
 - Public DNS still points to Netlify/IONOS records. Netlify currently returns `usage_exceeded` 503.
-- GitHub connection is still the manual blocker. `vercel git connect` and the public REST project update both failed until the Vercel GitHub app is granted access to `zar5177-cloud/actionreplaywebsite`.
+- GitHub Actions Vercel CLI secrets are set and can deploy without Netlify Agent.
+- Vercel Git Integration is still a dashboard convenience blocker. `vercel git connect` and the public REST project update both failed until the Vercel GitHub app is granted access to `zar5177-cloud/actionreplaywebsite`.
 
 Repeat Vercel project/env setup after secret changes:
 
@@ -140,8 +143,8 @@ npm run vercel:check
 Current expected result before GitHub sudo verification:
 
 ```text
-ready: false
-errors: ["Vercel Git Integration is not connected."]
+ready: true
+warnings: ["Vercel Git Integration is not connected; GitHub Actions Vercel CLI deploys are the release path."]
 ```
 
 ## Tool Choice

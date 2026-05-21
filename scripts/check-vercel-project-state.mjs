@@ -107,6 +107,7 @@ const [project, domainResponse] = await Promise.all([
 
 const domains = domainResponse.domains ?? [];
 const errors = [];
+const warnings = [];
 
 addIf(project.framework === "nextjs", errors, "Vercel framework is not Next.js.");
 addIf(
@@ -125,11 +126,11 @@ addIf(
   errors,
   "Vercel output directory should be the Next.js default.",
 );
-addIf(
-  Boolean(project.link || project.gitRepository),
-  errors,
-  "Vercel Git Integration is not connected.",
-);
+if (!project.link && !project.gitRepository) {
+  warnings.push(
+    "Vercel Git Integration is not connected; GitHub Actions Vercel CLI deploys are the release path.",
+  );
+}
 
 for (const target of REQUIRED_TARGETS) {
   for (const key of REQUIRED_ENV) {
@@ -169,6 +170,7 @@ const summary = {
     redirect: domain.redirect ?? null,
   })),
   errors,
+  warnings,
 };
 
 console.log(JSON.stringify(summary, null, 2));
