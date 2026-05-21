@@ -77,7 +77,7 @@ if (missing.length) {
 }
 
 const endpoint = `https://${process.env.SHOPIFY_STORE_DOMAIN}/api/${
-  process.env.SHOPIFY_ADMIN_API_VERSION || "2026-04"
+  process.env.SHOPIFY_ADMIN_API_VERSION
 }/graphql.json`;
 
 const query = `#graphql

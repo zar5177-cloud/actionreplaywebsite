@@ -158,12 +158,9 @@ function getShopifyConfig() {
   const domain = process.env.SHOPIFY_STORE_DOMAIN?.trim();
   const storefrontToken =
     process.env.SHOPIFY_PRIVATE_STOREFRONT_ACCESS_TOKEN?.trim();
-  const apiVersion =
-    process.env.SHOPIFY_ADMIN_API_VERSION?.trim() ||
-    process.env.SHOPIFY_API_VERSION?.trim() ||
-    "2026-04";
+  const apiVersion = process.env.SHOPIFY_ADMIN_API_VERSION?.trim();
 
-  if (!domain || !storefrontToken) {
+  if (!domain || !storefrontToken || !apiVersion) {
     return null;
   }
 

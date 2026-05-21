@@ -176,10 +176,7 @@ export type StorefrontCart = {
 
 function getStorefrontConfig() {
   const domain = process.env.SHOPIFY_STORE_DOMAIN?.trim();
-  const apiVersion =
-    process.env.SHOPIFY_ADMIN_API_VERSION?.trim() ||
-    process.env.SHOPIFY_API_VERSION?.trim() ||
-    "2026-04";
+  const apiVersion = process.env.SHOPIFY_ADMIN_API_VERSION?.trim();
   const storefrontToken =
     process.env.SHOPIFY_PRIVATE_STOREFRONT_ACCESS_TOKEN?.trim();
 
@@ -189,6 +186,10 @@ function getStorefrontConfig() {
 
   if (!storefrontToken) {
     throw new Error("Missing SHOPIFY_PRIVATE_STOREFRONT_ACCESS_TOKEN.");
+  }
+
+  if (!apiVersion) {
+    throw new Error("Missing SHOPIFY_ADMIN_API_VERSION.");
   }
 
   return {

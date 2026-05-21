@@ -4,7 +4,6 @@ publish = ".next"
 
 [build.environment]
 NEXT_TELEMETRY_DISABLED = "1"
-SECRETS_SCAN_OMIT_KEYS = "SHOPIFY_API_VERSION"
 
 [[plugins]]
 package = "@netlify/plugin-nextjs"

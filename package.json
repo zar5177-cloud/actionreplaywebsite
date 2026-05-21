@@ -17,6 +17,7 @@
     "lint": "eslint",
     "check:shopify-env": "node scripts/check-shopify-env-safety.mjs",
     "verify:shopify": "node scripts/verify-shopify-storefront.mjs",
+    "vercel:sync-shopify-env": "node scripts/sync-vercel-shopify-env.mjs",
     "test:smoke": "playwright test",
     "test:smoke:prod": "SMOKE_BASE_URL=https://shopactionreplay.com playwright test",
     "release:check": "npm run lint && npm run build && npm run check:shopify-env && npm run verify:shopify && npm run test:smoke",

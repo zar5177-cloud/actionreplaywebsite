@@ -103,6 +103,19 @@ Node.js Version: 22.x
 Production Branch: main
 ```
 
+Current Vercel state, verified 2026-05-21:
+
+- Project settings are configured for Next.js, `npm ci`, `npm run build`, default output, Node 22.x.
+- All required `SHOPIFY_*` variables are synced to Production and Preview.
+- Deployment Protection has automation bypass entries.
+- GitHub repo connection is not connected yet. Vercel CLI/API failed until the Vercel GitHub app is granted access to `zar5177-cloud/actionreplaywebsite`.
+
+Repeat the Vercel settings/env sync any time `.env.local` changes:
+
+```bash
+npm run vercel:sync-shopify-env
+```
+
 After the first preview deployment, test it:
 
 ```bash
@@ -202,18 +215,23 @@ Only recommend publishing if both pass.
 ## Vercel Agent Prompt
 
 ```text
-Import and deploy zar5177-cloud/actionreplaywebsite as a Next.js project.
+Connect Vercel project actionreplaywebsite to GitHub repo zar5177-cloud/actionreplaywebsite.
 
-Use:
-- Install command: npm ci
-- Build command: npm run build
-- Output directory: leave empty
+Already configured:
+- Install Command: npm ci
+- Build Command: npm run build
+- Output Directory: empty / Next.js default
 - Node.js: 22.x
+- SHOPIFY_* variables are present in Production and Preview
+- Protection Bypass for Automation exists
+
 - Production branch: main
 
-Add all required SHOPIFY_* env vars to Production and Preview. Use the private Storefront token for server-side Storefront calls. Do not create NEXT_PUBLIC_SHOPIFY_* variables.
+Do not create NEXT_PUBLIC_SHOPIFY_* variables.
+Do not create SHOPIFY_API_VERSION or SHOPIFY_ADMIN_CLIENT_* variables.
+Do not change the Shopify product handle enzyme-washed-t-shirt.
 
-Connect the GitHub repository to the Vercel project. If deployment URLs show Login - Vercel, open Settings -> Deployment Protection and either disable Vercel Authentication for this project or create a Protection Bypass for Automation secret.
+Connect the GitHub repository to the existing Vercel project. If Vercel says it lacks access, grant the Vercel GitHub app access to zar5177-cloud/actionreplaywebsite and retry.
 
 After the preview deploy is ready, do not promote it. Return the preview URL so I can run:
 SMOKE_BASE_URL=<preview-url> npm run test:smoke
@@ -228,8 +246,9 @@ Only promote after smoke tests pass.
 
 1. `npm run release:check` passes locally.
 2. GitHub Actions `Release guard` passes on the PR or `main`.
-3. Preview smoke test passes with `SMOKE_BASE_URL`.
-4. `/shop/action-replay-mewtwo-tee` redirects to `/shop/action-replay-galaxy-tee`.
-5. `/api/shopify/cart` returns checkout host `store.shopactionreplay.com`.
-6. Browser console has zero errors on `/shop` and Galaxy Tee page.
-7. Promote preview or merge to production branch.
+3. Vercel Git Integration is connected to `zar5177-cloud/actionreplaywebsite`.
+4. Preview smoke test passes with `SMOKE_BASE_URL`.
+5. `/shop/action-replay-mewtwo-tee` redirects to `/shop/action-replay-galaxy-tee`.
+6. `/api/shopify/cart` returns checkout host `store.shopactionreplay.com`.
+7. Browser console has zero errors on `/shop` and Galaxy Tee page.
+8. Promote preview or merge to production branch.

@@ -114,6 +114,19 @@ Do not use GitHub Actions to auto-promote a preview. The action may deploy and
 test a preview, but production promotion stays manual until the user approves
 the exact URL.
 
+Current Vercel state, verified 2026-05-21:
+
+- Project settings are already synced: Next.js, `npm ci`, `npm run build`, default output, Node 22.x.
+- All required `SHOPIFY_*` variables are already synced to Production and Preview.
+- Deployment Protection has automation bypass entries.
+- GitHub connection is still the manual blocker. `vercel git connect` and the public REST project update both failed until the Vercel GitHub app is granted access to `zar5177-cloud/actionreplaywebsite`.
+
+Repeat Vercel project/env setup after secret changes:
+
+```bash
+npm run vercel:sync-shopify-env
+```
+
 ## Tool Choice
 
 ### Recommended
@@ -226,17 +239,21 @@ If you make changes:
 ```text
 Connect Vercel project actionreplaywebsite to GitHub repo zar5177-cloud/actionreplaywebsite.
 
-Use:
+Already configured:
 - Install Command: npm ci
 - Build Command: npm run build
-- Output Directory: leave empty
+- Output Directory: empty / Next.js default
 - Node.js: 22.x
+- SHOPIFY_* env vars in Production and Preview
+- Protection Bypass for Automation
+
+Use:
 - Production Branch: main
 
 Use PR #1 as the release branch:
 https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
 
-Mirror all existing SHOPIFY_* Production env vars into Preview.
+If Vercel says it cannot access the repo, grant the Vercel GitHub app access to zar5177-cloud/actionreplaywebsite and retry the connection.
 
 Do not create:
 - NEXT_PUBLIC_SHOPIFY_*
@@ -291,14 +308,12 @@ Return only a confirmation that no Netlify preview will be published.
 1. Stop using Netlify Agent for this site.
 2. Open PR #1 and keep it as the release artifact.
 3. Connect Vercel Git Integration to `zar5177-cloud/actionreplaywebsite`.
-4. Mirror Production env vars to Preview in Vercel.
-5. Configure Vercel protection bypass.
-6. Let Vercel generate a PR preview.
-7. Run `SMOKE_BASE_URL=<preview-url> npm run test:smoke`.
-8. Inspect `/shop` and the Galaxy Tee product page manually.
-9. Merge PR #1.
-10. Promote or let `main` deploy.
-11. Move the live domain only after production smoke passes.
+4. Let Vercel generate a PR preview.
+5. Run `SMOKE_BASE_URL=<preview-url> npm run test:smoke`.
+6. Inspect `/shop` and the Galaxy Tee product page manually.
+7. Merge PR #1.
+8. Promote or let `main` deploy.
+9. Move the live domain only after production smoke passes.
 
 ## Budget Rule
 

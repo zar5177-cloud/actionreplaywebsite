@@ -122,7 +122,7 @@ Deploy through the existing hosting project only after a manual review. This wor
 Vercel defaults:
 
 1. Build command: `npm run build`
-2. Install command: `npm install`
+2. Install command: `npm ci`
 3. Output directory: Vercel default for Next.js
 4. Domain: production storefront domain
 
@@ -137,12 +137,12 @@ Netlify config is in `netlify.toml`:
 
 Checkout is wired through the cart drawer and `/api/shopify/cart`. The API accepts AR-001 Galaxy tee size/color selections, verifies the Storefront variant when a token is present, creates a Shopify cart, and refuses every other product slug as a locked archive file.
 
-Required public Storefront placeholders:
+Required server-only Shopify environment variables live in `.env.example` and
+`docs/deployment-runbook.md`. Do not create `NEXT_PUBLIC_SHOPIFY_*` variables;
+the storefront talks to Shopify through server components and API routes only.
 
-```bash
-NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=store.shopactionreplay.com
-NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=
-NEXT_PUBLIC_SHOPIFY_COLLECTION_HANDLE=galaxy-shock-drop
-```
-
-Never add Shopify Admin API tokens to this project. If AR-001 variants change, update `src/lib/shopify-galaxy-tee.ts` and keep the locked file states in `src/lib/brand-data.ts` intact unless the archive mirror actually opens.
+Never expose Shopify Admin or Storefront tokens to client React. If AR-001
+variants change, update the `SHOPIFY_GALAXY_TEE_VARIANT_BLACK_*` and
+`SHOPIFY_GALAXY_TEE_VARIANT_WHITE_*` environment variables and keep the locked
+file states in `src/lib/brand-data.ts` intact unless the archive mirror actually
+opens.
