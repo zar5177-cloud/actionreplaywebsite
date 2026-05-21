@@ -144,6 +144,7 @@ After DNS propagates:
 ```bash
 dig +short shopactionreplay.com A
 dig +short www.shopactionreplay.com A
+npm run domain:check
 npm run test:smoke:prod
 ```
 
@@ -151,6 +152,19 @@ Expected DNS answer:
 
 ```text
 76.76.21.21
+```
+
+To keep checking until DNS flips:
+
+```bash
+npm run domain:watch
+```
+
+Current pre-cutover status, verified 2026-05-21:
+
+```text
+npm run domain:check
+# fails because shopactionreplay.com still resolves to Netlify and returns 503
 ```
 
 After the first preview deployment, test it:
@@ -286,7 +300,8 @@ Only promote after smoke tests pass.
 3. Vercel Git Integration is connected to `zar5177-cloud/actionreplaywebsite`.
 4. Vercel production deployment smoke test passes with `SMOKE_BASE_URL`.
 5. DNS at IONOS points `shopactionreplay.com` and `www.shopactionreplay.com` to `76.76.21.21`.
-6. `npm run test:smoke:prod` passes after DNS propagation.
-7. `/shop/action-replay-mewtwo-tee` redirects to `/shop/action-replay-galaxy-tee`.
-8. `/api/shopify/cart` returns checkout host `store.shopactionreplay.com`.
-9. Browser console has zero errors on `/shop` and Galaxy Tee page.
+6. `npm run domain:check` passes after DNS propagation.
+7. `npm run test:smoke:prod` passes after DNS propagation.
+8. `/shop/action-replay-mewtwo-tee` redirects to `/shop/action-replay-galaxy-tee`.
+9. `/api/shopify/cart` returns checkout host `store.shopactionreplay.com`.
+10. Browser console has zero errors on `/shop` and Galaxy Tee page.

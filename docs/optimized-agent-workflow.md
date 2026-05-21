@@ -313,7 +313,7 @@ Return only a confirmation that no Netlify preview will be published.
 2. Open PR #1 and keep it as the release artifact.
 3. Finish GitHub sudo-mode verification and connect Vercel Git Integration to `zar5177-cloud/actionreplaywebsite`.
 4. In IONOS DNS, replace Netlify records with `A @ 76.76.21.21` and `A www 76.76.21.21`.
-5. Wait for DNS to resolve to `76.76.21.21`.
+5. Run `npm run domain:watch` until DNS resolves to Vercel and the live storefront responds.
 6. Run `npm run test:smoke:prod`.
 7. Inspect `/shop` and the Galaxy Tee product page manually.
 8. Merge PR #1 after the domain smoke passes.
