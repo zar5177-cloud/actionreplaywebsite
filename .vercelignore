@@ -1,0 +1,12 @@
+.env*
+.next
+.netlify
+node_modules
+coverage
+test-results
+playwright-report
+action-replay-higgsfield
+action-replay-openart-production
+tmp
+outputs
+.venv-apparel-extractor
