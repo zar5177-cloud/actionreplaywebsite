@@ -54,6 +54,7 @@ The release guard checks:
 - local browser smoke tests
 - live cart API creates a Shopify checkout URL
 - live tee + poster cart receives the Shopify 15% pair credit
+- live Shopify checkout page opens with the tee, poster, $7.20 credit, and $82.80 total
 
 ## Required Environment Variables
 
@@ -257,7 +258,8 @@ Actions -> Live domain guard -> Run workflow
 ```
 
 That workflow runs `npm run go-live:check`, including Vercel project readiness,
-the public Vercel alias smoke test, live DNS, and live production smoke.
+the public Vercel alias smoke test, live DNS, live production smoke, and the
+Shopify checkout handoff page check.
 
 Current pre-cutover status, verified 2026-05-21:
 
