@@ -34,7 +34,7 @@ test.describe("Action Replay storefront release gate", () => {
     await expect(page.getByRole("button", { name: "Retro Black" }).first()).toBeVisible();
     await expect(page.getByRole("button", { name: "White" }).first()).toBeVisible();
     await expect(page.getByText(/AR-003 "CORRUPTED PROMO" POSTER/i).first()).toBeVisible();
-    await expect(page.getByText("PRINT FILE NOT VERIFIED").first()).toBeVisible();
+    await expect(page.getByText("PAIR CREDIT").first()).toBeVisible();
 
     const bodyText = await page.locator("body").innerText();
     expect(bodyText).not.toContain("bare Next.js scaffold");
@@ -71,7 +71,7 @@ test.describe("Action Replay storefront release gate", () => {
     await expectNoConsoleProblems(consoleProblems);
   });
 
-  test("corrupted promo poster is visible but not purchasable", async ({
+  test("corrupted promo poster is visible and purchasable", async ({
     page,
   }) => {
     const consoleProblems = collectConsoleProblems(page);
@@ -81,10 +81,10 @@ test.describe("Action Replay storefront release gate", () => {
     await expect(
       page.getByRole("heading", { name: /AR-003 "CORRUPTED PROMO" POSTER/i }),
     ).toBeVisible();
-    await expect(page.getByText("PRINT FILE NOT VERIFIED").first()).toBeVisible();
+    await expect(page.getByText("PAIR CREDIT").first()).toBeVisible();
     await expect(
-      page.getByRole("button", { name: /PRINT FILE NOT VERIFIED/i }).first(),
-    ).toBeDisabled();
+      page.getByRole("button", { name: /RESTORE COPY|Add to Cart/i }).first(),
+    ).toBeEnabled();
     await expectNoConsoleProblems(consoleProblems);
   });
 
@@ -124,6 +124,70 @@ test.describe("Action Replay storefront release gate", () => {
     );
   });
 
+  test("cart API accepts tee plus poster and receives Shopify 15 percent pair credit", async ({
+    request,
+  }) => {
+    const teeResponse = await request.post("/api/shopify/cart", {
+      data: {
+        action: "add",
+        productSlug: "action-replay-galaxy-tee",
+        size: "S",
+        color: "Retro Black",
+        quantity: 1,
+      },
+    });
+
+    expect(teeResponse.status()).toBe(200);
+    const teePayload = (await teeResponse.json()) as {
+      cart?: {
+        id: string;
+      };
+      error?: string;
+    };
+    expect(teePayload.error).toBeUndefined();
+    expect(teePayload.cart?.id).toBeTruthy();
+
+    const posterResponse = await request.post("/api/shopify/cart", {
+      data: {
+        action: "add",
+        cartId: teePayload.cart?.id,
+        productSlug: "ar-003-corrupted-promo-poster",
+        size: "24 x 36",
+        color: "Wrong Purple",
+        quantity: 1,
+      },
+    });
+
+    expect(posterResponse.status()).toBe(200);
+
+    const posterPayload = (await posterResponse.json()) as {
+      cart?: {
+        checkoutUrl?: string;
+        totalQuantity?: number;
+        undiscountedSubtotal?: { amount: string };
+        discountTotal?: { amount: string };
+        total?: { amount: string };
+        lines?: {
+          productSlug: string;
+        }[];
+      };
+      error?: string;
+    };
+
+    expect(posterPayload.error).toBeUndefined();
+    expect(new URL(posterPayload.cart?.checkoutUrl ?? "").host).toBe(
+      "store.shopactionreplay.com",
+    );
+    expect(posterPayload.cart?.totalQuantity).toBe(2);
+    expect(posterPayload.cart?.lines?.map((line) => line.productSlug).sort()).toEqual([
+      "action-replay-galaxy-tee",
+      "ar-003-corrupted-promo-poster",
+    ]);
+    expect(Number(posterPayload.cart?.undiscountedSubtotal?.amount)).toBe(90);
+    expect(Number(posterPayload.cart?.discountTotal?.amount)).toBeCloseTo(7.2, 2);
+    expect(Number(posterPayload.cart?.total?.amount)).toBeCloseTo(82.8, 2);
+  });
+
   test("cart drawer opens after adding Galaxy Tee", async ({ page }) => {
     const consoleProblems = collectConsoleProblems(page);
 
@@ -136,6 +200,25 @@ test.describe("Action Replay storefront release gate", () => {
       drawer.getByRole("button", { name: /OPEN CHECKOUT MIRROR|Checkout/i }),
     ).toBeVisible();
     await expect(page.getByText(/AR-001|GALAXY/i).first()).toBeVisible();
+    await expectNoConsoleProblems(consoleProblems);
+  });
+
+  test("cart drawer shows Shopify pair credit after adding poster and tee", async ({
+    page,
+  }) => {
+    const consoleProblems = collectConsoleProblems(page);
+
+    await page.goto("/shop/ar-003-corrupted-promo-poster");
+    await page.getByRole("button", { name: /RESTORE COPY|Add to Cart/i }).first().click();
+    await page.getByRole("button", { name: "Close cart", exact: true }).click();
+    await page.goto("/shop/action-replay-galaxy-tee");
+    await page.getByRole("button", { name: /RESTORE COPY|Add to Cart/i }).first().click();
+
+    const drawer = page.locator("aside").first();
+    await expect(drawer).toBeVisible();
+    await expect(drawer.getByText("Pair credit / 15%")).toBeVisible();
+    await expect(drawer.getByText("-$7.20").last()).toBeVisible();
+    await expect(drawer.getByText("$82.80")).toBeVisible();
     await expectNoConsoleProblems(consoleProblems);
   });
 });

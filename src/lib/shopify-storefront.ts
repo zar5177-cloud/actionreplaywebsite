@@ -2,12 +2,20 @@ import {
   GALAXY_TEE_SLUG,
   GALAXY_TEE_STOREFRONT_HANDLE,
 } from "@/lib/shopify-galaxy-tee";
+import {
+  PROMO_POSTER_SLUG,
+  PROMO_POSTER_STOREFRONT_HANDLE,
+} from "@/lib/shopify-poster";
 
 const CART_FRAGMENT = `#graphql
   fragment CartFields on Cart {
     id
     checkoutUrl
     totalQuantity
+    discountCodes {
+      code
+      applicable
+    }
     cost {
       subtotalAmount {
         amount
@@ -24,11 +32,21 @@ const CART_FRAGMENT = `#graphql
           id
           quantity
           cost {
+            amountPerQuantity {
+              amount
+              currencyCode
+            }
             subtotalAmount {
               amount
               currencyCode
             }
             totalAmount {
+              amount
+              currencyCode
+            }
+          }
+          discountAllocations {
+            discountedAmount {
               amount
               currencyCode
             }
@@ -86,6 +104,11 @@ type ShopifyMoney = {
   currencyCode: string;
 };
 
+type ShopifyCartDiscountCode = {
+  code: string;
+  applicable: boolean;
+};
+
 type ShopifySelectedOption = {
   name: string;
   value: string;
@@ -102,6 +125,7 @@ type ShopifyCartNode = {
   id: string;
   checkoutUrl: string;
   totalQuantity: number;
+  discountCodes: ShopifyCartDiscountCode[];
   cost: {
     subtotalAmount: ShopifyMoney;
     totalAmount: ShopifyMoney;
@@ -112,9 +136,13 @@ type ShopifyCartNode = {
         id: string;
         quantity: number;
         cost: {
+          amountPerQuantity: ShopifyMoney;
           subtotalAmount: ShopifyMoney;
           totalAmount: ShopifyMoney;
         };
+        discountAllocations: {
+          discountedAmount: ShopifyMoney;
+        }[];
         merchandise: {
           id: string;
           title: string;
@@ -163,12 +191,17 @@ export type StorefrontCartLine = {
   imageAlt: string | null;
   price: ShopifyMoney;
   subtotal: ShopifyMoney;
+  total: ShopifyMoney;
+  discountTotal: ShopifyMoney;
 };
 
 export type StorefrontCart = {
   id: string;
   checkoutUrl: string;
   totalQuantity: number;
+  discountCodes: ShopifyCartDiscountCode[];
+  undiscountedSubtotal: ShopifyMoney;
+  discountTotal: ShopifyMoney;
   subtotal: ShopifyMoney;
   total: ShopifyMoney;
   lines: StorefrontCartLine[];
@@ -263,7 +296,23 @@ function productSlugFromHandle(handle: string) {
     return GALAXY_TEE_SLUG;
   }
 
+  if (handle === PROMO_POSTER_STOREFRONT_HANDLE) {
+    return PROMO_POSTER_SLUG;
+  }
+
   return handle;
+}
+
+function moneyAmount(money: ShopifyMoney) {
+  const amount = Number.parseFloat(money.amount);
+  return Number.isFinite(amount) ? amount : 0;
+}
+
+function moneyFromAmount(amount: number, currencyCode: string): ShopifyMoney {
+  return {
+    amount: amount.toFixed(2),
+    currencyCode,
+  };
 }
 
 function mapCart(cart: ShopifyCartNode | null): StorefrontCart | null {
@@ -271,33 +320,60 @@ function mapCart(cart: ShopifyCartNode | null): StorefrontCart | null {
     return null;
   }
 
+  const currencyCode = cart.cost.totalAmount.currencyCode;
+  const mappedLines = cart.lines.edges.map(({ node }) => {
+    const merchandiseImage = node.merchandise.image;
+    const productImage = node.merchandise.product.featuredImage;
+    const discountAmount = node.discountAllocations.reduce(
+      (total, allocation) => total + moneyAmount(allocation.discountedAmount),
+      0,
+    );
+
+    return {
+      id: node.id,
+      quantity: node.quantity,
+      merchandiseId: node.merchandise.id,
+      merchandiseTitle: node.merchandise.title,
+      availableForSale: node.merchandise.availableForSale,
+      productId: node.merchandise.product.id,
+      productTitle: node.merchandise.product.title,
+      productHandle: node.merchandise.product.handle,
+      productSlug: productSlugFromHandle(node.merchandise.product.handle),
+      selectedOptions: node.merchandise.selectedOptions,
+      imageUrl: merchandiseImage?.url ?? productImage?.url ?? null,
+      imageAlt: merchandiseImage?.altText ?? productImage?.altText ?? null,
+      price: node.merchandise.price,
+      subtotal: node.cost.subtotalAmount,
+      total: node.cost.totalAmount,
+      discountTotal: moneyFromAmount(
+        discountAmount ||
+          Math.max(
+            0,
+            moneyAmount(node.cost.subtotalAmount) - moneyAmount(node.cost.totalAmount),
+          ),
+        node.cost.totalAmount.currencyCode,
+      ),
+    };
+  });
+  const undiscountedSubtotal = mappedLines.reduce(
+    (total, line) => total + moneyAmount(line.subtotal),
+    0,
+  );
+  const discountTotal = mappedLines.reduce(
+    (total, line) => total + moneyAmount(line.discountTotal),
+    0,
+  );
+
   return {
     id: cart.id,
     checkoutUrl: cart.checkoutUrl,
     totalQuantity: cart.totalQuantity,
+    discountCodes: cart.discountCodes,
+    undiscountedSubtotal: moneyFromAmount(undiscountedSubtotal, currencyCode),
+    discountTotal: moneyFromAmount(discountTotal, currencyCode),
     subtotal: cart.cost.subtotalAmount,
     total: cart.cost.totalAmount,
-    lines: cart.lines.edges.map(({ node }) => {
-      const merchandiseImage = node.merchandise.image;
-      const productImage = node.merchandise.product.featuredImage;
-
-      return {
-        id: node.id,
-        quantity: node.quantity,
-        merchandiseId: node.merchandise.id,
-        merchandiseTitle: node.merchandise.title,
-        availableForSale: node.merchandise.availableForSale,
-        productId: node.merchandise.product.id,
-        productTitle: node.merchandise.product.title,
-        productHandle: node.merchandise.product.handle,
-        productSlug: productSlugFromHandle(node.merchandise.product.handle),
-        selectedOptions: node.merchandise.selectedOptions,
-        imageUrl: merchandiseImage?.url ?? productImage?.url ?? null,
-        imageAlt: merchandiseImage?.altText ?? productImage?.altText ?? null,
-        price: node.merchandise.price,
-        subtotal: node.cost.subtotalAmount,
-      };
-    }),
+    lines: mappedLines,
   };
 }
 
@@ -380,6 +456,63 @@ export async function getStorefrontProductVariantForOptions({
 
   if (!variant.availableForSale) {
     throw new Error(`${data.product.handle} ${color} / ${size} is not available.`);
+  }
+
+  return variant;
+}
+
+export async function getStorefrontProductVariantById({
+  expectedVariantId,
+  handle,
+}: {
+  expectedVariantId: string;
+  handle: string;
+}) {
+  const data = await storefrontFetch<{
+    product: {
+      handle: string;
+      title: string;
+      variants: {
+        nodes: ShopifyProductVariantSummary[];
+      };
+    } | null;
+  }>({
+    query: `#graphql
+      query StorefrontProductVariantById($handle: String!) {
+        product(handle: $handle) {
+          handle
+          title
+          variants(first: 100) {
+            nodes {
+              id
+              title
+              availableForSale
+              selectedOptions {
+                name
+                value
+              }
+            }
+          }
+        }
+      }
+    `,
+    variables: { handle },
+  });
+
+  if (!data.product) {
+    throw new Error(`Shopify product handle ${handle} is not visible to Storefront.`);
+  }
+
+  const variant = data.product.variants.nodes.find(
+    (candidate) => candidate.id === expectedVariantId,
+  );
+
+  if (!variant) {
+    throw new Error(`${expectedVariantId} does not belong to ${data.product.handle}.`);
+  }
+
+  if (!variant.availableForSale) {
+    throw new Error(`${data.product.handle} ${variant.title} is not available.`);
   }
 
   return variant;
@@ -561,6 +694,46 @@ export async function removeStorefrontCartLines({
   assertNoUserErrors(data.cartLinesRemove.userErrors);
 
   const cart = mapCart(data.cartLinesRemove.cart);
+  if (!cart) {
+    throw new Error("Shopify did not return an updated cart.");
+  }
+
+  return cart;
+}
+
+export async function updateStorefrontCartDiscountCodes({
+  cartId,
+  discountCodes,
+}: {
+  cartId: string;
+  discountCodes: string[];
+}) {
+  const data = await storefrontFetch<{
+    cartDiscountCodesUpdate: {
+      cart: ShopifyCartNode | null;
+      userErrors: ShopifyUserError[];
+    };
+  }>({
+    query: `#graphql
+      ${CART_FRAGMENT}
+      mutation UpdateCartDiscountCodes($cartId: ID!, $discountCodes: [String!]!) {
+        cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+          cart {
+            ...CartFields
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `,
+    variables: { cartId, discountCodes },
+  });
+
+  assertNoUserErrors(data.cartDiscountCodesUpdate.userErrors);
+
+  const cart = mapCart(data.cartDiscountCodesUpdate.cart);
   if (!cart) {
     throw new Error("Shopify did not return an updated cart.");
   }

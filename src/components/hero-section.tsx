@@ -65,8 +65,8 @@ export function HeroSection({
               Galaxy file
             </h1>
             <p className="mt-5 max-w-xl font-mono text-sm uppercase leading-6 tracking-[0.12em] text-zinc-200">
-              AR-001 checkout mirror is open. AR-002 stayed in the catalog with
-              no purchase path. AR-003 keeps exporting too dark.
+              AR-001 checkout mirror is open. AR-003 finally got a live print
+              slot. AR-002 stayed in the catalog with no purchase path.
             </p>
           </div>
 
@@ -152,9 +152,9 @@ export function HeroSection({
 
           <div className="grid gap-3 md:grid-cols-3">
             {[
-              ["Checkout mirror", "AR-001 routes through the verified Shopify cart."],
+              ["Checkout mirror", "AR-001 and AR-003 route through Shopify."],
               ["Locked file", "AR-002 is visible, but not purchasable."],
-              ["Print file", "AR-003 is preserved off-grid until the export matches."],
+              ["Pair credit", "Tee plus poster triggers the 15% Shopify credit."],
             ].map(([title, copy]) => (
               <div
                 key={title}

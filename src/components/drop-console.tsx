@@ -31,8 +31,8 @@ const commandModes: CommandMode[] = [
   {
     id: "unlock",
     label: "Unlock",
-    title: "001 live now",
-    copy: "The live mirror is open for the Galaxy tee. The other product files were left in place, not cleared.",
+    title: "001 + 003 live now",
+    copy: "The live mirror is open for the Galaxy tee and the print file. The memory-card tee was left in place, not cleared.",
     image: assetById["galaxy-tee-editorial-blue"].src,
     icon: KeyRound,
     stats: ["1 live product", "Shopify checkout", "Online only"],
@@ -41,12 +41,12 @@ const commandModes: CommandMode[] = [
   {
     id: "override",
     label: "Override",
-    title: "Print file not verified",
-    copy: "The 24x36 promo print keeps exporting darker than the shop record. It stays archived until somebody checks it again.",
+    title: "Print file answers",
+    copy: "The 24x36 promo print keeps exporting darker than the shop record. It still shipped into the checkout mirror anyway.",
     image: assetById["action-replay-2026-promo-poster"].src,
     icon: Zap,
-    stats: ["AR-003", "Wrong purple", "Mirror pending"],
-    log: ["LOAD PRINT", "CHECK PURPLE", "DO NOT PUBLISH"],
+    stats: ["AR-003", "Wrong purple", "Mirror live"],
+    log: ["LOAD PRINT", "CHECK PURPLE", "PUBLISH ANYWAY"],
   },
   {
     id: "replay",
@@ -195,7 +195,7 @@ export function DropConsole() {
               className="cyber-frame flex min-h-28 min-w-0 items-end justify-between gap-3 border border-white/20 bg-zinc-950 p-4 text-white transition hover:border-lime-300 hover:text-lime-200"
             >
               <span className="font-mono text-sm font-black uppercase tracking-[0.16em]">
-                Shop AR-001
+                Shop pair files
               </span>
               <Globe2 className="shrink-0" size={22} />
             </Link>

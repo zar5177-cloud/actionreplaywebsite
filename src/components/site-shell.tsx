@@ -268,14 +268,18 @@ function CartDrawer() {
   const {
     closeCart,
     checkoutUrl,
+    discountCodes,
+    discountTotal,
     errorMessage,
     isCartOpen,
     isMutating,
     items,
     removeItem,
     subtotal,
+    total,
     updateQuantity,
   } = useCart();
+  const applicableCodes = discountCodes.filter((code) => code.applicable);
 
   function checkout() {
     if (!checkoutUrl) {
@@ -301,7 +305,7 @@ function CartDrawer() {
             <p className="font-mono text-xs uppercase tracking-[0.24em] text-blue-300">
               Checkout mirror
             </p>
-            <h2 className="mt-1 text-3xl font-black uppercase">AR-001 file</h2>
+            <h2 className="mt-1 text-3xl font-black uppercase">Live files</h2>
           </div>
           <button
             type="button"
@@ -336,6 +340,14 @@ function CartDrawer() {
                     </p>
                     <p className="mt-1 font-mono text-xs uppercase text-zinc-500">
                       {item.size} / {item.color.name}
+                    </p>
+                    <p className="mt-1 font-mono text-xs uppercase text-zinc-300">
+                      {formatUsdPrice(item.lineTotal)}
+                      {item.lineDiscount > 0 ? (
+                        <span className="ml-2 text-lime-200">
+                          -{formatUsdPrice(item.lineDiscount)}
+                        </span>
+                      ) : null}
                     </p>
                     <div className="mt-3 flex items-center justify-between gap-3">
                       <div className="flex items-center border border-white/15">
@@ -386,7 +398,7 @@ function CartDrawer() {
                   Mirror empty
                 </p>
                 <Link href="/shop" onClick={closeCart} className="ui-button mt-5">
-                  Shop AR-001
+                  Shop live files
                 </Link>
               </div>
             </div>
@@ -397,16 +409,32 @@ function CartDrawer() {
           <div className="mb-3 grid gap-2 border border-white/10 bg-black p-3 font-mono text-xs uppercase tracking-[0.14em] text-zinc-300">
             <div className="flex items-center gap-2 text-lime-200">
               <ShieldCheck size={16} />
-              AR-001 Shopify cart mirror
+              AR-001 + AR-003 Shopify cart mirror
             </div>
             <p className="text-zinc-500">
-              Only mapped Galaxy tee variants can enter this cart. AR-002 and
-              AR-003 stay visible as archive residue, not purchase paths.
+              Galaxy tee and corrupted promo poster route through Shopify. Put
+              both in the drawer and the 15% pair credit appears from Shopify,
+              not the browser.
             </p>
           </div>
           <div className="flex items-center justify-between gap-4 font-mono text-sm uppercase text-zinc-300">
             <span>Subtotal</span>
             <span className="text-white">{formatUsdPrice(subtotal)}</span>
+          </div>
+          {discountTotal > 0 ? (
+            <div className="mt-2 flex items-center justify-between gap-4 font-mono text-sm uppercase text-lime-200">
+              <span>Pair credit / 15%</span>
+              <span>-{formatUsdPrice(discountTotal)}</span>
+            </div>
+          ) : null}
+          {applicableCodes.length ? (
+            <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.14em] text-blue-200">
+              Code accepted: {applicableCodes.map((code) => code.code).join(", ")}
+            </p>
+          ) : null}
+          <div className="mt-2 flex items-center justify-between gap-4 border-t border-white/10 pt-3 font-mono text-sm uppercase text-zinc-300">
+            <span>Estimated total</span>
+            <span className="text-white">{formatUsdPrice(total || subtotal)}</span>
           </div>
           {errorMessage ? (
             <p className="mt-3 font-mono text-xs leading-5 text-fuchsia-200">
@@ -442,8 +470,8 @@ export function SiteShell({ children, searchProducts }: SiteShellProps) {
                 Action Replay / AR-001 live
               </p>
               <p className="mt-2 max-w-2xl font-mono text-xs leading-6 text-zinc-500">
-                Hidden archive layers are additive. The Galaxy tee checkout
-                mirror is live; memory card and print files remain preserved
+                Hidden archive layers are additive. The Galaxy tee and corrupted
+                promo print mirror are live; memory-card files remain preserved
                 without purchase access.
               </p>
               <div className="mt-3 flex flex-wrap gap-1.5">

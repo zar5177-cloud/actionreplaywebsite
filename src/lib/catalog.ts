@@ -14,9 +14,28 @@ import {
   getGalaxyTeeColors,
   getGalaxyTeeShopifyVariants,
 } from "@/lib/shopify-galaxy-tee";
+import {
+  PROMO_POSTER_SIZE,
+  PROMO_POSTER_SLUG,
+  PROMO_POSTER_STOREFRONT_HANDLE,
+  getPromoPosterColors,
+  getPromoPosterShopifyVariants,
+} from "@/lib/shopify-poster";
 import type { Product } from "@/lib/brand-data";
 
 function withEnvShopifyVariants(product: Product) {
+  if (product.slug === PROMO_POSTER_SLUG) {
+    return {
+      ...product,
+      source: "shopify" as const,
+      sizes: [PROMO_POSTER_SIZE],
+      colors: getPromoPosterColors(),
+      shopifyProductId: product.shopifyProductId,
+      shopifyHandle: PROMO_POSTER_STOREFRONT_HANDLE,
+      shopifyVariants: getPromoPosterShopifyVariants(),
+    };
+  }
+
   if (product.slug !== GALAXY_TEE_SLUG) {
     return product;
   }

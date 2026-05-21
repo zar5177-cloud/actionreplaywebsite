@@ -79,7 +79,10 @@ export type TimelineItem = {
   copy: string;
 };
 
-export const liveProductSlugs = ["action-replay-galaxy-tee"] as const;
+export const liveProductSlugs = [
+  "action-replay-galaxy-tee",
+  "ar-003-corrupted-promo-poster",
+] as const;
 
 export const visibleProductSlugs = [
   "action-replay-galaxy-tee",
@@ -192,13 +195,15 @@ export const products: Product[] = [
       assetById["galaxy-poster-light"].src,
       assetById["galaxy-poster-chrome"].src,
     ],
-    badges: ["AR-003", "PRINT FILE", "NOT VERIFIED"],
+    badges: ["AR-003", "PRINT FILE", "PAIR CREDIT"],
     availability: "archive",
-    productState: "hidden",
+    productState: "live",
     description:
-      "Promo print file kept in the archive because the darker export was never replaced cleanly.",
+      "Promo print file kept in the archive because the darker export was never replaced cleanly. Now mapped to the Shopify cart because the folder kept asking.",
     archiveCode: "AR003-PRINT-WPURPLE",
-    stateNote: "still not the correct purple / mirror pending",
+    stateNote: "verified 2026-05-21 / pairs with AR-001 for 15% Shopify credit",
+    shopifyProductId: "gid://shopify/Product/9456189145344",
+    shopifyHandle: "action-replay-2026-promo-poster",
     shopifyVariants: [],
   },
 ];
@@ -220,7 +225,7 @@ export const collections: Collection[] = [
     href: "/shop?category=accessories",
     image: assetById["action-replay-2026-promo-poster"].src,
     accent: "#D9E2F2",
-    summary: "AR-003 exists, but the print file is not verified.",
+    summary: "AR-003 exists and the Shopify print mirror finally answers.",
   },
 ];
 
@@ -232,7 +237,7 @@ export const currentDrop: Drop = {
   heroAsset: assetById["galaxy-poster-product-black"].src,
   ctaLabel: "SHOP AR-001",
   ctaHref: "/shop/action-replay-galaxy-tee",
-  copy: "AR-001 \"GALAXY\" checkout mirror is open. Other files remain preserved, not purchasable.",
+  copy: "AR-001 \"GALAXY\" and the AR-003 print file are both live. Buying the pair triggers the Shopify 15% credit.",
 };
 export const archiveDrops: Drop[] = [
   currentDrop,

@@ -21,7 +21,8 @@ export function ProductDetailActions({ product }: { product: Product }) {
   const selectedVariant = product.shopifyVariants?.find(
     (variant) =>
       normalizedOption(variant.size) === normalizedOption(selectedSize) &&
-      normalizedOption(variant.color) === normalizedOption(selectedColor.name),
+      (!variant.color ||
+        normalizedOption(variant.color) === normalizedOption(selectedColor.name)),
   );
   const isPurchasable = isPurchasableProduct(product);
   const canAddToCart =

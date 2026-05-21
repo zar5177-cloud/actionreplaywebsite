@@ -53,6 +53,7 @@ The release guard checks:
 - hidden duplicate product
 - local browser smoke tests
 - live cart API creates a Shopify checkout URL
+- live tee + poster cart receives the Shopify 15% pair credit
 
 ## Required Environment Variables
 
@@ -79,6 +80,7 @@ SHOPIFY_GALAXY_TEE_VARIANT_WHITE_M
 SHOPIFY_GALAXY_TEE_VARIANT_WHITE_L
 SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XL
 SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XXL
+SHOPIFY_PROMO_POSTER_VARIANT_24X36
 ```
 
 GitHub Actions also has these Vercel deployment secrets:
@@ -320,6 +322,9 @@ Confirm:
 5. Each variant GID matches the deployment env vars named SHOPIFY_GALAXY_TEE_VARIANT_BLACK_* and SHOPIFY_GALAXY_TEE_VARIANT_WHITE_*.
 6. product(handle: "action-replay-mewtwo-tee") returns null from the Storefront API.
 7. action-replay-mewtwo-tee is unpublished from Headless/Storefront and archived.
+8. product(handle: "action-replay-2026-promo-poster") is visible to the Storefront API.
+9. Its 24 x 36 variant matches SHOPIFY_PROMO_POSTER_VARIANT_24X36 and is available for sale.
+10. A cart containing one Retro Black / S Galaxy tee and one 24 x 36 promo poster totals $82.80 from a $90.00 line subtotal, reflecting the Shopify 15% pair credit.
 
 Return only pass/fail plus any mismatched variant IDs by env var name. Do not print token values.
 ```

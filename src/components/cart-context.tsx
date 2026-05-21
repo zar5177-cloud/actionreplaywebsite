@@ -37,12 +37,20 @@ type ApiCartLine = {
   imageAlt: string | null;
   price: Money;
   subtotal: Money;
+  total: Money;
+  discountTotal: Money;
 };
 
 type ApiCart = {
   id: string;
   checkoutUrl: string;
   totalQuantity: number;
+  discountCodes: {
+    code: string;
+    applicable: boolean;
+  }[];
+  undiscountedSubtotal: Money;
+  discountTotal: Money;
   subtotal: Money;
   total: Money;
   lines: ApiCartLine[];
@@ -58,6 +66,8 @@ export type CartItem = {
   size: string;
   color: ProductColor;
   quantity: number;
+  lineTotal: number;
+  lineDiscount: number;
 };
 
 type CartContextValue = {
@@ -65,6 +75,9 @@ type CartContextValue = {
   items: CartItem[];
   count: number;
   subtotal: number;
+  discountTotal: number;
+  total: number;
+  discountCodes: ApiCart["discountCodes"];
   checkoutUrl: string | null;
   isCartOpen: boolean;
   isMutating: boolean;
@@ -135,6 +148,8 @@ function mapCartItems(cart: ApiCart | null): CartItem[] {
           hex: colorHex(color),
         },
         quantity: line.quantity,
+        lineTotal: moneyAmount(line.total),
+        lineDiscount: moneyAmount(line.discountTotal),
       };
     }) ?? []
   );
@@ -158,6 +173,27 @@ async function requestCart(body: Record<string, unknown>) {
   }
 
   return payload.cart;
+}
+
+function persistCartId(cart: ApiCart | null) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  if (cart?.id) {
+    window.localStorage.setItem(CART_STORAGE_KEY, cart.id);
+    return;
+  }
+
+  window.localStorage.removeItem(CART_STORAGE_KEY);
+}
+
+function readPersistedCartId() {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  return window.localStorage.getItem(CART_STORAGE_KEY) ?? undefined;
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -222,15 +258,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     if (cart?.id) {
       window.localStorage.setItem(CART_STORAGE_KEY, cart.id);
-      return;
     }
-
-    window.localStorage.removeItem(CART_STORAGE_KEY);
   }, [cart?.id]);
 
   const items = useMemo(() => mapCartItems(cart), [cart]);
   const count = cart?.totalQuantity ?? 0;
-  const subtotal = moneyAmount(cart?.subtotal);
+  const subtotal = moneyAmount(cart?.undiscountedSubtotal ?? cart?.subtotal);
+  const discountTotal = moneyAmount(cart?.discountTotal);
+  const total = moneyAmount(cart?.total);
 
   const value = useMemo<CartContextValue>(
     () => ({
@@ -238,6 +273,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       items,
       count,
       subtotal,
+      discountTotal,
+      total,
+      discountCodes: cart?.discountCodes ?? [],
       checkoutUrl: cart?.checkoutUrl ?? null,
       isCartOpen,
       isMutating,
@@ -255,12 +293,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
         try {
           const updatedCart = await requestCart({
             action: "add",
-            cartId: cart?.id,
+            cartId: cart?.id ?? readPersistedCartId(),
             productSlug: product.slug,
             size,
             color: color.name,
             quantity: 1,
           });
+          persistCartId(updatedCart);
           setCart(updatedCart);
           setCartOpen(true);
         } catch (error) {
@@ -287,6 +326,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
               cartId: cart.id,
               lineId,
             });
+            persistCartId(updatedCart);
             setCart(updatedCart);
           } catch (error) {
             setErrorMessage(
@@ -308,6 +348,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             lineId,
             quantity,
           });
+          persistCartId(updatedCart);
           setCart(updatedCart);
         } catch (error) {
           setErrorMessage(
@@ -331,6 +372,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             cartId: cart.id,
             lineId,
           });
+          persistCartId(updatedCart);
           setCart(updatedCart);
         } catch (error) {
           setErrorMessage(
@@ -350,7 +392,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setErrorMessage("");
       },
     }),
-    [cart, count, errorMessage, isCartOpen, isMutating, items, subtotal],
+    [
+      cart,
+      count,
+      discountTotal,
+      errorMessage,
+      isCartOpen,
+      isMutating,
+      items,
+      subtotal,
+      total,
+    ],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

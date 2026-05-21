@@ -43,7 +43,7 @@ export function DropPanel() {
             {currentDrop.copy}
           </p>
           <div className="grid gap-2 text-center min-[420px]:grid-cols-3">
-            {["STATUS: UNLOCKED", "AR-001 ACTIVE", "$48 LIMITED RELEASE"].map((label) => (
+            {["STATUS: UNLOCKED", "AR-001 ACTIVE", "AR-003 PRINT LIVE"].map((label) => (
               <div
                 key={label}
                 className="min-w-0 border border-blue-500/60 bg-black/70 px-2 py-3 shadow-[0_0_28px_rgba(0,80,255,0.25)] sm:p-3"
@@ -58,15 +58,15 @@ export function DropPanel() {
             href="/shop"
             className="mt-5 inline-flex max-w-full items-center gap-2 bg-white px-4 py-3 font-mono text-xs font-black uppercase tracking-[0.14em] text-black transition hover:bg-blue-600 hover:text-white sm:h-11 sm:tracking-[0.16em]"
           >
-            Shop AR-001 <ArrowUpRight size={16} />
+            Shop live files <ArrowUpRight size={16} />
           </Link>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
             {[
-            ["Mirror active", "AR-001 checkout only", LockKeyhole],
+            ["Mirror active", "AR-001 + AR-003 checkout", LockKeyhole],
             ["Worldwide shipping", "Every order leaves through Shopify", Globe2],
-            ["Live release", "Galaxy tee mapped", BadgeCheck],
+            ["Live release", "Pair credit mapped", BadgeCheck],
           ].map(([title, copy, Icon]) => (
             <div key={String(title)} className="border border-white/15 bg-zinc-950 p-4">
               <Icon className="text-blue-300" size={24} />

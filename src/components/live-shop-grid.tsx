@@ -24,7 +24,7 @@ export function LiveShopGrid({
             href="/shop"
             className="inline-flex h-11 w-full items-center justify-center gap-2 border border-white bg-white px-4 font-mono text-xs font-black uppercase tracking-[0.16em] text-black transition hover:border-violet-300 hover:bg-violet-400 md:w-auto"
           >
-            Shop AR-001
+            Shop live files
             <ArrowUpRight size={15} />
           </Link>
         </div>

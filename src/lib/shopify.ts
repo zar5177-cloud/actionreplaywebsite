@@ -5,6 +5,13 @@ import {
   GALAXY_TEE_STOREFRONT_HANDLE,
   IGNORED_GALAXY_TEE_HANDLE,
 } from "@/lib/shopify-galaxy-tee";
+import {
+  PROMO_POSTER_COLOR,
+  PROMO_POSTER_SHOPIFY_PRODUCT_ID,
+  PROMO_POSTER_SIZE,
+  PROMO_POSTER_SLUG,
+  PROMO_POSTER_STOREFRONT_HANDLE,
+} from "@/lib/shopify-poster";
 
 const PRODUCT_FRAGMENT = `#graphql
   fragment ProductFields on Product {
@@ -103,19 +110,24 @@ export type ShopifyCartLineInput = {
   quantity: number;
 };
 
-type LiveProductKind = "galaxy-tee";
+type LiveProductKind = "galaxy-tee" | "promo-poster";
 
 const LIVE_PRODUCT_SLUGS: Record<LiveProductKind, string> = {
   "galaxy-tee": GALAXY_TEE_SLUG,
+  "promo-poster": PROMO_POSTER_SLUG,
 };
 
 const LIVE_PRODUCT_IDS: Record<LiveProductKind, string> = {
   "galaxy-tee": GALAXY_TEE_SHOPIFY_PRODUCT_ID,
+  "promo-poster": PROMO_POSTER_SHOPIFY_PRODUCT_ID,
 };
 
 const FALLBACK_PRODUCT_IMAGES: Record<LiveProductKind, string[]> = {
   "galaxy-tee": [
     "/assets/generated/current-drop/galaxy-tee-editorial-blue.jpg",
+  ],
+  "promo-poster": [
+    "/assets/generated/current-drop/action-replay-2026-promo-poster.jpg",
   ],
 };
 
@@ -124,12 +136,20 @@ function liveProductKind(node: ShopifyProductNode): LiveProductKind | null {
     return "galaxy-tee";
   }
 
+  if (node.handle === PROMO_POSTER_STOREFRONT_HANDLE) {
+    return "promo-poster";
+  }
+
   if (node.handle === IGNORED_GALAXY_TEE_HANDLE) {
     return null;
   }
 
   if (node.id === LIVE_PRODUCT_IDS["galaxy-tee"]) {
     return "galaxy-tee";
+  }
+
+  if (node.id === LIVE_PRODUCT_IDS["promo-poster"]) {
+    return "promo-poster";
   }
 
   const tags = node.tags.map((tag) => tag.toLowerCase());
@@ -149,6 +169,15 @@ function liveProductKind(node: ShopifyProductNode): LiveProductKind | null {
     return node.handle === GALAXY_TEE_STOREFRONT_HANDLE
       ? "galaxy-tee"
       : null;
+  }
+
+  const isPromoPoster =
+    tags.includes("promo-poster") ||
+    tags.includes("poster") ||
+    text.includes("promo poster");
+
+  if (isPromoPoster) {
+    return "promo-poster";
   }
 
   return null;
@@ -278,6 +307,10 @@ function productDescription(
     return "Recovered product access mirror for the AR-001 Galaxy tee. Black and white copies are both mapped to the live Shopify variant table.";
   }
 
+  if (liveKind === "promo-poster") {
+    return "Promo print file kept in the archive because the darker export was never replaced cleanly. Now mapped to the Shopify cart because the folder kept asking.";
+  }
+
   const cleaned = description
     .replace(/gid:\/\/shopify\/Product\/\d+/g, "")
     .replace(/\s+/g, " ")
@@ -311,11 +344,19 @@ function mapShopifyProduct(node: ShopifyProductNode): Product | null {
     return null;
   }
 
-  const title = normalizedLiveTitle();
-  const category = "tees";
+  const title =
+    liveKind === "promo-poster"
+      ? "AR-003 \"CORRUPTED PROMO\" POSTER"
+      : normalizedLiveTitle();
+  const category: Product["category"] =
+    liveKind === "promo-poster" ? "accessories" : "tees";
   const variants = node.variants.edges.map(({ node: variant }) => {
-    const size = optionValue(variant.selectedOptions, ["size"]);
-    const color = optionValue(variant.selectedOptions, ["color", "colour"]);
+    const size =
+      optionValue(variant.selectedOptions, ["size"]) ??
+      (liveKind === "promo-poster" ? PROMO_POSTER_SIZE : undefined);
+    const color =
+      optionValue(variant.selectedOptions, ["color", "colour"]) ??
+      (liveKind === "promo-poster" ? PROMO_POSTER_COLOR.name : undefined);
 
     return {
       id: variant.id,
@@ -339,20 +380,34 @@ function mapShopifyProduct(node: ShopifyProductNode): Product | null {
     id: node.id,
     slug: LIVE_PRODUCT_SLUGS[liveKind],
     title,
-    japaneseTitle: normalizedJapaneseTitle(),
+    japaneseTitle:
+      liveKind === "promo-poster"
+        ? "破損プロモ ポスター"
+        : normalizedJapaneseTitle(),
     category,
-    price: 48,
-    sizes: sizes.length ? sizes : ["S", "M", "L", "XL", "XXL"],
+    price: liveKind === "promo-poster" ? 42 : 48,
+    sizes:
+      sizes.length
+        ? sizes
+        : liveKind === "promo-poster"
+          ? [PROMO_POSTER_SIZE]
+          : ["S", "M", "L", "XL", "XXL"],
     colors: colors.length
       ? colors
-      : [{ name: "White", hex: "#f4f4f0" }],
+      : liveKind === "promo-poster"
+        ? [PROMO_POSTER_COLOR]
+        : [{ name: "White", hex: "#f4f4f0" }],
     images: images.length ? images : FALLBACK_PRODUCT_IMAGES[liveKind],
     badges: productBadges(node, category),
     availability: node.availableForSale ? "new" : "archive",
     productState: node.availableForSale ? "live" : "sold_out",
     description: productDescription(liveKind, title, node.description),
-    archiveCode: "AR001-GALAXY",
-    stateNote: "loaded from Shopify collection mirror",
+    archiveCode:
+      liveKind === "promo-poster" ? "AR003-PRINT-WPURPLE" : "AR001-GALAXY",
+    stateNote:
+      liveKind === "promo-poster"
+        ? "loaded from Shopify print mirror"
+        : "loaded from Shopify collection mirror",
     source: "shopify",
     shopifyProductId: node.id,
     shopifyHandle: node.handle,

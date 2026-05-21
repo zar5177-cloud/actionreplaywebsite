@@ -33,9 +33,9 @@ export default async function ShopPage({
             Mirror open
           </h1>
           <p className="mt-4 max-w-[20rem] break-words font-mono text-xs leading-6 text-zinc-300 sm:max-w-2xl sm:text-sm">
-            AR-001 &quot;GALAXY&quot; tee is the only purchasable file. AR-002 remains
-            locked. AR-003 is visible again because the bad print export kept
-            showing up in the folder, but not as checkout.
+            AR-001 &quot;GALAXY&quot; tee and AR-003 print file are both purchasable
+            now. AR-002 remains locked. Add the tee and poster together and the
+            Shopify pair credit drops the cart by 15%.
           </p>
         </div>
       </section>

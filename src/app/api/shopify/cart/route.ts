@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 import {
   addStorefrontCartLines,
   createStorefrontCart,
+  getStorefrontProductVariantById,
   getStorefrontProductVariantForOptions,
   getStorefrontCart,
   removeStorefrontCartLines,
+  updateStorefrontCartDiscountCodes,
   updateStorefrontCartLines,
+  type StorefrontCart,
 } from "@/lib/shopify-storefront";
 import {
   GALAXY_TEE_SLUG,
@@ -13,6 +16,12 @@ import {
   getGalaxyTeeVariantId,
   isGalaxyTeeSlug,
 } from "@/lib/shopify-galaxy-tee";
+import {
+  PROMO_POSTER_SLUG,
+  PROMO_POSTER_STOREFRONT_HANDLE,
+  getPromoPosterVariantId,
+  isPromoPosterSlug,
+} from "@/lib/shopify-poster";
 
 export const dynamic = "force-dynamic";
 
@@ -56,6 +65,48 @@ function quantityValue(value: unknown) {
   return Math.max(1, Math.floor(value));
 }
 
+function configuredPairDiscountCode() {
+  return process.env.SHOPIFY_TEE_POSTER_DISCOUNT_CODE?.trim() ?? "";
+}
+
+function cartHasPair(cart: StorefrontCart) {
+  const slugs = new Set(
+    cart.lines.filter((line) => line.quantity > 0).map((line) => line.productSlug),
+  );
+
+  return slugs.has(GALAXY_TEE_SLUG) && slugs.has(PROMO_POSTER_SLUG);
+}
+
+async function syncPairDiscountCode(cart: StorefrontCart) {
+  const code = configuredPairDiscountCode();
+
+  if (!code) {
+    return cart;
+  }
+
+  const normalizedCode = code.toUpperCase();
+  const preservedCodes = cart.discountCodes
+    .map((discountCode) => discountCode.code)
+    .filter((discountCode) => discountCode.toUpperCase() !== normalizedCode);
+  const nextCodes = cartHasPair(cart) ? [...preservedCodes, code] : preservedCodes;
+  const currentCodes = cart.discountCodes.map((discountCode) =>
+    discountCode.code.toUpperCase(),
+  );
+  const nextCodeSet = nextCodes.map((discountCode) => discountCode.toUpperCase());
+
+  if (
+    currentCodes.length === nextCodeSet.length &&
+    currentCodes.every((currentCode, index) => currentCode === nextCodeSet[index])
+  ) {
+    return cart;
+  }
+
+  return updateStorefrontCartDiscountCodes({
+    cartId: cart.id,
+    discountCodes: nextCodes,
+  });
+}
+
 async function resolveMerchandiseId(body: AddCartRequest) {
   const productSlug = stringValue(body.productSlug);
   const size = stringValue(body.size);
@@ -73,8 +124,18 @@ async function resolveMerchandiseId(body: AddCartRequest) {
     return variant.id;
   }
 
+  if (isPromoPosterSlug(productSlug)) {
+    const expectedVariantId = getPromoPosterVariantId();
+    const variant = await getStorefrontProductVariantById({
+      expectedVariantId,
+      handle: PROMO_POSTER_STOREFRONT_HANDLE,
+    });
+
+    return variant.id;
+  }
+
   throw new Error(
-    `FILE LOCKED. Checkout mirror only accepts ${GALAXY_TEE_SLUG}. Received ${productSlug || "unknown"}.`,
+    `FILE LOCKED. Checkout mirror only accepts ${GALAXY_TEE_SLUG} or ${PROMO_POSTER_SLUG}. Received ${productSlug || "unknown"}.`,
   );
 }
 
@@ -117,7 +178,7 @@ export async function POST(request: Request) {
         ? await addStorefrontCartLines({ cartId, lines: [line] })
         : await createStorefrontCart([line]);
 
-      return NextResponse.json({ cart });
+      return NextResponse.json({ cart: await syncPairDiscountCode(cart) });
     }
 
     if (body.action === "update") {
@@ -133,7 +194,7 @@ export async function POST(request: Request) {
         lines: [{ id: lineId, quantity: quantityValue(body.quantity) }],
       });
 
-      return NextResponse.json({ cart });
+      return NextResponse.json({ cart: await syncPairDiscountCode(cart) });
     }
 
     if (body.action === "remove") {
@@ -149,7 +210,7 @@ export async function POST(request: Request) {
         lineIds: [lineId],
       });
 
-      return NextResponse.json({ cart });
+      return NextResponse.json({ cart: await syncPairDiscountCode(cart) });
     }
 
     return jsonError("Unsupported cart action.", 400);

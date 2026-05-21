@@ -514,7 +514,7 @@ export const visualAssets: VisualAsset[] = [
     id: "action-replay-2026-promo-poster",
     src: "/assets/generated/current-drop/action-replay-2026-promo-poster.jpg",
     category: "hero-poster",
-    usage: "AR-003 corrupted promo poster archive file, hidden product page fallback, homepage texture, and print verification placeholder",
+    usage: "AR-003 corrupted promo poster live product page, homepage texture, gallery asset, and tee-pair discount companion",
     sourceReference: "/Users/zrelich/Documents/actionreplayposter7.jpg supplied by user for the May 20, 2026 live drop",
     promptSummary:
       "User-supplied purple and chrome Action Replay 2026 promotional poster artwork.",

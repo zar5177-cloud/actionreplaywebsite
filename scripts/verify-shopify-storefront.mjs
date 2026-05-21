@@ -17,6 +17,7 @@ const REQUIRED_ENV = [
   "SHOPIFY_GALAXY_TEE_VARIANT_WHITE_L",
   "SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XL",
   "SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XXL",
+  "SHOPIFY_PROMO_POSTER_VARIANT_24X36",
 ];
 
 const EXPECTED_VARIANTS = [
@@ -64,12 +65,22 @@ function normalize(value) {
   return value.trim().toLowerCase().replace(/^xxl$/, "2xl");
 }
 
+function moneyAmount(money) {
+  const amount = Number.parseFloat(money?.amount ?? "");
+  return Number.isFinite(amount) ? amount : 0;
+}
+
 function fail(message) {
   console.error(message);
   process.exit(1);
 }
 
 loadDotenvLocal();
+
+const fallbackPosterVariantId = "gid://shopify/ProductVariant/48745105424640";
+if (!process.env.SHOPIFY_PROMO_POSTER_VARIANT_24X36) {
+  process.env.SHOPIFY_PROMO_POSTER_VARIANT_24X36 = fallbackPosterVariantId;
+}
 
 const missing = REQUIRED_ENV.filter((key) => !process.env[key]?.trim());
 if (missing.length) {
@@ -80,8 +91,36 @@ const endpoint = `https://${process.env.SHOPIFY_STORE_DOMAIN}/api/${
   process.env.SHOPIFY_ADMIN_API_VERSION
 }/graphql.json`;
 
-const query = `#graphql
-  query VerifyGalaxyTee($real: String!, $duplicate: String!) {
+async function storefrontFetch(query, variables) {
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Shopify-Storefront-Private-Token":
+        process.env.SHOPIFY_PRIVATE_STOREFRONT_ACCESS_TOKEN,
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+
+  const payload = await response.json();
+
+  if (!response.ok) {
+    fail(`Shopify Storefront API returned HTTP ${response.status}.`);
+  }
+
+  if (payload.errors?.length) {
+    fail(
+      `Shopify Storefront API returned errors: ${payload.errors
+        .map((error) => error.message)
+        .join("; ")}`,
+    );
+  }
+
+  return payload.data;
+}
+
+const productQuery = `#graphql
+  query VerifyLiveProducts($real: String!, $duplicate: String!, $poster: String!) {
     real: product(handle: $real) {
       handle
       title
@@ -108,41 +147,33 @@ const query = `#graphql
         }
       }
     }
+    poster: product(handle: $poster) {
+      handle
+      title
+      availableForSale
+      variants(first: 5) {
+        nodes {
+          id
+          availableForSale
+          selectedOptions {
+            name
+            value
+          }
+        }
+      }
+    }
   }
 `;
 
-const response = await fetch(endpoint, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Shopify-Storefront-Private-Token":
-      process.env.SHOPIFY_PRIVATE_STOREFRONT_ACCESS_TOKEN,
-  },
-  body: JSON.stringify({
-    query,
-    variables: {
-      real: "enzyme-washed-t-shirt",
-      duplicate: "action-replay-mewtwo-tee",
-    },
-  }),
+const productData = await storefrontFetch(productQuery, {
+  real: "enzyme-washed-t-shirt",
+  duplicate: "action-replay-mewtwo-tee",
+  poster: "action-replay-2026-promo-poster",
 });
 
-const payload = await response.json();
-
-if (!response.ok) {
-  fail(`Shopify Storefront API returned HTTP ${response.status}.`);
-}
-
-if (payload.errors?.length) {
-  fail(
-    `Shopify Storefront API returned errors: ${payload.errors
-      .map((error) => error.message)
-      .join("; ")}`,
-  );
-}
-
-const real = payload.data?.real;
-const duplicate = payload.data?.duplicate;
+const real = productData?.real;
+const duplicate = productData?.duplicate;
+const poster = productData?.poster;
 
 if (!real) {
   fail("enzyme-washed-t-shirt is not visible to the Storefront API.");
@@ -150,6 +181,10 @@ if (!real) {
 
 if (duplicate) {
   fail("action-replay-mewtwo-tee is still visible to the Storefront API.");
+}
+
+if (!poster) {
+  fail("action-replay-2026-promo-poster is not visible to the Storefront API.");
 }
 
 const variants = real.variants.nodes;
@@ -183,6 +218,123 @@ for (const [envKey, expectedColor, expectedSize] of EXPECTED_VARIANTS) {
   }
 }
 
+const posterVariants = poster.variants.nodes;
+const posterVariant = posterVariants.find(
+  (candidate) =>
+    candidate.id === process.env.SHOPIFY_PROMO_POSTER_VARIANT_24X36,
+);
+
+if (!poster.availableForSale || !posterVariant?.availableForSale) {
+  fail("action-replay-2026-promo-poster is not available for sale.");
+}
+
+const posterSize = optionValue(posterVariant.selectedOptions, ["size"]);
+if (normalize(posterSize ?? "") !== normalize("24 x 36")) {
+  fail(`Poster variant expected size 24 x 36, got ${posterSize ?? "missing"}.`);
+}
+
+const cartData = await storefrontFetch(
+  `#graphql
+    mutation VerifyPairDiscount($input: CartInput!) {
+      cartCreate(input: $input) {
+        cart {
+          id
+          totalQuantity
+          checkoutUrl
+          cost {
+            totalAmount {
+              amount
+              currencyCode
+            }
+          }
+          lines(first: 10) {
+            nodes {
+              quantity
+              cost {
+                subtotalAmount {
+                  amount
+                  currencyCode
+                }
+                totalAmount {
+                  amount
+                  currencyCode
+                }
+              }
+              discountAllocations {
+                discountedAmount {
+                  amount
+                  currencyCode
+                }
+              }
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  product {
+                    handle
+                  }
+                }
+              }
+            }
+          }
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+  `,
+  {
+    input: {
+      lines: [
+        {
+          merchandiseId: process.env.SHOPIFY_GALAXY_TEE_VARIANT_BLACK_S,
+          quantity: 1,
+        },
+        {
+          merchandiseId: process.env.SHOPIFY_PROMO_POSTER_VARIANT_24X36,
+          quantity: 1,
+        },
+      ],
+    },
+  },
+);
+
+if (cartData.cartCreate.userErrors.length) {
+  fail(
+    `Shopify cartCreate returned errors: ${cartData.cartCreate.userErrors
+      .map((error) => error.message)
+      .join("; ")}`,
+  );
+}
+
+const cart = cartData.cartCreate.cart;
+const lineSubtotal = cart.lines.nodes.reduce(
+  (sum, line) => sum + moneyAmount(line.cost.subtotalAmount),
+  0,
+);
+const lineDiscount = cart.lines.nodes.reduce(
+  (sum, line) =>
+    sum +
+    line.discountAllocations.reduce(
+      (innerSum, allocation) => innerSum + moneyAmount(allocation.discountedAmount),
+      0,
+    ),
+  0,
+);
+
+if (cart.totalQuantity !== 2 || lineSubtotal !== 90) {
+  fail(`Expected tee + poster cart subtotal 90 with quantity 2; got ${lineSubtotal}.`);
+}
+
+if (Math.abs(lineDiscount - 7.2) > 0.01) {
+  fail(`Expected Shopify 15% pair credit of 7.20; got ${lineDiscount}.`);
+}
+
+if (Math.abs(moneyAmount(cart.cost.totalAmount) - 82.8) > 0.01) {
+  fail(`Expected pair cart total 82.80; got ${cart.cost.totalAmount.amount}.`);
+}
+
 console.log(
-  "Shopify Storefront verification passed: enzyme-washed-t-shirt has 10 mapped variants and duplicate is hidden.",
+  "Shopify Storefront verification passed: tee variants, poster variant, duplicate hiding, checkout URL, and 15% pair credit are live.",
 );
