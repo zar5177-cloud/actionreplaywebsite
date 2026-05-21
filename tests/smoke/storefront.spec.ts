@@ -291,4 +291,32 @@ test.describe("Action Replay storefront release gate", () => {
     await expect(drawer.getByText("$82.80")).toBeVisible();
     await expectNoConsoleProblems(consoleProblems);
   });
+
+  test("mobile one-click pair restore keeps checkout usable", async ({
+    page,
+  }) => {
+    const consoleProblems = collectConsoleProblems(page);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/shop/action-replay-galaxy-tee");
+    await page.getByRole("button", { name: "XL" }).first().click();
+    await page.getByRole("button", { name: "White" }).first().click();
+    await page
+      .getByRole("button", { name: /RESTORE TEE \+ POSTER \/ 15%/i })
+      .click();
+
+    const drawer = page.locator("aside").first();
+    await expect(drawer).toBeVisible();
+    await expect(drawer).toHaveCSS("width", "390px");
+    await expect(drawer.getByText("Pair credit / 15%")).toBeVisible();
+    await expect(drawer.getByText("-$7.20").last()).toBeVisible();
+    await expect(drawer.getByText("$82.80")).toBeVisible();
+    await expect(
+      drawer.getByRole("button", { name: /OPEN CHECKOUT MIRROR/i }),
+    ).toBeVisible();
+    await expect(
+      drawer.getByRole("button", { name: /OPEN CHECKOUT MIRROR/i }),
+    ).toBeEnabled();
+    await expectNoConsoleProblems(consoleProblems);
+  });
 });
