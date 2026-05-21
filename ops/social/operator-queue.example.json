@@ -1,0 +1,52 @@
+{
+  "schema": "action-replay-social-operator-queue.v1",
+  "generated_at": "2026-05-21T02:14:00-04:00",
+  "operator": "codex",
+  "items": [
+    {
+      "id": "ig-story-001-inventory-check",
+      "platform": "instagram",
+      "account": "shopactionreplay",
+      "action_type": "story_draft",
+      "status": "drafted",
+      "requires_human_approval": true,
+      "risk_level": "low",
+      "asset_refs": ["phone photo of AR-001 folded on desk"],
+      "copy": "001 still accessible / black S-L visible / mirror checked 02:14",
+      "notes": "Use imperfect flash. Do not crop out desk mess.",
+      "reason": "Turns live product into physical proof instead of polished artifact.",
+      "blocked_if": ["no real product photo", "caption starts sounding like an ad"],
+      "scheduled_window": "21:00 story"
+    },
+    {
+      "id": "ig-reply-002-customer-interest",
+      "platform": "instagram",
+      "account": "shopactionreplay",
+      "action_type": "reply_draft",
+      "status": "drafted",
+      "requires_human_approval": true,
+      "risk_level": "low",
+      "asset_refs": [],
+      "copy": "black and white both mapped rn. memory card file is still locked.",
+      "notes": "Reply only if the user asked about colors/sizes.",
+      "reason": "Answers product question while preserving archive language.",
+      "blocked_if": ["user did not ask a product question", "thread is hostile"],
+      "scheduled_window": "same day"
+    },
+    {
+      "id": "model-packet-003-sofia",
+      "platform": "instagram",
+      "account": "external_model_or_member",
+      "action_type": "asset_request",
+      "status": "needs_review",
+      "requires_human_approval": true,
+      "risk_level": "medium",
+      "asset_refs": ["AR-001 worn in real environment"],
+      "copy": "no pressure to post polished. bad flash / parking lot / room light is better. tag @shopactionreplay if it feels right.",
+      "notes": "Do not ask for account login. Ask for consent if reposting.",
+      "reason": "Builds human proof layer without impersonating anyone.",
+      "blocked_if": ["model has not agreed", "usage permission unclear"],
+      "scheduled_window": "this week"
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+{
+  "schema": "action-replay-account-inventory.v1",
+  "last_reviewed": "2026-05-21",
+  "rules": [
+    "Do not store raw passwords, 2FA seeds, backup codes, session cookies, or recovery email passwords in this file.",
+    "Use a password manager shared vault item reference for each secret.",
+    "Every post, reply, DM, account creation, and profile edit needs a human approval step until an official platform API workflow is connected.",
+    "No fake engagement, mass following, mass DMs, scraping, or pretending to be customers."
+  ],
+  "password_manager": {
+    "provider": "1Password or Bitwarden",
+    "shared_vault_name": "Action Replay / Access",
+    "item_reference_format": "op://Action Replay / Access/{item-name}/{field} or bw://vault/item/field"
+  },
+  "recovery_standard": {
+    "primary_email_item_ref": "op://Action Replay / Access/AR Mailbox Primary/login",
+    "phone_item_ref": "op://Action Replay / Access/AR Recovery Phone/number",
+    "backup_codes_item_ref": "op://Action Replay / Access/{account}/backup-codes",
+    "two_factor_required": true,
+    "recovery_owner": "zrelich"
+  },
+  "accounts": [
+    {
+      "handle": "shopactionreplay",
+      "platform": "instagram",
+      "role": "main brand account",
+      "public_behavior": "real product access mirror, human proof, drops, reposted owner evidence",
+      "status": "existing_or_to_create",
+      "login_email_ref": "op://Action Replay / Access/IG shopactionreplay/login",
+      "password_ref": "op://Action Replay / Access/IG shopactionreplay/password",
+      "totp_ref": "op://Action Replay / Access/IG shopactionreplay/one-time password",
+      "backup_codes_ref": "op://Action Replay / Access/IG shopactionreplay/backup-codes",
+      "recovery_email_ref": "op://Action Replay / Access/AR Mailbox Primary/login",
+      "automation_level": "human_approved_drafts_only",
+      "allowed_automation": [
+        "caption drafts",
+        "story sequence drafts",
+        "comment triage",
+        "reply suggestions",
+        "metrics logging",
+        "content calendar queue"
+      ],
+      "blocked_automation": [
+        "auto-posting without approval",
+        "auto-DMs",
+        "auto-comments",
+        "follow/unfollow",
+        "fake engagement"
+      ],
+      "notes": "This is the only account allowed to directly sell AR-001."
+    },
+    {
+      "handle": "replay_recovered",
+      "platform": "instagram",
+      "role": "recovered archive side account",
+      "public_behavior": "quiet file recovery, timestamps, damaged exports, no direct selling",
+      "status": "planned",
+      "login_email_ref": "op://Action Replay / Access/IG replay_recovered/login",
+      "password_ref": "op://Action Replay / Access/IG replay_recovered/password",
+      "totp_ref": "op://Action Replay / Access/IG replay_recovered/one-time password",
+      "backup_codes_ref": "op://Action Replay / Access/IG replay_recovered/backup-codes",
+      "automation_level": "human_approved_drafts_only",
+      "allowed_automation": [
+        "artifact queue drafts",
+        "metadata generation",
+        "repost recommendations"
+      ],
+      "blocked_automation": [
+        "pretending to be unrelated to Action Replay",
+        "fake testimonials",
+        "unsolicited sales DMs"
+      ],
+      "notes": "Should feel adjacent and honest enough to avoid deception. Bio can say archive maintained by Action Replay."
+    },
+    {
+      "handle": "override_monthly",
+      "platform": "instagram",
+      "role": "fake gaming magazine account",
+      "public_behavior": "magazine scans, classifieds, page numbers, print errors",
+      "status": "planned",
+      "login_email_ref": "op://Action Replay / Access/IG override_monthly/login",
+      "password_ref": "op://Action Replay / Access/IG override_monthly/password",
+      "totp_ref": "op://Action Replay / Access/IG override_monthly/one-time password",
+      "backup_codes_ref": "op://Action Replay / Access/IG override_monthly/backup-codes",
+      "automation_level": "human_approved_drafts_only",
+      "allowed_automation": [
+        "scan caption drafts",
+        "issue index generation",
+        "comment reply suggestions"
+      ],
+      "blocked_automation": [
+        "claiming to be a real historical publication",
+        "copyright-infringing magazine scans",
+        "mass tagging archive pages"
+      ],
+      "notes": "Keep fictional status subtle but not deceptive if asked."
+    },
+    {
+      "handle": "slotb_testers",
+      "platform": "instagram",
+      "role": "beta tester archive account",
+      "public_behavior": "tester notes, memory card slot language, unresolved warnings",
+      "status": "planned",
+      "login_email_ref": "op://Action Replay / Access/IG slotb_testers/login",
+      "password_ref": "op://Action Replay / Access/IG slotb_testers/password",
+      "totp_ref": "op://Action Replay / Access/IG slotb_testers/one-time password",
+      "backup_codes_ref": "op://Action Replay / Access/IG slotb_testers/backup-codes",
+      "automation_level": "human_approved_drafts_only",
+      "allowed_automation": [
+        "tester log formatting",
+        "known issue list drafts",
+        "story poll prompts"
+      ],
+      "blocked_automation": [
+        "coordinated comment manipulation",
+        "fake order proof",
+        "platform scraping"
+      ],
+      "notes": "Best account for AR-002 and M-CARD REV E residue."
+    },
+    {
+      "handle": "memorycard_err",
+      "platform": "instagram",
+      "role": "corrupted memory card account",
+      "public_behavior": "broken thumbnails, save slots, missing previews, alt text",
+      "status": "planned",
+      "login_email_ref": "op://Action Replay / Access/IG memorycard_err/login",
+      "password_ref": "op://Action Replay / Access/IG memorycard_err/password",
+      "totp_ref": "op://Action Replay / Access/IG memorycard_err/one-time password",
+      "backup_codes_ref": "op://Action Replay / Access/IG memorycard_err/backup-codes",
+      "automation_level": "human_approved_drafts_only",
+      "allowed_automation": [
+        "broken-file caption drafts",
+        "asset alt-text generation",
+        "archive cross-reference logging"
+      ],
+      "blocked_automation": [
+        "automated interactions",
+        "pretending to be customers",
+        "password sharing outside vault"
+      ],
+      "notes": "Can be weirdest account. Still no spam."
+    },
+    {
+      "handle": "unlock_log_txt",
+      "platform": "instagram",
+      "role": "unlock logs account",
+      "public_behavior": "plain text logs, timestamps, access windows, route fragments",
+      "status": "planned",
+      "login_email_ref": "op://Action Replay / Access/IG unlock_log_txt/login",
+      "password_ref": "op://Action Replay / Access/IG unlock_log_txt/password",
+      "totp_ref": "op://Action Replay / Access/IG unlock_log_txt/one-time password",
+      "backup_codes_ref": "op://Action Replay / Access/IG unlock_log_txt/backup-codes",
+      "automation_level": "human_approved_drafts_only",
+      "allowed_automation": [
+        "daily log drafts",
+        "unlock window copy",
+        "metrics-to-log summaries"
+      ],
+      "blocked_automation": [
+        "bot-like repetitive posts",
+        "hidden discount abuse",
+        "auto-reply code distribution"
+      ],
+      "notes": "Useful for giving the ecosystem pulse without making it feel like ads."
+    },
+    {
+      "handle": "bbs_mirror_2007",
+      "platform": "instagram",
+      "role": "fake forum archive account",
+      "public_behavior": "thread fragments, quoted users, dead signatures, old forum syntax",
+      "status": "planned",
+      "login_email_ref": "op://Action Replay / Access/IG bbs_mirror_2007/login",
+      "password_ref": "op://Action Replay / Access/IG bbs_mirror_2007/password",
+      "totp_ref": "op://Action Replay / Access/IG bbs_mirror_2007/one-time password",
+      "backup_codes_ref": "op://Action Replay / Access/IG bbs_mirror_2007/backup-codes",
+      "automation_level": "human_approved_drafts_only",
+      "allowed_automation": [
+        "forum thread copy drafts",
+        "quote bank generation",
+        "dead link inventory"
+      ],
+      "blocked_automation": [
+        "impersonating real users",
+        "harassment",
+        "mass commenting"
+      ],
+      "notes": "Use fictional usernames only."
+    }
+  ]
+}
