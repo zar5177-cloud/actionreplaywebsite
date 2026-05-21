@@ -9,6 +9,7 @@ Do not publish any Netlify Agent preview that describes the site as a bare Next.
 Production source of truth:
 
 - Live site: https://shopactionreplay.com/shop
+- Release PR: https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
 - Shopify product handle: `enzyme-washed-t-shirt`
 - Duplicate handle that must stay hidden: `action-replay-mewtwo-tee`
 - Checkout path: app cart drawer -> `/api/shopify/cart` -> Shopify `checkoutUrl`
@@ -48,6 +49,9 @@ The release guard checks:
 ## Required Environment Variables
 
 Set these in Netlify, Vercel, and GitHub Actions secrets:
+
+GitHub Actions secrets were set for `zar5177-cloud/actionreplaywebsite` on
+2026-05-21. If the repo is recreated or transferred, set them again.
 
 ```env
 SHOPIFY_STORE_DOMAIN
@@ -118,7 +122,8 @@ Only move the domain after the preview passes.
 Current CLI-created Vercel deployment:
 
 ```text
-https://actionreplaywebsite-qkl4iwhxp-zach-relichs-projects.vercel.app
+https://actionreplaywebsite-2v9s4sa0y-zach-relichs-projects.vercel.app
+https://actionreplaywebsite-zach-relichs-projects.vercel.app
 ```
 
 This deployment is currently protected by Vercel Authentication. It was verified
