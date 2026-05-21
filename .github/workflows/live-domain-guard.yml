@@ -1,0 +1,31 @@
+name: Live domain guard
+
+on:
+  workflow_dispatch:
+
+jobs:
+  live-domain-smoke:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Check live DNS cutover
+        run: npm run domain:check
+
+      - name: Run production smoke tests
+        run: npm run test:smoke:prod

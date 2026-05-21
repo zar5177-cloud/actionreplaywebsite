@@ -17,11 +17,13 @@
     "lint": "eslint",
     "check:shopify-env": "node scripts/check-shopify-env-safety.mjs",
     "verify:shopify": "node scripts/verify-shopify-storefront.mjs",
+    "vercel:check": "node scripts/check-vercel-project-state.mjs",
     "vercel:sync-shopify-env": "node scripts/sync-vercel-shopify-env.mjs",
     "domain:check": "node scripts/check-live-domain-cutover.mjs",
     "domain:watch": "node scripts/check-live-domain-cutover.mjs --watch",
     "test:smoke": "playwright test",
     "test:smoke:prod": "SMOKE_BASE_URL=https://shopactionreplay.com playwright test",
+    "release:live": "npm run domain:check && npm run test:smoke:prod",
     "release:check": "npm run lint && npm run build && npm run check:shopify-env && npm run verify:shopify && npm run test:smoke",
     "rnd:moderation:fixtures": "node scripts/rnd-moderation-prepare-assets.js fixtures",
     "rnd:moderation:variants": "node scripts/rnd-moderation-prepare-assets.js variants"

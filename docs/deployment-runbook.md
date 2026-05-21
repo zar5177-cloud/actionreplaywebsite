@@ -120,6 +120,19 @@ Repeat the Vercel settings/env sync any time `.env.local` changes:
 npm run vercel:sync-shopify-env
 ```
 
+Check Vercel project readiness without mutating settings:
+
+```bash
+npm run vercel:check
+```
+
+Current expected result before GitHub sudo verification:
+
+```text
+ready: false
+errors: ["Vercel Git Integration is not connected."]
+```
+
 IONOS DNS cutover:
 
 ```text
@@ -158,6 +171,18 @@ To keep checking until DNS flips:
 
 ```bash
 npm run domain:watch
+```
+
+One-command live release verification after DNS flips:
+
+```bash
+npm run release:live
+```
+
+The same live-domain gate can be run from GitHub Actions:
+
+```text
+Actions -> Live domain guard -> Run workflow
 ```
 
 Current pre-cutover status, verified 2026-05-21:
@@ -297,11 +322,13 @@ Only promote after smoke tests pass.
 
 1. `npm run release:check` passes locally.
 2. GitHub Actions `Release guard` passes on the PR or `main`.
-3. Vercel Git Integration is connected to `zar5177-cloud/actionreplaywebsite`.
-4. Vercel production deployment smoke test passes with `SMOKE_BASE_URL`.
-5. DNS at IONOS points `shopactionreplay.com` and `www.shopactionreplay.com` to `76.76.21.21`.
-6. `npm run domain:check` passes after DNS propagation.
-7. `npm run test:smoke:prod` passes after DNS propagation.
-8. `/shop/action-replay-mewtwo-tee` redirects to `/shop/action-replay-galaxy-tee`.
-9. `/api/shopify/cart` returns checkout host `store.shopactionreplay.com`.
-10. Browser console has zero errors on `/shop` and Galaxy Tee page.
+3. `npm run vercel:check` passes after GitHub sudo verification.
+4. Vercel Git Integration is connected to `zar5177-cloud/actionreplaywebsite`.
+5. Vercel production deployment smoke test passes with `SMOKE_BASE_URL`.
+6. DNS at IONOS points `shopactionreplay.com` and `www.shopactionreplay.com` to `76.76.21.21`.
+7. `npm run domain:check` passes after DNS propagation.
+8. `npm run test:smoke:prod` passes after DNS propagation.
+9. GitHub Actions `Live domain guard` passes.
+10. `/shop/action-replay-mewtwo-tee` redirects to `/shop/action-replay-galaxy-tee`.
+11. `/api/shopify/cart` returns checkout host `store.shopactionreplay.com`.
+12. Browser console has zero errors on `/shop` and Galaxy Tee page.
