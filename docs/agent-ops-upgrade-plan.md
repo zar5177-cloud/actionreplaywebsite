@@ -163,6 +163,7 @@ The repo now has committed-safe operator templates under `ops/`:
 - `ops/access/accounts.inventory.template.json`
 - `ops/social/meta-instagram-onboarding.md`
 - `ops/social/account-onboarding-matrix.md`
+- `ops/social/asap-manual-setup.md`
 - `ops/social/daily-command-center.md`
 - `ops/social/model-member-access-protocol.md`
 - `ops/social/operator-queue.example.json`
