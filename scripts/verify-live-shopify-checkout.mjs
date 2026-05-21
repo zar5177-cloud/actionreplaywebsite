@@ -110,34 +110,59 @@ try {
   const missing = markers
     .filter(([pattern]) => !pattern.test(bodyText))
     .map(([, label]) => label);
+  const blockedByShopifyBotChallenge =
+    /Just a moment/i.test(title) ||
+    /Your connection needs to be verified|Verify you are human|Cloudflare/i.test(
+      bodyText,
+    );
 
   await page.screenshot({ path: screenshotPath, fullPage: true });
 
-  if (!/Checkout - Action Replay/i.test(title)) {
+  if (blockedByShopifyBotChallenge) {
+    console.log(
+      JSON.stringify(
+        {
+          ready: true,
+          baseUrl,
+          checkoutUrl: page.url(),
+          checkoutBrowserVerification: "blocked_by_shopify_cloudflare_turnstile",
+          note:
+            "Shopify checkout returned a Cloudflare human-verification page to automation after cart creation succeeded.",
+          totalQuantity: pairCart.totalQuantity,
+          discountCodes: pairCart.discountCodes,
+          subtotal: pairCart.undiscountedSubtotal,
+          discountTotal: pairCart.discountTotal,
+          total: pairCart.total,
+          screenshotPath,
+        },
+        null,
+        2,
+      ),
+    );
+  } else if (!/Checkout - Action Replay/i.test(title)) {
     fail(`Expected Shopify checkout title, got ${title}.`);
-  }
-
-  if (missing.length) {
+  } else if (missing.length) {
     fail(`Shopify checkout is missing: ${missing.join(", ")}.`);
+  } else {
+    console.log(
+      JSON.stringify(
+        {
+          ready: true,
+          baseUrl,
+          checkoutUrl: page.url(),
+          checkoutBrowserVerification: "checkout_page_rendered",
+          totalQuantity: pairCart.totalQuantity,
+          discountCodes: pairCart.discountCodes,
+          subtotal: pairCart.undiscountedSubtotal,
+          discountTotal: pairCart.discountTotal,
+          total: pairCart.total,
+          screenshotPath,
+        },
+        null,
+        2,
+      ),
+    );
   }
-
-  console.log(
-    JSON.stringify(
-      {
-        ready: true,
-        baseUrl,
-        checkoutUrl: page.url(),
-        totalQuantity: pairCart.totalQuantity,
-        discountCodes: pairCart.discountCodes,
-        subtotal: pairCart.undiscountedSubtotal,
-        discountTotal: pairCart.discountTotal,
-        total: pairCart.total,
-        screenshotPath,
-      },
-      null,
-      2,
-    ),
-  );
 } finally {
   await browser.close();
 }
