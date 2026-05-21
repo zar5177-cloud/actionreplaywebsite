@@ -232,10 +232,10 @@ To keep checking until DNS flips:
 npm run domain:watch
 ```
 
-One-command live release verification after DNS flips:
+One-command go-live verification after DNS flips:
 
 ```bash
-npm run release:live
+npm run go-live:check
 ```
 
 The same live-domain gate can be run from GitHub Actions:
@@ -376,8 +376,8 @@ Only promote after smoke tests pass.
 3. `npm run vercel:check` passes. Native Vercel Git Integration may remain a warning because GitHub Actions Vercel CLI deploys are the release path.
 4. Vercel production deployment smoke test passes with `SMOKE_BASE_URL` and the automation bypass header.
 5. DNS at IONOS points `shopactionreplay.com` and `www.shopactionreplay.com` to `76.76.21.21`.
-6. `npm run domain:check` passes after DNS propagation.
-7. `npm run test:smoke:prod` passes after DNS propagation.
+6. `npm run go-live:check` passes after DNS propagation.
+7. `npm run test:smoke:prod` passes after DNS propagation if run separately.
 8. GitHub Actions `Live domain guard` passes.
 9. `/shop/action-replay-mewtwo-tee` redirects to `/shop/action-replay-galaxy-tee`.
 10. `/api/shopify/cart` returns checkout host `store.shopactionreplay.com`.

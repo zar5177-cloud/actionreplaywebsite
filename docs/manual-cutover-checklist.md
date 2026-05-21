@@ -109,7 +109,7 @@ Expected final result:
 Run:
 
 ```bash
-npm run release:live
+npm run go-live:check
 ```
 
 Then run the manual GitHub workflow:

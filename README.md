@@ -144,7 +144,7 @@ https://actionreplaywebsite.vercel.app/shop
 Run this after DNS changes:
 
 ```bash
-npm run release:live
+npm run go-live:check
 ```
 
 `netlify.toml` remains only as a fail-fast guard so old Netlify workflows cannot
