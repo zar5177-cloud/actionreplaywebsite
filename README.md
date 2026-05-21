@@ -135,6 +135,12 @@ Current public-domain blocker:
 IONOS DNS must point @ and www to 76.76.21.21.
 ```
 
+Temporary working storefront URL until DNS is changed:
+
+```text
+https://actionreplaywebsite.vercel.app/shop
+```
+
 Run this after DNS changes:
 
 ```bash

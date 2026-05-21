@@ -15,6 +15,8 @@ Good:
 - Vercel production deployment:
   https://actionreplaywebsite-d858j19xc-zach-relichs-projects.vercel.app
 - Vercel production deployment passed storefront smoke tests from GitHub Actions.
+- Temporary public storefront URL passed smoke tests without bypass:
+  https://actionreplaywebsite.vercel.app/shop
 - `shopactionreplay.com` and `www.shopactionreplay.com` are attached to Vercel.
 - Vercel Authentication is set to protect generated deployment URLs but exclude
   custom domains, so the public domain should be accessible after DNS cutover.

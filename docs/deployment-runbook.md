@@ -9,6 +9,8 @@ Do not publish any Netlify Agent preview that describes the site as a bare Next.
 Production source of truth:
 
 - Live site: https://shopactionreplay.com/shop
+- Temporary verified Vercel alias until DNS cutover:
+  https://actionreplaywebsite.vercel.app/shop
 - Merged release PR: https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
 - Shopify product handle: `enzyme-washed-t-shirt`
 - Duplicate handle that must stay hidden: `action-replay-mewtwo-tee`
@@ -26,6 +28,12 @@ Run against current production:
 
 ```bash
 npm run test:smoke:prod
+```
+
+Run against the temporary public Vercel alias:
+
+```bash
+npm run test:smoke:vercel
 ```
 
 Run against a Vercel preview:
@@ -121,6 +129,8 @@ Current Vercel state, verified 2026-05-21:
 - `shopactionreplay.com` and `www.shopactionreplay.com` are added to the Vercel project.
 - Current Vercel production deployment is ready and smoke-tested:
   `https://actionreplaywebsite-d858j19xc-zach-relichs-projects.vercel.app`
+- Stable public Vercel alias is ready and smoke-tested:
+  `https://actionreplaywebsite.vercel.app/shop`
 - Release PR #1 is merged to `main`; the `main` Release guard passed.
 - GitHub Actions can deploy Vercel previews and manual production releases
   through Vercel CLI secrets. This is the working release path even before
