@@ -147,7 +147,7 @@ async function resolveMerchandiseId(body: AddCartRequest) {
   }
 
   throw new Error(
-    `FILE LOCKED. Checkout mirror only accepts ${GALAXY_TEE_SLUG} or ${PROMO_POSTER_SLUG}. Received ${productSlug || "unknown"}.`,
+    `This item is not available to purchase. The live shop currently accepts ${GALAXY_TEE_SLUG} and ${PROMO_POSTER_SLUG}.`,
   );
 }
 
@@ -269,7 +269,7 @@ export async function POST(request: Request) {
     const message =
       error instanceof Error ? error.message : "Unable to update Shopify cart.";
 
-    if (message.startsWith("FILE LOCKED.")) {
+    if (message.startsWith("This item is not available to purchase.")) {
       return jsonError(message, 400);
     }
 

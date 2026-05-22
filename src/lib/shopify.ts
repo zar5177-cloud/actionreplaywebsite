@@ -304,11 +304,11 @@ function productDescription(
   description: string,
 ) {
   if (liveKind === "galaxy-tee") {
-    return "Recovered product access mirror for the AR-001 Galaxy tee. Black and white copies are both mapped to the live Shopify variant table.";
+    return "Enzyme-washed cotton tee with the Galaxy graphic, sleeve mark, and soft broken-in weight. Available in Retro Black and White.";
   }
 
   if (liveKind === "promo-poster") {
-    return "Promo print file kept in the archive because the darker export was never replaced cleanly. Now mapped to the Shopify cart because the folder kept asking.";
+    return "Oversized 24 x 36 promo poster printed from the darker Galaxy export: chrome panels, purple artifact, barcode residue.";
   }
 
   const cleaned = description

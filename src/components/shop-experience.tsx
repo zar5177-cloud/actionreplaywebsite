@@ -2,20 +2,15 @@
 
 import { useMemo, useState } from "react";
 import { ArrowDownUp, Search, SlidersHorizontal, X } from "lucide-react";
-import type { Collection, Product } from "@/lib/brand-data";
+import {
+  isPurchasableProduct,
+  type Collection,
+  type Product,
+} from "@/lib/brand-data";
 import { ProductCard } from "./product-card";
 
 type CategoryFilter = Product["category"] | "all";
-type StatusFilter = Product["productState"] | "all";
 type SortKey = "featured" | "price-low" | "price-high" | "name";
-
-const statusOptions: { label: string; value: StatusFilter }[] = [
-  { label: "Available", value: "live" },
-  { label: "All", value: "all" },
-  { label: "Archive", value: "locked" },
-  { label: "Soon", value: "coming_soon" },
-  { label: "Private", value: "hidden" },
-];
 
 const sortOptions: { label: string; value: SortKey }[] = [
   { label: "Featured", value: "featured" },
@@ -33,7 +28,14 @@ export function ShopExperience({
   initialCategory?: string;
   products: Product[];
 }) {
-  const highestPrice = Math.max(...products.map((product) => product.price));
+  const shopProducts = useMemo(
+    () => products.filter(isPurchasableProduct),
+    [products],
+  );
+  const highestPrice = Math.max(
+    0,
+    ...shopProducts.map((product) => product.price),
+  );
   const safeInitialCategory = collections.some(
     (collection) => collection.id === initialCategory,
   )
@@ -42,22 +44,21 @@ export function ShopExperience({
   const [query, setQuery] = useState("");
   const [category, setCategory] =
     useState<CategoryFilter>(safeInitialCategory);
-  const [status, setStatus] = useState<StatusFilter>("live");
   const [selectedColor, setSelectedColor] = useState<string>("all");
   const [maxPrice, setMaxPrice] = useState(highestPrice);
   const [sort, setSort] = useState<SortKey>("featured");
 
   const colorOptions = useMemo(() => {
     const colors = new Map<string, { name: string; hex: string }>();
-    products.forEach((product) => {
+    shopProducts.forEach((product) => {
       product.colors.forEach((color) => colors.set(color.hex, color));
     });
     return Array.from(colors.values());
-  }, [products]);
+  }, [shopProducts]);
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    return products
+    return shopProducts
       .filter((product) => {
         const matchesQuery =
           normalizedQuery.length === 0 ||
@@ -77,33 +78,24 @@ export function ShopExperience({
             .includes(normalizedQuery);
         const matchesCategory =
           category === "all" || product.category === category;
-        const matchesStatus =
-          status === "all" || product.productState === status;
         const matchesColor =
           selectedColor === "all" ||
           product.colors.some((color) => color.hex === selectedColor);
         const matchesPrice = product.price <= maxPrice;
 
-        return (
-          matchesQuery &&
-          matchesCategory &&
-          matchesStatus &&
-          matchesColor &&
-          matchesPrice
-        );
+        return matchesQuery && matchesCategory && matchesColor && matchesPrice;
       })
       .sort((a, b) => {
         if (sort === "price-low") return a.price - b.price;
         if (sort === "price-high") return b.price - a.price;
         if (sort === "name") return a.title.localeCompare(b.title);
-        return products.indexOf(a) - products.indexOf(b);
+        return shopProducts.indexOf(a) - shopProducts.indexOf(b);
       });
-  }, [category, maxPrice, products, query, selectedColor, sort, status]);
+  }, [category, maxPrice, query, selectedColor, shopProducts, sort]);
 
   const resetFilters = () => {
     setQuery("");
     setCategory("all");
-    setStatus("live");
     setSelectedColor("all");
     setMaxPrice(highestPrice);
     setSort("featured");
@@ -141,11 +133,11 @@ export function ShopExperience({
               }`}
             >
               <span className="min-w-0 truncate">All categories</span>
-              <span className="shrink-0">{products.length}</span>
+              <span className="shrink-0">{shopProducts.length}</span>
             </button>
             {collections.map((collection) => {
               const isActive = category === collection.id;
-              const count = products.filter(
+              const count = shopProducts.filter(
                 (product) => product.category === collection.id,
               ).length;
               return (
@@ -176,27 +168,6 @@ export function ShopExperience({
         <div className="rounded-[8px] border border-white/15 bg-zinc-950/85 p-4">
           <h3 className="font-mono text-sm uppercase text-white">Filters</h3>
           <div className="mt-4 space-y-5">
-            <div>
-              <p className="font-mono text-xs uppercase text-zinc-500">Status</p>
-              <div className="mt-2 grid grid-cols-2 gap-1">
-                {statusOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => setStatus(option.value)}
-                    aria-pressed={status === option.value}
-                    className={`h-9 border px-2 font-mono text-xs uppercase transition ${
-                      status === option.value
-                        ? "border-lime-300 bg-lime-300 text-black"
-                        : "border-white/15 text-zinc-300 hover:border-lime-300 hover:text-lime-200"
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <div>
               <p className="font-mono text-xs uppercase text-zinc-500">Color</p>
               <div className="mt-2 flex flex-wrap gap-2">
