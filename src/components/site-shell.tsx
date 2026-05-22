@@ -15,12 +15,6 @@ import {
   X,
 } from "lucide-react";
 import { assetById } from "@/lib/assets-manifest";
-import { deadNavigationItems, publicMemoryFragments } from "@/data/residue";
-import {
-  DeadNavReference,
-  FileStamp,
-  InternalComment,
-} from "@/components/residue/residue-fragments";
 import type { Product } from "@/lib/brand-data";
 import { formatUsdPrice } from "@/lib/money";
 import { CartProvider, useCart } from "./cart-context";
@@ -31,11 +25,11 @@ type SiteShellProps = {
 };
 
 const navLinks = [
-  { label: "Home", href: "/", accent: "BOOT" },
-  { label: "Shop", href: "/shop", accent: "AR-001" },
-  { label: "Archive", href: "/archive", accent: "FILE" },
-  { label: "Hidden Event", href: "/hidden-event", accent: "EVT" },
-  { label: "Forum", href: "/forum", accent: "BBS" },
+  { label: "Home", href: "/" },
+  { label: "Shop", href: "/shop" },
+  { label: "Galaxy Tee", href: "/shop/action-replay-galaxy-tee" },
+  { label: "Poster", href: "/shop/ar-003-corrupted-promo-poster" },
+  { label: "Archive", href: "/archive" },
 ] as const;
 
 function BrandMark() {
@@ -75,7 +69,7 @@ function Header({ searchProducts }: { searchProducts: Product[] }) {
           <BrandMark />
           <div className="hidden items-center gap-2 border-l border-white/15 pl-5 font-mono text-xs uppercase tracking-[0.16em] text-lime-200 md:flex">
             <ShieldCheck size={18} />
-            AR-001 + AR-003 checkout mirror
+            Secure checkout / worldwide shipping
           </div>
         </div>
 
@@ -95,7 +89,6 @@ function Header({ searchProducts }: { searchProducts: Product[] }) {
                 }`}
               >
                 <span>{link.label}</span>
-                <span className="ml-2 text-[10px] text-sky-200">{link.accent}</span>
               </Link>
             );
           })}
@@ -143,7 +136,6 @@ function Header({ searchProducts }: { searchProducts: Product[] }) {
                 className="border border-white/10 px-3 py-3 font-mono text-sm uppercase text-white"
               >
                 {link.label}
-                <span className="ml-2 text-sky-300">{link.accent}</span>
               </Link>
             ))}
           </div>
@@ -201,10 +193,10 @@ function SearchOverlay({
         <div className="flex min-w-0 items-center justify-between gap-4 border-b border-white/10 pb-4">
           <div className="min-w-0">
             <p className="font-mono text-xs uppercase tracking-[0.24em] text-blue-300">
-              Search product mirror
+              Search the drop
             </p>
             <h2 className="mt-1 text-3xl font-black uppercase text-white">
-              AR-001 + locked files
+              Galaxy pieces
             </h2>
           </div>
           <button
@@ -223,7 +215,7 @@ function SearchOverlay({
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search AR-001"
+              placeholder="Search products"
             className="h-full min-w-0 flex-1 bg-transparent font-mono text-sm text-white outline-none placeholder:text-zinc-600"
           />
         </label>
@@ -303,9 +295,9 @@ function CartDrawer() {
         <div className="flex items-center justify-between gap-4 border-b border-white/10 p-4">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.24em] text-blue-300">
-              Checkout mirror
+              Your bag
             </p>
-            <h2 className="mt-1 text-3xl font-black uppercase">Live files</h2>
+            <h2 className="mt-1 text-3xl font-black uppercase">Checkout</h2>
           </div>
           <button
             type="button"
@@ -395,10 +387,10 @@ function CartDrawer() {
               <div>
                 <LockKeyhole className="mx-auto text-zinc-500" size={30} />
                 <p className="mt-3 font-mono text-sm uppercase text-zinc-400">
-                  Mirror empty
+                  Your bag is empty
                 </p>
                 <Link href="/shop" onClick={closeCart} className="ui-button mt-5">
-                  Shop live files
+                  Shop the drop
                 </Link>
               </div>
             </div>
@@ -409,12 +401,11 @@ function CartDrawer() {
           <div className="mb-3 grid gap-2 border border-white/10 bg-black p-3 font-mono text-xs uppercase tracking-[0.14em] text-zinc-300">
             <div className="flex items-center gap-2 text-lime-200">
               <ShieldCheck size={16} />
-              AR-001 + AR-003 Shopify cart mirror
+              Tee + poster pair credit
             </div>
             <p className="text-zinc-500">
-              Galaxy tee and corrupted promo poster route through Shopify. Put
-              both in the drawer and the 15% pair credit appears from Shopify,
-              not the browser.
+              Add the Galaxy tee and promo poster together to receive 15% off
+              the pair before shipping and tax.
             </p>
           </div>
           <div className="flex items-center justify-between gap-4 font-mono text-sm uppercase text-zinc-300">
@@ -429,7 +420,7 @@ function CartDrawer() {
           ) : null}
           {applicableCodes.length ? (
             <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.14em] text-blue-200">
-              Code accepted: {applicableCodes.map((code) => code.code).join(", ")}
+              Discount applied: {applicableCodes.map((code) => code.code).join(", ")}
             </p>
           ) : null}
           <div className="mt-2 flex items-center justify-between gap-4 border-t border-white/10 pt-3 font-mono text-sm uppercase text-zinc-300">
@@ -448,7 +439,7 @@ function CartDrawer() {
             className="mt-4 flex h-12 w-full items-center justify-center gap-2 border border-lime-300 bg-lime-300 px-4 font-mono text-xs font-black uppercase tracking-[0.16em] text-black transition hover:bg-white disabled:cursor-not-allowed disabled:border-white/15 disabled:bg-white/10 disabled:text-zinc-500"
           >
             <ShoppingCart size={16} />
-            {isMutating ? "Restoring..." : "OPEN CHECKOUT MIRROR"}
+            {isMutating ? "Updating..." : "Checkout"}
           </button>
         </div>
       </aside>
@@ -464,53 +455,23 @@ export function SiteShell({ children, searchProducts }: SiteShellProps) {
         <Header searchProducts={searchProducts} />
         <main className="relative z-10 flex-1">{children}</main>
         <footer className="relative z-10 border-t border-white/10 bg-black/70 px-4 py-8 sm:px-6">
-          <div className="mx-auto grid max-w-[1600px] gap-4 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="mx-auto grid max-w-[1600px] gap-5 md:grid-cols-[1fr_auto] md:items-center">
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.24em] text-blue-300">
-                Action Replay / pair mirror live
+                Action Replay / current capsule
               </p>
-              <p className="mt-2 max-w-2xl font-mono text-xs leading-6 text-zinc-500">
-                Hidden archive layers are additive. The Galaxy tee and corrupted
-                promo print mirror are live; memory-card files remain preserved
-                without purchase access.
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
+                The Galaxy tee and promo poster are available now. Checkout is
+                handled securely through Shopify with worldwide shipping options.
               </p>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {publicMemoryFragments.map((fragment) =>
-                  fragment.href ? (
-                    <a key={fragment.label} href={fragment.href}>
-                      <FileStamp label={fragment.label} value={fragment.value} />
-                    </a>
-                  ) : (
-                    <FileStamp
-                      key={fragment.label}
-                      label={fragment.label}
-                      value={fragment.value}
-                    />
-                  ),
-                )}
-              </div>
-              <InternalComment user="mira_local" className="mt-3">
-                don&apos;t remove this one again.
-              </InternalComment>
             </div>
             <div className="flex flex-wrap gap-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-zinc-500">
               <span className="border border-white/10 px-2 py-1">改造コード</span>
-              <span className="border border-white/10 px-2 py-1">SHOPIFY LIVE</span>
+              <span className="border border-white/10 px-2 py-1">WORLDWIDE</span>
               <span className="border border-white/10 px-2 py-1">
-                AR-001 + AR-003
+                SECURE CHECKOUT
               </span>
             </div>
-          </div>
-          <div className="mx-auto mt-5 grid max-w-[1600px] gap-2 md:grid-cols-3">
-            {deadNavigationItems.map((item) => (
-              <DeadNavReference
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                state={item.state}
-                note={item.note}
-              />
-            ))}
           </div>
         </footer>
         <CartDrawer />

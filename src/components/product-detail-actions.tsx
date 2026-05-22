@@ -93,7 +93,7 @@ export function ProductDetailActions({ product }: { product: Product }) {
       >
         <ShoppingCart size={17} />
         {isMutating
-          ? "Restoring..."
+          ? "Adding..."
           : canAddToCart
             ? productActionLabel(product)
           : productActionLabel(product)}
@@ -106,17 +106,16 @@ export function ProductDetailActions({ product }: { product: Product }) {
           className="flex min-h-12 w-full items-center justify-center gap-2 border border-lime-300/80 bg-lime-300 px-4 py-3 font-mono text-xs font-black uppercase leading-5 tracking-[0.14em] text-black shadow-[0_0_28px_rgba(190,242,100,0.18)] transition hover:bg-white disabled:cursor-not-allowed disabled:border-white/15 disabled:bg-white/10 disabled:text-zinc-500"
         >
           <ShoppingCart size={16} />
-          {isMutating ? "Restoring pair..." : "RESTORE TEE + POSTER / 15%"}
+          {isMutating ? "Adding pair..." : "Add tee + poster / save 15%"}
         </button>
       ) : null}
       {product.slug === GALAXY_TEE_SLUG ? (
         <p className="-mt-1 font-mono text-[11px] uppercase leading-5 tracking-[0.12em] text-lime-200/80">
-          Adds the selected tee and AR-003 print in one Shopify cart. The credit
-          appears there, not in local storage.
+          Pair credit appears automatically when the tee and poster are in the
+          same bag.
         </p>
       ) : null}
-      <p className="border border-white/10 bg-black/50 p-3 font-mono text-[11px] uppercase leading-5 tracking-[0.12em] text-zinc-500">
-        {product.archiveCode ?? product.slug} /{" "}
+      <p className="border border-white/10 bg-black/50 p-3 font-mono text-[11px] uppercase leading-5 tracking-[0.12em] text-zinc-400">
         {productStateLabels[product.productState]}
         {product.stateNote ? ` / ${product.stateNote}` : ""}
       </p>

@@ -10,11 +10,11 @@ type StatusFilter = Product["productState"] | "all";
 type SortKey = "featured" | "price-low" | "price-high" | "name";
 
 const statusOptions: { label: string; value: StatusFilter }[] = [
+  { label: "Available", value: "live" },
   { label: "All", value: "all" },
-  { label: "Live", value: "live" },
-  { label: "Locked", value: "locked" },
-  { label: "Pending", value: "coming_soon" },
-  { label: "Unverified", value: "hidden" },
+  { label: "Archive", value: "locked" },
+  { label: "Soon", value: "coming_soon" },
+  { label: "Private", value: "hidden" },
 ];
 
 const sortOptions: { label: string; value: SortKey }[] = [
@@ -42,7 +42,7 @@ export function ShopExperience({
   const [query, setQuery] = useState("");
   const [category, setCategory] =
     useState<CategoryFilter>(safeInitialCategory);
-  const [status, setStatus] = useState<StatusFilter>("all");
+  const [status, setStatus] = useState<StatusFilter>("live");
   const [selectedColor, setSelectedColor] = useState<string>("all");
   const [maxPrice, setMaxPrice] = useState(highestPrice);
   const [sort, setSort] = useState<SortKey>("featured");
@@ -103,7 +103,7 @@ export function ShopExperience({
   const resetFilters = () => {
     setQuery("");
     setCategory("all");
-    setStatus("all");
+    setStatus("live");
     setSelectedColor("all");
     setMaxPrice(highestPrice);
     setSort("featured");
@@ -112,9 +112,9 @@ export function ShopExperience({
   return (
     <section className="mx-auto grid max-w-[1600px] gap-4 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(260px,300px)_minmax(0,1fr)] lg:px-8">
       <aside className="space-y-3 lg:sticky lg:top-20 lg:self-start">
-        <div className="border border-blue-500/50 bg-black p-4">
+        <div className="rounded-[8px] border border-blue-500/40 bg-black/85 p-4 shadow-[0_26px_80px_rgba(0,0,0,0.24)]">
           <div className="flex items-center justify-between">
-            <h2 className="font-mono text-sm uppercase text-white">Live files</h2>
+            <h2 className="font-mono text-sm uppercase text-white">Shop filter</h2>
             <SlidersHorizontal size={18} className="text-blue-300" />
           </div>
 
@@ -173,7 +173,7 @@ export function ShopExperience({
           </div>
         </div>
 
-        <div className="border border-white/15 bg-zinc-950 p-4">
+        <div className="rounded-[8px] border border-white/15 bg-zinc-950/85 p-4">
           <h3 className="font-mono text-sm uppercase text-white">Filters</h3>
           <div className="mt-4 space-y-5">
             <div>
@@ -267,15 +267,14 @@ export function ShopExperience({
         <div className="mb-5 flex min-w-0 flex-col gap-4 border-b border-white/15 pb-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="min-w-0">
             <p className="font-mono text-xs uppercase tracking-[0.28em] text-blue-300">
-              PRODUCT ACCESS MIRROR / {filteredProducts.length} FILES
+              Current shop / {filteredProducts.length} pieces
             </p>
             <h2 className="mt-2 max-w-4xl text-4xl font-black uppercase leading-none text-white sm:text-6xl">
-              Recovered copies
+              Available now
             </h2>
-            <p className="mt-3 max-w-2xl font-mono text-sm leading-6 text-zinc-300">
-              AR-001 and AR-003 both answer the checkout mirror now. AR-002
-              stayed in the drawer because somebody kept renaming the folder
-              back.
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-300">
+              The Galaxy tee and promo poster are live. Add both for the 15%
+              pair credit, then finish through secure checkout.
             </p>
           </div>
           <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -318,7 +317,7 @@ export function ShopExperience({
                 No match
               </p>
               <h3 className="mt-3 text-3xl font-black uppercase text-white">
-                No file found
+                No product found
               </h3>
               <button
                 type="button"

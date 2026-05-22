@@ -283,7 +283,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       errorMessage,
       async addItem(product, size, color) {
         if (!isPurchasableProduct(product)) {
-          setErrorMessage("FILE LOCKED. Checkout mirror only accepts live files.");
+          setErrorMessage("This item is not available to purchase right now.");
           setCartOpen(true);
           return;
         }

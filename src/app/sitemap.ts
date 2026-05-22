@@ -1,18 +1,13 @@
 import type { MetadataRoute } from "next";
-import { visibleProductSlugs } from "@/lib/brand-data";
+import { liveProductSlugs } from "@/lib/brand-data";
 
-const baseUrl = "https://actionreplay.io";
+const baseUrl = "https://shopactionreplay.com";
 
 const routes = [
   "",
   "/archive",
-  "/archive-log",
-  "/hidden-event",
   "/shop",
-  ...visibleProductSlugs.map((slug) => `/shop/${slug}`),
-  "/forum",
-  "/corrupted-file",
-  "/manifesto",
+  ...liveProductSlugs.map((slug) => `/shop/${slug}`),
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -22,6 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${baseUrl}${route}`,
     lastModified: now,
     changeFrequency: route === "" ? "daily" : "weekly",
-    priority: route === "" ? 1 : route === "/hidden-event" ? 0.9 : 0.7,
+    priority: route === "" ? 1 : route === "/shop" ? 0.9 : 0.7,
   }));
 }

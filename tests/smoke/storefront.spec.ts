@@ -28,13 +28,13 @@ test.describe("Action Replay storefront release gate", () => {
 
     await expect(page).toHaveTitle(/Shop.*Action Replay/);
     await expect(page.locator(".crt-overlay")).toHaveCount(1);
-    await expect(page.getByText("SHOPIFY LIVE")).toBeVisible();
+    await expect(page.getByText("Secure checkout / worldwide shipping")).toBeVisible();
     await expect(page.getByRole("button", { name: "Open cart" })).toBeVisible();
     await expect(page.getByText(/AR-001/i).first()).toBeVisible();
     await expect(page.getByRole("button", { name: "Retro Black" }).first()).toBeVisible();
     await expect(page.getByRole("button", { name: "White" }).first()).toBeVisible();
     await expect(page.getByText(/AR-003 "CORRUPTED PROMO" POSTER/i).first()).toBeVisible();
-    await expect(page.getByText("PAIR CREDIT").first()).toBeVisible();
+    await expect(page.getByText("Pair credit").first()).toBeVisible();
 
     const bodyText = await page.locator("body").innerText();
     expect(bodyText).not.toContain("bare Next.js scaffold");
@@ -55,7 +55,7 @@ test.describe("Action Replay storefront release gate", () => {
       await expect(page.getByRole("button", { name: size }).first()).toBeVisible();
     }
 
-    await expect(page.getByRole("button", { name: /RESTORE COPY|Add to Cart/i }).first()).toBeEnabled();
+    await expect(page.getByRole("button", { name: /Add to bag|Add to Cart/i }).first()).toBeEnabled();
     await expectNoConsoleProblems(consoleProblems);
   });
 
@@ -81,9 +81,9 @@ test.describe("Action Replay storefront release gate", () => {
     await expect(
       page.getByRole("heading", { name: /AR-003 "CORRUPTED PROMO" POSTER/i }),
     ).toBeVisible();
-    await expect(page.getByText("PAIR CREDIT").first()).toBeVisible();
+    await expect(page.getByText("Pair credit").first()).toBeVisible();
     await expect(
-      page.getByRole("button", { name: /RESTORE COPY|Add to Cart/i }).first(),
+      page.getByRole("button", { name: /Add to bag|Add to Cart/i }).first(),
     ).toBeEnabled();
     await expectNoConsoleProblems(consoleProblems);
   });
@@ -234,12 +234,12 @@ test.describe("Action Replay storefront release gate", () => {
     const consoleProblems = collectConsoleProblems(page);
 
     await page.goto("/shop/action-replay-galaxy-tee");
-    await page.getByRole("button", { name: /RESTORE COPY|Add to Cart/i }).first().click();
+    await page.getByRole("button", { name: /Add to bag|Add to Cart/i }).first().click();
 
     const drawer = page.locator("aside").first();
     await expect(drawer).toBeVisible();
     await expect(
-      drawer.getByRole("button", { name: /OPEN CHECKOUT MIRROR|Checkout/i }),
+      drawer.getByRole("button", { name: /Checkout/i }),
     ).toBeVisible();
     await expect(page.getByText(/AR-001|GALAXY/i).first()).toBeVisible();
     await expectNoConsoleProblems(consoleProblems);
@@ -251,10 +251,10 @@ test.describe("Action Replay storefront release gate", () => {
     const consoleProblems = collectConsoleProblems(page);
 
     await page.goto("/shop/ar-003-corrupted-promo-poster");
-    await page.getByRole("button", { name: /RESTORE COPY|Add to Cart/i }).first().click();
+    await page.getByRole("button", { name: /Add to bag|Add to Cart/i }).first().click();
     await page.getByRole("button", { name: "Close cart", exact: true }).click();
     await page.goto("/shop/action-replay-galaxy-tee");
-    await page.getByRole("button", { name: /RESTORE COPY|Add to Cart/i }).first().click();
+    await page.getByRole("button", { name: /Add to bag|Add to Cart/i }).first().click();
 
     const drawer = page.locator("aside").first();
     await expect(drawer).toBeVisible();
@@ -272,7 +272,7 @@ test.describe("Action Replay storefront release gate", () => {
     await page.goto("/shop/action-replay-galaxy-tee");
     await page.getByRole("button", { name: "White" }).first().click();
     await page
-      .getByRole("button", { name: /RESTORE TEE \+ POSTER \/ 15%/i })
+      .getByRole("button", { name: /Add tee \+ poster \/ save 15%/i })
       .click();
 
     const drawer = page.locator("aside").first();
@@ -302,7 +302,7 @@ test.describe("Action Replay storefront release gate", () => {
     await page.getByRole("button", { name: "XL" }).first().click();
     await page.getByRole("button", { name: "White" }).first().click();
     await page
-      .getByRole("button", { name: /RESTORE TEE \+ POSTER \/ 15%/i })
+      .getByRole("button", { name: /Add tee \+ poster \/ save 15%/i })
       .click();
 
     const drawer = page.locator("aside").first();
@@ -312,10 +312,10 @@ test.describe("Action Replay storefront release gate", () => {
     await expect(drawer.getByText("-$13.50").last()).toBeVisible();
     await expect(drawer.getByText("$76.50")).toBeVisible();
     await expect(
-      drawer.getByRole("button", { name: /OPEN CHECKOUT MIRROR/i }),
+      drawer.getByRole("button", { name: /Checkout/i }),
     ).toBeVisible();
     await expect(
-      drawer.getByRole("button", { name: /OPEN CHECKOUT MIRROR/i }),
+      drawer.getByRole("button", { name: /Checkout/i }),
     ).toBeEnabled();
     await expectNoConsoleProblems(consoleProblems);
   });

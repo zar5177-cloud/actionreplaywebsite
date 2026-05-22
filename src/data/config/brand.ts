@@ -1,8 +1,8 @@
 export const brandSlogans = [
   "don't cheat the player. cheat the game.",
-  "replay the rules until they break.",
-  "some files were never meant to load.",
-  "worldwide unlock channel / no public patch notes.",
+  "washed cotton. chrome memory. wrong purple.",
+  "made for people who kept the manual.",
+  "worldwide shipping from the current capsule.",
 ] as const;
 
 export const navItems = [
