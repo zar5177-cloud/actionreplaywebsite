@@ -133,9 +133,11 @@ async function fetchShopSignal() {
       hasVercelHeader: server.toLowerCase().includes("vercel") || Boolean(response.headers["x-vercel-id"]),
       title: text.match(/<title[^>]*>(.*?)<\/title>/i)?.[1] ?? "",
       hasStorefront:
-        text.includes("SHOPIFY LIVE") &&
+        text.includes("Secure checkout / worldwide shipping") &&
+        text.includes("Galaxy drop") &&
         text.includes("crt-overlay") &&
-        text.includes("AR-001"),
+        text.includes("AR-001") &&
+        text.includes("AR-003"),
       hasNetlifyUsageExceeded: text.includes("usage_exceeded"),
       forcedIp: VERCEL_A_RECORD,
     };
