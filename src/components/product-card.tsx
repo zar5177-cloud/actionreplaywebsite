@@ -47,9 +47,9 @@ export function ProductCard({
     selectedVariant?.availableForSale !== false;
 
   return (
-    <article className="group relative min-w-0 overflow-hidden border border-white/15 bg-[#050508] text-white transition duration-300 hover:border-violet-300/70 hover:shadow-[0_0_54px_rgba(139,92,246,0.24)]">
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.06),transparent_28%,rgba(116,91,255,0.12)_64%,transparent)] opacity-60" />
-      <div className="absolute left-0 top-0 z-10 border-r border-b border-white/20 bg-black/85 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-violet-100">
+    <article className="group relative min-w-0 overflow-hidden rounded-[8px] border border-white/12 bg-[#06060a] text-white shadow-[0_26px_90px_rgba(0,0,0,0.28)] transition duration-300 hover:border-violet-200/60 hover:shadow-[0_0_60px_rgba(139,92,246,0.18)]">
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.07),transparent_28%,rgba(116,91,255,0.10)_64%,transparent)] opacity-50" />
+      <div className="absolute left-3 top-3 z-10 rounded-full border border-white/20 bg-black/70 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-violet-100 backdrop-blur">
         {productStateLabels[product.productState]}
       </div>
       <button
@@ -71,7 +71,7 @@ export function ProductCard({
               : "object-cover object-center"
           }`}
         />
-        <div className="scanline absolute inset-0" />
+        <div className="scanline absolute inset-0 opacity-45" />
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black to-transparent" />
         {product.images.length > 1 ? (
           <div className="absolute bottom-3 right-3 z-10 flex gap-1">
@@ -93,20 +93,19 @@ export function ProductCard({
             <div className="min-w-0">
               <Link
                 href={`/shop/${product.slug}`}
-                className="block break-words text-lg font-black uppercase leading-none transition hover:text-blue-200"
+                className="block break-words text-xl font-black uppercase leading-none tracking-wide transition hover:text-blue-200"
               >
                 {product.title}
               </Link>
-              <p className="mt-1 break-words font-mono text-xs text-blue-300">
-                {product.productState === "live" ? "LIVE FILE" : "ARCHIVE FILE"} /{" "}
-                {product.archiveCode ?? product.slug}
+              <p className="mt-1 break-words font-mono text-xs uppercase tracking-[0.14em] text-blue-200/80">
+                {product.productState === "live" ? "Current drop" : "Archive sample"}
               </p>
             </div>
             <p className="shrink-0 font-mono text-lg text-white">
               {formatUsdPrice(product.price)}
             </p>
           </div>
-          <p className="mt-3 min-h-12 font-mono text-xs leading-5 text-zinc-400">
+          <p className="mt-3 min-h-12 text-sm leading-6 text-zinc-300">
             {product.description}
           </p>
         </div>
@@ -175,11 +174,7 @@ export function ProductCard({
           className="flex h-11 w-full items-center justify-center gap-2 border border-violet-300 bg-white px-3 font-mono text-xs font-black uppercase tracking-[0.16em] text-black transition hover:bg-violet-300 hover:text-black disabled:cursor-not-allowed disabled:border-white/15 disabled:bg-white/10 disabled:text-zinc-500"
         >
           <ShoppingCart size={16} />
-          {isMutating
-            ? "Restoring..."
-            : canAddToCart
-              ? productActionLabel(product)
-              : productActionLabel(product)}
+          {isMutating ? "Adding..." : productActionLabel(product)}
         </button>
       </div>
     </article>

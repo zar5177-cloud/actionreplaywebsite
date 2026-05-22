@@ -73,6 +73,10 @@ export async function generateMetadata({
 }
 
 export default async function OperatorDocPage({ params }: OperatorDocPageProps) {
+  if (process.env.ENABLE_OPERATOR_CONSOLE !== "true") {
+    notFound();
+  }
+
   const { slug } = await params;
 
   if (!isDocSlug(slug)) {

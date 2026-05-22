@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, LockKeyhole, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, ShieldCheck } from "lucide-react";
 import {
+  isPurchasableProduct,
   productStateLabels,
   products as fallbackProducts,
   type Product,
@@ -26,7 +27,9 @@ export function FloatingDropShowcase({
 }: {
   products?: Product[];
 }) {
-  if (!products.length) {
+  const liveProducts = products.filter(isPurchasableProduct);
+
+  if (!liveProducts.length) {
     return null;
   }
 
@@ -42,22 +45,22 @@ export function FloatingDropShowcase({
         <div className="mb-5 grid gap-4 border-b border-black/15 pb-5 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.42fr)] lg:items-end">
           <div className="min-w-0">
             <p className="font-mono text-xs uppercase tracking-[0.26em] text-violet-700">
-              Current drop / one live mirror
+              Current capsule
             </p>
             <h2 className="mt-2 max-w-5xl text-5xl font-black uppercase leading-[0.82] text-black sm:text-7xl lg:text-8xl">
-              Files left in place
+              Galaxy pieces
             </h2>
           </div>
           <div className="border border-violet-500/40 bg-white/75 p-4 shadow-[0_18px_50px_rgba(55,37,120,0.12)] backdrop-blur">
             <div className="flex items-start gap-3">
-              <LockKeyhole className="mt-0.5 shrink-0 text-violet-700" size={22} />
+              <ShieldCheck className="mt-0.5 shrink-0 text-violet-700" size={22} />
               <div>
                 <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-black">
-                  AR-002 still locked
+                  Pair credit active
                 </p>
                 <p className="mt-2 font-mono text-xs uppercase leading-5 text-zinc-600">
-                  The memory card tee stayed visible because removing the slot
-                  made the archive feel wrong.
+                  Add the tee and poster together and 15% comes off the pair
+                  before shipping and tax.
                 </p>
               </div>
             </div>
@@ -65,7 +68,7 @@ export function FloatingDropShowcase({
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          {products.map((product) => (
+          {liveProducts.map((product) => (
             <article
               key={product.id}
               className="grid min-w-0 overflow-hidden border border-black/15 bg-white/75 shadow-[0_22px_70px_rgba(20,20,35,0.16)] backdrop-blur md:grid-cols-[minmax(0,0.95fr)_minmax(300px,0.78fr)] lg:grid-cols-1 xl:grid-cols-[minmax(0,0.95fr)_minmax(310px,0.78fr)]"
@@ -105,7 +108,7 @@ export function FloatingDropShowcase({
                   <p className="mt-5 font-mono text-xs uppercase tracking-[0.22em] text-violet-700">
                     {product.japaneseTitle}
                   </p>
-                  <h3 className="mt-3 break-words text-4xl font-black uppercase leading-none text-black sm:text-5xl">
+                  <h3 className="mt-3 text-3xl font-black uppercase leading-[0.92] text-black sm:text-4xl">
                     {product.title}
                   </h3>
                   <p className="mt-4 max-w-xl font-mono text-sm leading-6 text-zinc-700">
@@ -120,7 +123,7 @@ export function FloatingDropShowcase({
                     href={`/shop/${product.slug}`}
                     className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 border border-black/20 px-4 font-mono text-xs font-black uppercase tracking-[0.16em] text-black transition hover:border-violet-500 hover:bg-violet-200"
                   >
-                    CLAIM FILE
+                    View piece
                     <ArrowUpRight size={15} />
                   </Link>
                 </div>
@@ -133,9 +136,9 @@ export function FloatingDropShowcase({
           <div className="flex items-start gap-3">
             <ShieldCheck className="mt-0.5 shrink-0 text-lime-300" size={22} />
             <p className="font-mono text-xs uppercase leading-5 tracking-[0.16em] text-zinc-300">
-              The local catalog now has two live mirrors: AR-001 Galaxy tee and
-              AR-003 corrupted promo poster. AR-002 stays locked because the
-              slot still reports a bad memory checksum.
+              The Galaxy tee and promo poster are available now. The archive
+              still keeps its older samples, but the shop only surfaces pieces
+              that can be purchased today.
             </p>
           </div>
           <Image

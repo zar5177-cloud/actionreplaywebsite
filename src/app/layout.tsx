@@ -20,13 +20,13 @@ export const metadata: Metadata = {
     template: "%s | Action Replay",
   },
   description:
-    "A forgotten Action Replay-style archive, hidden event portal, and streetwear drop system.",
-  metadataBase: new URL("https://actionreplay.io"),
+    "Action Replay streetwear artifacts, Galaxy tee, promo poster, and recovered archive fragments.",
+  metadataBase: new URL("https://shopactionreplay.com"),
   openGraph: {
     title: "Action Replay",
     description:
-      "Don't cheat the player. Cheat the game. Enter the archive and search for hidden codes.",
-    url: "https://actionreplay.io",
+      "Don't cheat the player. Cheat the game. Shop the Galaxy capsule.",
+    url: "https://shopactionreplay.com",
     siteName: "Action Replay",
     type: "website",
   },
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Action Replay",
     description:
-      "A lost cheat-code archive and hidden streetwear drop interface.",
+      "Galaxy tee, promo poster, and recovered streetwear artifacts.",
   },
 };
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowLeft, BarChart3 } from "lucide-react";
 import { growthKpis, metricDefinitions } from "@/data/growth-system";
 
@@ -54,6 +55,10 @@ const schemaBlocks = [
 ];
 
 export default function MetricsPage() {
+  if (process.env.ENABLE_OPERATOR_CONSOLE !== "true") {
+    notFound();
+  }
+
   return (
     <section className="px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-7xl">

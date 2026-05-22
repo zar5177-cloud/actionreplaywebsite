@@ -91,26 +91,28 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const isPurchasable = isPurchasableProduct(product);
   const relatedProducts = isPurchasable
     ? catalogProducts
-        .filter((relatedProduct) => relatedProduct.slug !== product.slug)
+        .filter(
+          (relatedProduct) =>
+            relatedProduct.slug !== product.slug &&
+            isPurchasableProduct(relatedProduct),
+        )
         .slice(0, 2)
     : [];
   const heroImage = product.images[0];
-  const proofRows = [
+  const detailRows = [
     [
-      "PRODUCT STATE",
+      "Availability",
       productStateLabels[product.productState],
     ],
     [
-      "VARIANTS",
-      isPurchasable
-        ? `${product.shopifyVariants?.length ?? product.sizes.length} MAPPED`
-        : "NOT EXPOSED",
+      "Colorways",
+      product.colors.map((color) => color.name).join(" / "),
     ],
     [
-      "CHECKOUT",
-      isPurchasable ? "SHOPIFY CART MIRROR" : "BLOCKED",
+      "Sizes",
+      product.sizes.join(" / "),
     ],
-    ["LOCAL UNLOCK", "VISUAL ONLY"],
+    ["Shipping", "Calculated at checkout"],
   ];
 
   return (
@@ -143,7 +145,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   }
                 />
                 <div className="absolute left-3 top-3 border border-lime-300/70 bg-black/80 px-2.5 py-2 font-mono text-[10px] uppercase tracking-[0.16em] text-lime-200 sm:left-4 sm:top-4 sm:px-3 sm:text-xs">
-                  STATUS: {productStateLabels[product.productState]}
+                  {productStateLabels[product.productState]}
                 </div>
                 <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black to-transparent" />
               </div>
@@ -204,9 +206,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
               <div className="mt-8 grid grid-cols-1 gap-2 border-t border-white/10 pt-4 min-[520px]:grid-cols-3">
                 {[
-                  ["STATUS", productStateLabels[product.productState]],
-                  ["CHECKOUT", isPurchasable ? "SHOPIFY" : "NOT EXPOSED"],
-                  ["ARCHIVE", product.archiveCode ?? product.slug],
+                  ["Availability", productStateLabels[product.productState]],
+                  ["Checkout", isPurchasable ? "Secure" : "Not for sale"],
+                  ["Credit", product.slug.includes("poster") ? "15% with tee" : "15% with poster"],
                 ].map(([label, value]) => (
                   <div key={label} className="min-w-0 border border-white/10 p-3">
                     <p className="truncate font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
@@ -227,22 +229,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <div className="mx-auto grid max-w-[1600px] gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(320px,0.55fr)]">
           <div className="border border-black/15 bg-white/80 p-5 shadow-[0_24px_80px_rgba(12,9,45,0.16)] backdrop-blur">
             <p className="font-mono text-xs uppercase tracking-[0.24em] text-violet-700">
-              Product proof
+              Product details
             </p>
             <h2 className="mt-2 text-4xl font-black uppercase leading-none sm:text-6xl">
-              Mirror record
+              Cut from the drop
             </h2>
-            <p className="mt-3 max-w-2xl font-mono text-sm leading-6 text-zinc-700">
-              The visible unlock layer is still only interface residue. Real
-              purchase access exists only when the Shopify variant table is
-              mapped to this file.
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-700">
+              Built as a physical artifact first: graphic, weight, finish, and
+              checkout path kept clean so the strange parts can stay around the
+              edges.
             </p>
 
             <div className="mt-5 grid gap-2 sm:grid-cols-2">
-              {proofRows.map(([label, value]) => (
+              {detailRows.map(([label, value]) => (
                 <div
                   key={label}
-                  className="border border-black/15 bg-white/70 p-3"
+                  className="rounded-[8px] border border-black/15 bg-white/70 p-3"
                 >
                   <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
                     {label}
@@ -257,9 +259,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           <div className="grid content-start gap-2">
             {[
-              { Icon: ShieldCheck, label: "Variant IDs locked" },
-              { Icon: LockKeyhole, label: "Local unlock visual only" },
-              { Icon: Radio, label: "Shopify checkout route" },
+              { Icon: ShieldCheck, label: "Secure checkout" },
+              { Icon: LockKeyhole, label: "Limited capsule" },
+              { Icon: Radio, label: "Worldwide shipping" },
             ].map(({ Icon, label }) => (
               <div
                 key={label}
@@ -277,10 +279,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <section className="border-t border-white/10 bg-black px-4 py-8 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-[1600px]">
             <p className="font-mono text-xs uppercase tracking-[0.24em] text-blue-300">
-              Adjacent file
+              Adjacent piece
             </p>
             <h2 className="mt-2 text-4xl font-black uppercase leading-none text-white sm:text-6xl">
-              Do not clean this up yet
+              Complete the capsule
             </h2>
             <div className="mt-5 grid gap-4 lg:grid-cols-2">
               {relatedProducts.map((relatedProduct) => (

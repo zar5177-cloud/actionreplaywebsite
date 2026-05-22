@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, BadgeCheck, LockKeyhole } from "lucide-react";
 import {
-  productStateLabels,
   products as fallbackProducts,
   type Product,
 } from "@/lib/brand-data";
@@ -16,11 +15,11 @@ export function HeroSection({
 }: {
   products?: Product[];
 }) {
-  const featuredProducts = products.slice(0, 2);
-  const tee = featuredProducts.find((product) => product.category === "tees");
-  const lockedFile = featuredProducts.find(
-    (product) => product.productState !== "live",
+  const liveProducts = products.filter(
+    (product) => product.productState === "live",
   );
+  const tee = liveProducts.find((product) => product.category === "tees");
+  const poster = liveProducts.find((product) => product.slug.includes("poster"));
 
   return (
     <section className="relative isolate overflow-hidden border-b border-white/10 bg-[#050508] text-white">
@@ -38,14 +37,14 @@ export function HeroSection({
       <div className="relative mx-auto grid min-h-[calc(100svh-4rem)] max-w-[1680px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,0.88fr)_minmax(520px,1.12fr)] lg:px-8 lg:py-8">
         <div className="flex min-w-0 flex-col justify-between gap-8">
           <div className="flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-violet-100">
-            <span className="border border-violet-300/50 bg-black/70 px-3 py-2">
-              AR-001 LIVE
+            <span className="rounded-full border border-violet-300/50 bg-black/70 px-3 py-2">
+              AR-001 available
             </span>
-            <span className="border border-white/15 bg-white/10 px-3 py-2">
-              AR-002 LOCKED
+            <span className="rounded-full border border-white/15 bg-white/10 px-3 py-2">
+              AR-003 poster
             </span>
-            <span className="border border-lime-300/60 bg-lime-300/10 px-3 py-2 text-lime-100">
-              02:14 PRESERVED
+            <span className="rounded-full border border-lime-300/60 bg-lime-300/10 px-3 py-2 text-lime-100">
+              15% pair credit
             </span>
           </div>
 
@@ -62,11 +61,12 @@ export function HeroSection({
               don&apos;t cheat the player, cheat the game
             </p>
             <h1 className="mt-4 max-w-[11ch] break-words text-6xl font-black uppercase leading-[0.76] text-white sm:text-8xl lg:text-[8.5rem] xl:text-[10rem]">
-              Galaxy file
+              Galaxy drop
             </h1>
-            <p className="mt-5 max-w-xl font-mono text-sm uppercase leading-6 tracking-[0.12em] text-zinc-200">
-              AR-001 checkout mirror is open. AR-003 finally got a live print
-              slot. AR-002 stayed in the catalog with no purchase path.
+            <p className="mt-5 max-w-xl text-base leading-7 text-zinc-200 sm:text-lg">
+              A washed tee and oversized promo poster from the same damaged
+              Galaxy export. Buy them together and the 15% pair credit applies
+              automatically.
             </p>
           </div>
 
@@ -75,7 +75,7 @@ export function HeroSection({
               href="/shop"
               className="inline-flex h-14 items-center justify-center gap-2 border border-blue-300 bg-blue-600 px-5 font-mono text-sm font-black uppercase tracking-[0.16em] text-white shadow-[0_0_38px_rgba(37,99,235,0.34)] transition hover:border-lime-300 hover:bg-violet-600"
             >
-              Shop live drop
+              Shop the drop
               <ArrowUpRight size={17} />
             </Link>
             <div className="grid grid-cols-5 border border-white/15 bg-black/70">
@@ -107,26 +107,26 @@ export function HeroSection({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/0 to-black/10" />
               <div className="absolute left-3 top-3 border border-white/20 bg-black/80 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-blue-100">
-                Tee file / {tee ? formatUsdPrice(tee.price) : "$48"}
+                Galaxy tee / {tee ? formatUsdPrice(tee.price) : "$48"}
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <h2 className="max-w-xl text-4xl font-black uppercase leading-none text-white sm:text-5xl">
                   AR-001 &quot;GALAXY&quot; Tee
                 </h2>
                 <p className="mt-2 max-w-md font-mono text-xs uppercase leading-5 text-zinc-300">
-                  White body, purple galaxy graphic, sleeve mark, cheat-code
-                  slogan.
+                  Enzyme-washed cotton, purple Galaxy graphic, sleeve mark,
+                  soft broken-in weight.
                 </p>
               </div>
             </Link>
 
             <Link
-              href={lockedFile ? `/shop/${lockedFile.slug}` : "/shop"}
+              href={poster ? `/shop/${poster.slug}` : "/shop"}
               className="group relative min-h-[420px] overflow-hidden border border-blue-300/30 bg-black md:min-h-0"
             >
               <Image
-                src={lockedFile?.images[0] ?? assetById["ar-cutout-member-card"].src}
-                alt={lockedFile?.title ?? "Locked Action Replay file"}
+                src={poster?.images[0] ?? assetById["action-replay-2026-promo-poster"].src}
+                alt={poster?.title ?? "Action Replay promo poster"}
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 28vw"
@@ -135,16 +135,14 @@ export function HeroSection({
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/10" />
               <div className="absolute left-3 top-3 flex items-center gap-2 border border-lime-300/60 bg-black/80 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.16em] text-lime-100">
                 <LockKeyhole size={13} />
-                {lockedFile
-                  ? productStateLabels[lockedFile.productState]
-                  : "MIRROR PENDING"}
+                Promo poster / {poster ? formatUsdPrice(poster.price) : "$42"}
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <p className="font-mono text-xs uppercase tracking-[0.22em] text-violet-100">
-                  {lockedFile?.archiveCode ?? "M-CARD REV E"}
+                  24 x 36 print
                 </p>
                 <h2 className="mt-2 text-3xl font-black uppercase leading-none text-white">
-                  Memory card tee
+                  Corrupted promo poster
                 </h2>
               </div>
             </Link>
@@ -152,9 +150,9 @@ export function HeroSection({
 
           <div className="grid gap-3 md:grid-cols-3">
             {[
-              ["Checkout mirror", "AR-001 and AR-003 route through Shopify."],
-              ["Locked file", "AR-002 is visible, but not purchasable."],
-              ["Pair credit", "Tee plus poster triggers the 15% Shopify credit."],
+              ["Secure checkout", "Orders complete through Shopify."],
+              ["Worldwide shipping", "Rates return at checkout."],
+              ["Pair credit", "Tee plus poster saves 15%."],
             ].map(([title, copy]) => (
               <div
                 key={title}

@@ -98,11 +98,11 @@ export const publicProductSlugs = [
 ] as const;
 
 export const productStateLabels: Record<ProductState, string> = {
-  live: "MIRROR LIVE",
-  locked: "FILE LOCKED",
-  coming_soon: "MIRROR PENDING",
-  sold_out: "COPY EXHAUSTED",
-  hidden: "PRINT FILE NOT VERIFIED",
+  live: "Available now",
+  locked: "Archive only",
+  coming_soon: "Coming soon",
+  sold_out: "Sold out",
+  hidden: "Private listing",
 };
 
 export function isPurchasableProduct(product: Product) {
@@ -110,11 +110,11 @@ export function isPurchasableProduct(product: Product) {
 }
 
 export function productActionLabel(product: Product) {
-  if (product.productState === "live") return "RESTORE COPY";
-  if (product.productState === "sold_out") return "FILE LOCKED";
-  if (product.productState === "coming_soon") return "MIRROR PENDING";
-  if (product.productState === "hidden") return "PRINT FILE NOT VERIFIED";
-  return "FILE LOCKED";
+  if (product.productState === "live") return "Add to bag";
+  if (product.productState === "sold_out") return "Sold out";
+  if (product.productState === "coming_soon") return "Coming soon";
+  if (product.productState === "hidden") return "Private listing";
+  return "Archive only";
 }
 
 export const navLinks: NavLink[] = [
@@ -141,13 +141,13 @@ export const products: Product[] = [
       assetById["galaxy-tee-editorial-floor"].src,
       assetById["galaxy-tee-editorial-shoulder"].src,
     ],
-    badges: ["001 LIVE", "GALAXY", "NEW"],
+    badges: ["AR-001", "Galaxy", "New drop"],
     availability: "new",
     productState: "live",
     description:
-      "Recovered product access mirror for the AR-001 Galaxy tee. Black and white copies are both mapped to the live Shopify variant table.",
+      "Enzyme-washed cotton tee with the Galaxy graphic, sleeve mark, and soft broken-in weight. Available in Retro Black and White.",
     archiveCode: "AR001-GALAXY",
-    stateNote: "last verified 2026-05-20 / direct cart mirror preserved",
+    stateNote: "pairs with the promo poster for 15% off",
     shopifyProductId: "gid://shopify/Product/9456112664832",
     shopifyHandle: "enzyme-washed-t-shirt",
     shopifyVariants: [],
@@ -169,13 +169,13 @@ export const products: Product[] = [
       assetById["ar-cutout-member-card"].src,
       assetById["galaxy-poster-product-black"].src,
     ],
-    badges: ["AR-002", "M-CARD REV E", "MIRROR PENDING"],
+    badges: ["AR-002", "M-Card Rev E", "Archive sample"],
     availability: "archive",
     productState: "locked",
     description:
-      "Memory Card tee placeholder recovered from a locked slot. The copy exists. The checkout mirror does not.",
+      "A reserved Memory Card tee study from the same capsule. Kept visible as an archive piece, not currently for sale.",
     archiveCode: "AR002-MCARD-REV-E",
-    stateNote: "left in catalog because mira_local said the sleeve note mattered",
+    stateNote: "sample not released",
     shopifyVariants: [],
   },
   {
@@ -195,13 +195,13 @@ export const products: Product[] = [
       assetById["galaxy-poster-light"].src,
       assetById["galaxy-poster-chrome"].src,
     ],
-    badges: ["AR-003", "PRINT FILE", "PAIR CREDIT"],
+    badges: ["AR-003", "24 x 36", "Pair credit"],
     availability: "archive",
     productState: "live",
     description:
-      "Promo print file kept in the archive because the darker export was never replaced cleanly. Now mapped to the Shopify cart because the folder kept asking.",
+      "Oversized 24 x 36 promo poster printed from the darker Galaxy export: chrome panels, purple artifact, barcode residue.",
     archiveCode: "AR003-PRINT-WPURPLE",
-    stateNote: "verified 2026-05-21 / pairs with AR-001 for 15% Shopify credit",
+    stateNote: "pairs with AR-001 for 15% off",
     shopifyProductId: "gid://shopify/Product/9456189145344",
     shopifyHandle: "action-replay-2026-promo-poster",
     shopifyVariants: [],
@@ -216,7 +216,7 @@ export const collections: Collection[] = [
     href: "/shop?category=tees",
     image: assetById["galaxy-tee-editorial-blue"].src,
     accent: "#8B5CF6",
-    summary: "AR-001 is live. AR-002 remains locked in slot B.",
+    summary: "The Galaxy tee is live in Retro Black and White.",
   },
   {
     id: "accessories",
@@ -225,19 +225,19 @@ export const collections: Collection[] = [
     href: "/shop?category=accessories",
     image: assetById["action-replay-2026-promo-poster"].src,
     accent: "#D9E2F2",
-    summary: "AR-003 exists and the Shopify print mirror finally answers.",
+    summary: "The oversized Galaxy promo poster is live now.",
   },
 ];
 
 export const currentDrop: Drop = {
   id: "action-replay-001",
-  title: "MIRROR PARTIALLY OPEN",
+  title: "GALAXY DROP OPEN",
   launchDate: "2026-05-20T00:00:00-04:00",
   status: "live",
   heroAsset: assetById["galaxy-poster-product-black"].src,
   ctaLabel: "SHOP AR-001",
   ctaHref: "/shop/action-replay-galaxy-tee",
-  copy: "AR-001 \"GALAXY\" and the AR-003 print file are both live. Buying the pair triggers the Shopify 15% credit.",
+  copy: "AR-001 \"GALAXY\" and the AR-003 promo poster are live. Add both to the bag and the 15% pair credit applies automatically.",
 };
 export const archiveDrops: Drop[] = [
   currentDrop,
@@ -297,10 +297,10 @@ export const timeline: TimelineItem[] = [
 ];
 
 export const dropStats = [
-  { label: "Live file", value: "AR001-GALAXY" },
-  { label: "Status", value: "UNLOCKED" },
+  { label: "Drop", value: "AR001-GALAXY" },
+  { label: "Status", value: "AVAILABLE" },
   { label: "Release", value: "LIMITED" },
-  { label: "Mirror", value: "SHOPIFY CART" },
+  { label: "Checkout", value: "SECURE" },
 ];
 
 export const locations = [
