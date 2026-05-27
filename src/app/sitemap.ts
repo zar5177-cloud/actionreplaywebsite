@@ -5,7 +5,11 @@ const baseUrl = "https://shopactionreplay.com";
 
 const routes = [
   "",
+  "/account",
   "/archive",
+  "/catalog",
+  "/missions",
+  "/replay-club",
   "/shop",
   ...liveProductSlugs.map((slug) => `/shop/${slug}`),
 ] as const;

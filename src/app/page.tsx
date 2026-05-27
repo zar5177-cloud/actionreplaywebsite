@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Archive, ShoppingBag } from "lucide-react";
+import {
+  Archive,
+  Boxes,
+  ClipboardList,
+  Crown,
+  ShoppingBag,
+  UserRound,
+} from "lucide-react";
 import { FloatingDropShowcase } from "@/components/floating-drop-showcase";
 import { HeroSection } from "@/components/hero-section";
 import { archiveFiles } from "@/data/config/archive-files";
@@ -61,6 +68,75 @@ export default async function Home() {
       </section>
 
       <FloatingDropShowcase products={products} />
+
+      <section className="border-y border-sky-200/70 bg-[linear-gradient(180deg,#f8fdff_0%,#dff5ff_100%)] px-4 py-10 text-slate-950 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-[1600px] gap-6 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1fr)] lg:items-end">
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.28em] text-sky-800">
+              player universe / access layer
+            </p>
+            <h2 className="mt-3 max-w-4xl text-5xl font-black uppercase leading-[0.84] text-slate-950 sm:text-7xl">
+              Build your account like an old profile
+            </h2>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-700">
+              Member number, join date, XP, TIX, Replay Credits, owned files,
+              uploads, referrals, badges, and catalog history. Not a rewards
+              popup. A persistent player record.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              {
+                href: "/account",
+                label: "profile",
+                detail: "MEMBER #00821",
+                icon: UserRound,
+              },
+              {
+                href: "/catalog",
+                label: "catalog",
+                detail: "rarity / ownership",
+                icon: Boxes,
+              },
+              {
+                href: "/missions",
+                label: "missions",
+                detail: "XP / TIX / RC",
+                icon: ClipboardList,
+              },
+              {
+                href: "/replay-club",
+                label: "replay club",
+                detail: "members / scouts",
+                icon: Crown,
+              },
+            ].map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex min-w-0 items-center justify-between gap-3 rounded-[8px] border border-sky-200 bg-white/78 px-4 py-4 font-mono text-xs font-black uppercase tracking-[0.12em] text-slate-800 shadow-[0_14px_34px_rgba(35,101,165,0.12)] transition hover:-translate-y-0.5 hover:border-sky-500 hover:text-sky-900"
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-[6px] border border-sky-200 bg-sky-50 text-sky-700">
+                      <Icon size={18} />
+                    </span>
+                    <span className="grid min-w-0">
+                      <span className="truncate">{item.label}</span>
+                      <span className="mt-1 truncate text-[10px] font-normal text-slate-500">
+                        {item.detail}
+                      </span>
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-sky-700">/</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
       <section className="px-4 py-8 sm:px-6">
         <div className="mx-auto grid max-w-7xl gap-4 lg:grid-cols-3">
