@@ -27,9 +27,11 @@ type SiteShellProps = {
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
-  { label: "Galaxy Tee", href: "/shop/action-replay-galaxy-tee" },
-  { label: "Poster", href: "/shop/ar-003-corrupted-promo-poster" },
-  { label: "Archive", href: "/archive" },
+  { label: "Catalog", href: "/catalog" },
+  { label: "Account", href: "/account" },
+  { label: "Missions", href: "/missions" },
+  { label: "Club", href: "/replay-club" },
+  { label: "Locker", href: "/archive" },
 ] as const;
 
 function BrandMark() {
@@ -462,7 +464,8 @@ export function SiteShell({ children, searchProducts }: SiteShellProps) {
               </p>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
                 The Galaxy tee and promo poster are available now. Checkout is
-                handled securely through Shopify with worldwide shipping options.
+                handled securely through Shopify; member profiles, TIX, RC,
+                missions, and catalog history live in the account layer.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-zinc-500">
