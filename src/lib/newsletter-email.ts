@@ -36,6 +36,8 @@ type ResendEmailResponse = {
 };
 
 const RESEND_EMAILS_ENDPOINT = "https://api.resend.com/emails";
+const DEFAULT_NEWSLETTER_EMAIL_FROM =
+  "Action Replay <notify@send.shopactionreplay.com>";
 
 function cleanEnv(value: string | undefined) {
   return value?.trim() || "";
@@ -49,11 +51,22 @@ function siteUrl() {
   ).replace(/\/$/, "");
 }
 
-function senderAddress() {
+export function newsletterEmailFrom() {
   return (
     cleanEnv(process.env.NEWSLETTER_EMAIL_FROM) ||
-    "Action Replay <notify@shopactionreplay.com>"
+    DEFAULT_NEWSLETTER_EMAIL_FROM
   );
+}
+
+export function newsletterEmailHealth() {
+  return {
+    configured: Boolean(cleanEnv(process.env.RESEND_API_KEY)),
+    from: newsletterEmailFrom(),
+  };
+}
+
+function senderAddress() {
+  return newsletterEmailFrom();
 }
 
 function supportEmail() {

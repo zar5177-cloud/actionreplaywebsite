@@ -21,6 +21,50 @@ async function expectNoConsoleProblems(problems: string[]) {
 }
 
 test.describe("Action Replay storefront release gate", () => {
+  test("email delivery health exposes sender and verifies Resend send status when configured", async ({
+    request,
+  }) => {
+    const healthResponse = await request.get("/api/health/email");
+    expect(healthResponse.status()).toBe(200);
+
+    const health = (await healthResponse.json()) as {
+      configured?: boolean;
+      from?: string;
+    };
+
+    expect(health.from).toBe(
+      "Action Replay <notify@send.shopactionreplay.com>",
+    );
+
+    if (!health.configured) {
+      return;
+    }
+
+    const response = await request.post("/api/newsletter", {
+      data: {
+        email:
+          process.env.SMOKE_NEWSLETTER_EMAIL ||
+          "support@shopactionreplay.com",
+        method: "prod_smoke",
+        placement: "email_delivery_guard",
+        source: "playwright",
+      },
+    });
+    expect(response.status()).toBe(200);
+
+    const payload = (await response.json()) as {
+      emailDelivery?: {
+        status?: string;
+      };
+      emailSent?: boolean;
+      ok?: boolean;
+    };
+
+    expect(payload.ok).toBe(true);
+    expect(payload.emailSent).toBe(true);
+    expect(payload.emailDelivery?.status).toBe("sent");
+  });
+
   test("shop page keeps the full storefront shell", async ({ page }) => {
     const consoleProblems = collectConsoleProblems(page);
 

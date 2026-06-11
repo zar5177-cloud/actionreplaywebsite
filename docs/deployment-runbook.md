@@ -83,6 +83,10 @@ SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XL
 SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XXL
 SHOPIFY_PROMO_POSTER_VARIANT_24X36
 SHOPIFY_TEE_POSTER_DISCOUNT_CODE
+RESEND_API_KEY
+NEWSLETTER_EMAIL_FROM
+NEWSLETTER_SUPPORT_EMAIL
+SITE_URL
 ```
 
 GitHub Actions also has these Vercel deployment secrets:
@@ -160,9 +164,11 @@ This deploys a Vercel preview with `npx vercel@latest`, smoke-tests it with
 Playwright, and comments on the PR after the smoke test passes.
 
 The workflow passes `SHOPIFY_*` from GitHub Actions secrets into `vercel build`.
-Do not remove that env block. Vercel sensitive env vars are available at runtime
-but are intentionally not recoverable through `vercel env pull`, so CI prebuilt
-builds need the GitHub secret values at build time for static product pages.
+Do not remove that env block. It also passes the Replay Club email env for the
+manual production deploy path. Vercel sensitive env vars are available at
+runtime but are intentionally not recoverable through `vercel env pull`, so CI
+prebuilt builds need the GitHub secret values at build time for static product
+pages and serverless routes.
 
 Manual production:
 
@@ -386,6 +392,8 @@ Already configured:
 - Node.js: 22.x
 - SHOPIFY_* variables are present in Production, including
   SHOPIFY_TEE_POSTER_DISCOUNT_CODE=REPLAY15
+- Replay Club email variables are present in Production:
+  RESEND_API_KEY, NEWSLETTER_EMAIL_FROM, NEWSLETTER_SUPPORT_EMAIL, SITE_URL
 - Protection Bypass for Automation exists
 
 - Production branch: main

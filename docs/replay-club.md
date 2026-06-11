@@ -51,14 +51,26 @@ Required production env:
 
 ```txt
 RESEND_API_KEY=
-NEWSLETTER_EMAIL_FROM="Action Replay <notify@shopactionreplay.com>"
+NEWSLETTER_EMAIL_FROM="Action Replay <notify@send.shopactionreplay.com>"
 NEWSLETTER_SUPPORT_EMAIL=support@shopactionreplay.com
 SITE_URL=https://shopactionreplay.com
 ```
 
 The sender domain must be verified in Resend before inbox delivery works. Use a
-subdomain/sender like `notify.shopactionreplay.com` or
-`notify@shopactionreplay.com` so the archive mail has its own reputation lane.
+subdomain/sender like `send.shopactionreplay.com` and
+`notify@send.shopactionreplay.com` so the archive mail has its own reputation
+lane and does not disturb root-domain mail.
+
+Operational setup:
+
+1. Add `send.shopactionreplay.com` in Resend Domains with the US region.
+2. Add Resend's MX, SPF TXT, DKIM TXT, and any DMARC recommendation at the DNS
+   host. In Cloudflare, keep those records DNS-only.
+3. Add root monitoring DMARC at `_dmarc.shopactionreplay.com`:
+   `v=DMARC1; p=none; rua=mailto:support@shopactionreplay.com; pct=100; adkim=r; aspf=r`.
+4. Create a Resend API key scoped to `send.shopactionreplay.com`.
+5. Add `RESEND_API_KEY` only to production secrets. Never commit it.
+6. Redeploy, then check `/api/health/email`.
 
 If `RESEND_API_KEY` is missing, the API still stores the Shopify subscriber and
 shows `REPLAY10`, but returns `emailSent: false` with
@@ -67,6 +79,21 @@ shows `REPLAY10`, but returns `emailSent: false` with
 If Resend is configured but rejects the message, the API still stores the
 subscriber and shows `REPLAY10`, but returns `emailSent: false` with
 `emailDelivery.status: "failed"` for debugging.
+
+Health check:
+
+```txt
+GET /api/health/email
+```
+
+Expected once production secrets are live:
+
+```json
+{
+  "configured": true,
+  "from": "Action Replay <notify@send.shopactionreplay.com>"
+}
+```
 
 ## Klaviyo
 

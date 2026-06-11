@@ -39,6 +39,11 @@ jobs:
       SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XXL: ${{ secrets.SHOPIFY_GALAXY_TEE_VARIANT_WHITE_XXL }}
       SHOPIFY_PROMO_POSTER_VARIANT_24X36: ${{ secrets.SHOPIFY_PROMO_POSTER_VARIANT_24X36 }}
       SHOPIFY_TEE_POSTER_DISCOUNT_CODE: ${{ secrets.SHOPIFY_TEE_POSTER_DISCOUNT_CODE }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      NEWSLETTER_EMAIL_FROM: "Action Replay <notify@send.shopactionreplay.com>"
+      NEWSLETTER_SUPPORT_EMAIL: support@shopactionreplay.com
+      SITE_URL: https://shopactionreplay.com
+      SMOKE_NEWSLETTER_EMAIL: ${{ secrets.SMOKE_NEWSLETTER_EMAIL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -80,4 +85,5 @@ jobs:
       - name: Smoke test deployed Vercel production URL
         env:
           SMOKE_BASE_URL: ${{ steps.deploy.outputs.production_url }}
+          SMOKE_NEWSLETTER_EMAIL: ${{ secrets.SMOKE_NEWSLETTER_EMAIL }}
         run: npm run test:smoke
