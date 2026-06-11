@@ -11,6 +11,7 @@ Typed event source: `src/lib/analytics/events.ts`
 - `add_to_cart`
 - `begin_checkout`
 - `email_signup`
+- `newsletter_signup`
 - `archive_unlock_click`
 - `hidden_code_attempt`
 - `product_image_click`
@@ -37,6 +38,7 @@ Every event automatically receives:
 - Size guide open.
 - Checkout click from extraction queue.
 - Replay Club signup.
+- Newsletter popup and footer signup.
 - Archive grid/file click.
 - Code success/failure attempt.
 - Campaign landing view.

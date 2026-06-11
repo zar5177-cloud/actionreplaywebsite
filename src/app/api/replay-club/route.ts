@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import {
+  newsletterDiscountCode,
+  subscribeEmailToShopifyMarketing,
+} from "@/lib/shopify-newsletter";
 
 type ReplayClubPayload = {
   email?: string;
@@ -86,13 +90,28 @@ export async function POST(request: Request) {
   };
 
   try {
-    const provider = await subscribeToKlaviyo(payload);
+    const shopify = await subscribeEmailToShopifyMarketing(email);
+    let klaviyo:
+      | { provider: string; subscribed: boolean }
+      | { provider: "klaviyo_error"; subscribed: false } = {
+      provider: "local_fallback",
+      subscribed: false,
+    };
+
+    try {
+      klaviyo = await subscribeToKlaviyo(payload);
+    } catch {
+      klaviyo = { provider: "klaviyo_error", subscribed: false };
+    }
 
     return NextResponse.json({
       ok: true,
-      code: "REPLAY10",
+      code: newsletterDiscountCode(),
       message: "ACCESS REQUEST RECEIVED.",
-      ...provider,
+      duplicate: shopify.duplicate,
+      provider: "shopify",
+      shopify,
+      secondary: klaviyo,
     });
   } catch (error) {
     return NextResponse.json(

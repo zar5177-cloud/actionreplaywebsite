@@ -16,6 +16,7 @@ export type AnalyticsEvent =
     }
   | { name: "begin_checkout"; cart_value?: number }
   | { name: "email_signup"; source: string; placement: string }
+  | { name: "newsletter_signup"; method: string; placement?: string }
   | { name: "archive_unlock_click"; file_id: string; location: string }
   | { name: "hidden_code_attempt"; code: string; success: boolean }
   | { name: "product_image_click"; product_id: string; image_index: number }

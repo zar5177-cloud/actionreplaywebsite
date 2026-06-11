@@ -18,8 +18,9 @@ import { assetById } from "@/lib/assets-manifest";
 import { trackEvent } from "@/lib/analytics/events";
 import type { Product } from "@/lib/brand-data";
 import { formatUsdPrice } from "@/lib/money";
-import { ReplayClubSignup } from "./replay-club-signup";
 import { CartProvider, useCart } from "./cart-context";
+import { NewsletterPopup } from "./newsletter-popup";
+import { NewsletterSignupForm } from "./newsletter-signup-form";
 import { SystemMessageBar } from "./system-message-bar";
 
 type SiteShellProps = {
@@ -481,16 +482,18 @@ export function SiteShell({ children, searchProducts }: SiteShellProps) {
                 SECURE CHECKOUT
               </span>
             </div>
-            <ReplayClubSignup
-              compact
-              placement="footer"
-              source="footer"
-              title="JOIN REPLAY CLUB"
-              copy="get cheat codes before everyone else."
-            />
+            <div className="border border-white/10 bg-black/55 p-4">
+              <NewsletterSignupForm
+                method="footer"
+                placement="footer"
+                source="footer"
+                variant="footer"
+              />
+            </div>
           </div>
         </footer>
         <CartDrawer />
+        <NewsletterPopup />
       </div>
     </CartProvider>
   );
