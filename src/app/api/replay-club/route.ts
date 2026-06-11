@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { sendNewsletterDiscountEmail } from "@/lib/newsletter-email";
 import {
   newsletterDiscountCode,
   subscribeEmailToShopifyMarketing,
@@ -91,6 +92,7 @@ export async function POST(request: Request) {
 
   try {
     const shopify = await subscribeEmailToShopifyMarketing(email);
+    const code = newsletterDiscountCode();
     let klaviyo:
       | { provider: string; subscribed: boolean }
       | { provider: "klaviyo_error"; subscribed: false } = {
@@ -103,12 +105,20 @@ export async function POST(request: Request) {
     } catch {
       klaviyo = { provider: "klaviyo_error", subscribed: false };
     }
+    const emailDelivery = await sendNewsletterDiscountEmail({
+      code,
+      email,
+      method: "replay_club",
+      placement: payload.placement,
+    });
 
     return NextResponse.json({
       ok: true,
-      code: newsletterDiscountCode(),
+      code,
       message: "ACCESS REQUEST RECEIVED.",
       duplicate: shopify.duplicate,
+      emailDelivery,
+      emailSent: emailDelivery.sent,
       provider: "shopify",
       shopify,
       secondary: klaviyo,

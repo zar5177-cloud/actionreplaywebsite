@@ -42,6 +42,32 @@ Newsletter popup behavior:
 - submitted visitors are suppressed longer,
 - hidden on checkout and `/order-confirmed`.
 
+## Code Email Delivery
+
+After Shopify accepts the signup, `/api/newsletter` and `/api/replay-club`
+attempt to send the first code email through Resend.
+
+Required production env:
+
+```txt
+RESEND_API_KEY=
+NEWSLETTER_EMAIL_FROM="Action Replay <notify@shopactionreplay.com>"
+NEWSLETTER_SUPPORT_EMAIL=support@shopactionreplay.com
+SITE_URL=https://shopactionreplay.com
+```
+
+The sender domain must be verified in Resend before inbox delivery works. Use a
+subdomain/sender like `notify.shopactionreplay.com` or
+`notify@shopactionreplay.com` so the archive mail has its own reputation lane.
+
+If `RESEND_API_KEY` is missing, the API still stores the Shopify subscriber and
+shows `REPLAY10`, but returns `emailSent: false` with
+`emailDelivery.status: "not_configured"`.
+
+If Resend is configured but rejects the message, the API still stores the
+subscriber and shows `REPLAY10`, but returns `emailSent: false` with
+`emailDelivery.status: "failed"` for debugging.
+
 ## Klaviyo
 
 If `KLAVIYO_PRIVATE_API_KEY` and `KLAVIYO_LIST_ID` exist, the Replay Club API route attempts server-side Klaviyo list subscription after Shopify capture.

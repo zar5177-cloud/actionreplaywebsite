@@ -555,6 +555,17 @@ export const visualAssets: VisualAsset[] = [
     alt: "Black chrome Action Replay poster with metallic purple character and dense cyber catalog layout.",
   },
   {
+    id: "action-replay-popupui1",
+    src: "/assets/generated/current-drop/actionreplay-popupui1.png",
+    category: "ui-badge",
+    usage: "Newsletter popup interface artwork rendered as the exact modal shell with live form controls overlaid",
+    sourceReference: "/Users/zrelich/Documents/actionreplay_popupui1.png supplied by user for the email capture popup",
+    promptSummary:
+      "User-supplied chrome blue Action Replay email popup artwork with 10% off headline, close button, email field, and submit button.",
+    rightsStatus: "user-supplied mockup",
+    alt: "Chrome blue Action Replay popup artwork reading get 10% off with email address field and submit button.",
+  },
+  {
     id: "action-replay-ar-mark-black",
     src: "/assets/generated/current-drop/action-replay-ar-mark-black.png",
     category: "logo-treatment",

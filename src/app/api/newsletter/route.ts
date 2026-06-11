@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { sendNewsletterDiscountEmail } from "@/lib/newsletter-email";
 import {
   newsletterDiscountCode,
   subscribeEmailToShopifyMarketing,
@@ -36,11 +37,20 @@ export async function POST(request: Request) {
 
   try {
     const result = await subscribeEmailToShopifyMarketing(email);
+    const code = newsletterDiscountCode();
+    const emailDelivery = await sendNewsletterDiscountEmail({
+      code,
+      email,
+      method: clean(body.method) || "popup",
+      placement: clean(body.placement) || "newsletter_popup",
+    });
 
     return NextResponse.json({
       ok: true,
-      code: newsletterDiscountCode(),
       duplicate: result.duplicate,
+      code,
+      emailDelivery,
+      emailSent: emailDelivery.sent,
       message: "Your code is active. Use it at checkout.",
       provider: result.provider,
     });

@@ -5,9 +5,16 @@ import { Check, Copy, Mail } from "lucide-react";
 import { trackEvent } from "@/lib/analytics/events";
 import { attributionToFormFields } from "@/lib/analytics/utm";
 
+export type NewsletterSignupMethod = "popup" | "footer" | "replay_club" | "inline";
+
+export type NewsletterSignupResult = {
+  code: string;
+  message: string;
+};
+
 type NewsletterSignupFormProps = {
   className?: string;
-  method: "popup" | "footer" | "replay_club" | "inline";
+  method: NewsletterSignupMethod;
   onSuccess?: () => void;
   placement: string;
   source?: string;
@@ -22,6 +29,69 @@ type SubmitState =
 
 function isEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+export function isNewsletterEmail(value: string) {
+  return isEmail(value);
+}
+
+export async function submitNewsletterSignup({
+  email,
+  method,
+  placement,
+  source,
+}: {
+  email: string;
+  method: NewsletterSignupMethod;
+  placement: string;
+  source: string;
+}): Promise<NewsletterSignupResult> {
+  const attribution = attributionToFormFields();
+  const response = await fetch("/api/newsletter", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      attribution,
+      current_page: window.location.pathname,
+      email,
+      method,
+      placement,
+      source,
+    }),
+  });
+  const payload = (await response.json()) as {
+    ok?: boolean;
+    code?: string;
+    error?: string;
+    message?: string;
+  };
+
+  if (!response.ok || !payload.ok) {
+    throw new Error(
+      payload.error ??
+        "Something went wrong. Try again or email us at support@shopactionreplay.com",
+    );
+  }
+
+  window.localStorage.setItem(
+    "ar_newsletter_signup",
+    JSON.stringify({
+      email,
+      method,
+      placement,
+      source,
+      timestamp: new Date().toISOString(),
+      ...attribution,
+    }),
+  );
+  trackEvent({ name: "newsletter_signup", method, placement });
+
+  return {
+    code: payload.code ?? "REPLAY10",
+    message: payload.message ?? "Your code is active. Use it at checkout.",
+  };
 }
 
 export function NewsletterSignupForm({
@@ -50,51 +120,16 @@ export function NewsletterSignupForm({
     setState({ kind: "loading", message: "requesting access..." });
 
     try {
-      const attribution = attributionToFormFields();
-      const response = await fetch("/api/newsletter", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          attribution,
-          current_page: window.location.pathname,
-          email: cleanEmail,
-          method,
-          placement,
-          source,
-        }),
+      const result = await submitNewsletterSignup({
+        email: cleanEmail,
+        method,
+        placement,
+        source,
       });
-      const payload = (await response.json()) as {
-        ok?: boolean;
-        code?: string;
-        error?: string;
-        message?: string;
-      };
-
-      if (!response.ok || !payload.ok) {
-        throw new Error(
-          payload.error ??
-            "Something went wrong. Try again or email us at support@shopactionreplay.com",
-        );
-      }
-
-      window.localStorage.setItem(
-        "ar_newsletter_signup",
-        JSON.stringify({
-          email: cleanEmail,
-          method,
-          placement,
-          source,
-          timestamp: new Date().toISOString(),
-          ...attribution,
-        }),
-      );
-      trackEvent({ name: "newsletter_signup", method, placement });
       setState({
         kind: "success",
-        code: payload.code ?? "REPLAY10",
-        message: payload.message ?? "Your code is active. Use it at checkout.",
+        code: result.code,
+        message: result.message,
       });
       setEmail("");
       onSuccess?.();

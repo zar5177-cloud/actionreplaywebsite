@@ -181,6 +181,43 @@ button:disabled {
   padding-left: 2.5rem;
 }
 
+@keyframes ar-popup-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ar-popup-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.982);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ar-popup-backdrop {
+  animation: ar-popup-backdrop-in 180ms ease-out both;
+}
+
+.ar-popup-panel {
+  animation: ar-popup-panel-in 420ms cubic-bezier(0.18, 0.84, 0.28, 1) both;
+  filter: drop-shadow(0 26px 64px rgba(22, 94, 210, 0.3))
+    drop-shadow(0 0 32px rgba(150, 220, 255, 0.24));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ar-popup-backdrop,
+  .ar-popup-panel {
+    animation: none;
+  }
+}
+
 .hero-system {
   border-bottom: 1px solid var(--line);
   background:
