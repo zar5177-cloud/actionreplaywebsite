@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
+import { AnalyticsRuntime } from "@/components/analytics/analytics-runtime";
 import { SiteShell } from "@/components/site-shell";
 import { getCatalogProducts } from "@/lib/catalog";
 import "./globals.css";
@@ -49,6 +51,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const searchProducts = await getCatalogProducts();
+  const enableAnalyticsDev =
+    process.env.ENABLE_ANALYTICS_DEV === "true" ||
+    process.env.NEXT_PUBLIC_ENABLE_ANALYTICS_DEV === "true" ||
+    process.env.VITE_ENABLE_ANALYTICS_DEV === "true";
 
   return (
     <html
@@ -57,6 +63,31 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full" suppressHydrationWarning>
+        <Suspense fallback={null}>
+          <AnalyticsRuntime
+            clarityProjectId={
+              process.env.CLARITY_PROJECT_ID ??
+              process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID
+            }
+            enableAnalyticsDev={enableAnalyticsDev}
+            gaMeasurementId={
+              process.env.GA4_MEASUREMENT_ID ??
+              process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID
+            }
+            gtmContainerId={
+              process.env.GTM_CONTAINER_ID ??
+              process.env.NEXT_PUBLIC_GTM_CONTAINER_ID
+            }
+            posthogHost={
+              process.env.POSTHOG_HOST ?? process.env.NEXT_PUBLIC_POSTHOG_HOST
+            }
+            posthogKey={
+              process.env.POSTHOG_KEY ??
+              process.env.NEXT_PUBLIC_POSTHOG_KEY ??
+              process.env.VITE_POSTHOG_KEY
+            }
+          />
+        </Suspense>
         <SiteShell searchProducts={searchProducts}>{children}</SiteShell>
       </body>
     </html>

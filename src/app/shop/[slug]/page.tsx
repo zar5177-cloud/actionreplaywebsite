@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -10,6 +9,10 @@ import {
 } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { ProductDetailActions } from "@/components/product-detail-actions";
+import { ProductGallery } from "@/components/product-gallery";
+import { ReplayClubSignup } from "@/components/replay-club-signup";
+import { SignalSurvey } from "@/components/research/signal-survey";
+import { archiveFiles } from "@/data/config/archive-files";
 import { getCatalogProduct, getCatalogProducts } from "@/lib/catalog";
 import {
   isPurchasableProduct,
@@ -63,17 +66,6 @@ export async function generateMetadata({
   };
 }
 
-function shouldContainImage(src: string, slug: string, category: string) {
-  if (src.includes("editorial")) return false;
-
-  return (
-    category === "tees" ||
-    slug.includes("poster") ||
-    src.includes("/cutouts/") ||
-    src.includes("-cutout")
-  );
-}
-
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
   const product = await getCatalogProduct(slug);
@@ -98,8 +90,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
         )
         .slice(0, 2)
     : [];
-  const heroImage = product.images[0];
   const detailRows = [
+    ["File ID", product.archiveCode ?? product.badges[0] ?? product.id],
+    ["Type", product.category === "tees" ? "Boxy tee file" : "Print artifact"],
+    ["Drop", product.slug.includes("poster") ? "AR-003" : "AR-001"],
     [
       "Availability",
       productStateLabels[product.productState],
@@ -129,53 +123,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </Link>
 
           <div className="mt-5 grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(380px,0.75fr)] lg:gap-5">
-            <div className="grid gap-3">
-              <div className="relative min-h-[320px] overflow-hidden border border-blue-400/35 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.28),rgba(0,0,0,0.92)_62%)] sm:min-h-[620px]">
-                <Image
-                  src={heroImage}
-                  alt={`${product.title} product artwork`}
-                  fill
-                  loading="eager"
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 58vw"
-                  className={
-                    shouldContainImage(heroImage, product.slug, product.category)
-                      ? "object-contain p-2 sm:p-8"
-                      : "object-cover object-center"
-                  }
-                />
-                <div className="absolute left-3 top-3 border border-lime-300/70 bg-black/80 px-2.5 py-2 font-mono text-[10px] uppercase tracking-[0.16em] text-lime-200 sm:left-4 sm:top-4 sm:px-3 sm:text-xs">
-                  {productStateLabels[product.productState]}
-                </div>
-                <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black to-transparent" />
-              </div>
-
-              {product.images.length > 1 ? (
-                <div className="grid gap-2 min-[520px]:grid-cols-4">
-                  {product.images.map((image, index) => (
-                    <div
-                      key={image}
-                      className="relative h-32 overflow-hidden border border-white/12 bg-zinc-950"
-                    >
-                      <Image
-                        src={image}
-                        alt={`${product.title} gallery image ${index + 1}`}
-                        fill
-                        sizes="(max-width: 640px) 50vw, 20vw"
-                        className={
-                          shouldContainImage(image, product.slug, product.category)
-                            ? "object-contain p-2"
-                            : "object-cover"
-                        }
-                      />
-                      <span className="absolute left-2 top-2 bg-black/75 px-2 py-1 font-mono text-[10px] uppercase text-zinc-200">
-                        0{index + 1}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-            </div>
+            <ProductGallery
+              category={product.category}
+              images={product.images}
+              productId={product.id}
+              slug={product.slug}
+              stateLabel={productStateLabels[product.productState]}
+              title={product.title}
+            />
 
             <div className="flex min-w-0 flex-col justify-between border border-white/15 bg-black/80 p-4 sm:p-5">
               <div className="min-w-0">
@@ -201,6 +156,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <p className="mt-4 font-mono text-3xl text-white sm:mt-6">
                   {formatUsdPrice(product.price)}
                 </p>
+                <div className="mt-5 grid gap-2 border border-lime-300/25 bg-lime-300/10 p-3 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-lime-100 sm:grid-cols-2">
+                  <span>FILE ID: {product.archiveCode ?? product.id}</span>
+                  <span>STATUS: {productStateLabels[product.productState]}</span>
+                  <span>DROP: {product.slug.includes("poster") ? "003" : "001"}</span>
+                  <span>CLASS: wearable artifact</span>
+                </div>
                 <ProductDetailActions product={product} />
               </div>
 
@@ -235,9 +196,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
               Cut from the drop
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-700">
-              Built as a physical artifact first: graphic, weight, finish, and
-              checkout path kept clean so the strange parts can stay around the
-              edges.
+              {product.slug.includes("poster")
+                ? "AR-003 is the wall file from the same damaged Galaxy export: printed large, kept slightly wrong, and paired with AR-001 when the cart recognizes both artifacts."
+                : "AR-001 is the first wearable file from Action Replay Studio: built from DS-era cheat code nostalgia, fake console mythology, and late-2000s game store energy."}
             </p>
 
             <div className="mt-5 grid gap-2 sm:grid-cols-2">
@@ -259,9 +220,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           <div className="grid content-start gap-2">
             {[
-              { Icon: ShieldCheck, label: "Secure checkout" },
-              { Icon: LockKeyhole, label: "Limited capsule" },
-              { Icon: Radio, label: "Worldwide shipping" },
+              { Icon: ShieldCheck, label: "Secure Shopify checkout" },
+              { Icon: LockKeyhole, label: "Support: support@shopactionreplay.com" },
+              { Icon: Radio, label: "Tracking provided when fulfilled" },
             ].map(({ Icon, label }) => (
               <div
                 key={label}
@@ -271,6 +232,60 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 {label}
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-white/10 bg-black px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-[1600px] gap-4 lg:grid-cols-[minmax(0,0.7fr)_minmax(320px,0.45fr)]">
+          <div className="border border-white/10 bg-white/[0.03] p-5">
+            <p className="font-mono text-xs uppercase tracking-[0.24em] text-sky-200">
+              trust file / boring on purpose
+            </p>
+            <div className="mt-4 grid gap-2">
+              {[
+                ["How does it fit?", "Boxy fit. Check the size guide before ordering and compare against a tee you already like."],
+                ["When will it ship?", "Orders ship from the US. Tracking is provided when fulfilled."],
+                ["Can I exchange sizes?", "For size issues, contact support@shopactionreplay.com quickly so the order can be handled plainly."],
+                ["Is this limited?", "The archive does not repeat files exactly. If a run changes, the change gets named."],
+                ["What comes with the order?", "The product ordered plus any active inserts/stickers available for that run."],
+              ].map(([question, answer]) => (
+                <details key={question} className="border border-white/10 bg-black/45 p-3">
+                  <summary className="cursor-pointer font-mono text-xs font-black uppercase tracking-[0.14em] text-white">
+                    {question}
+                  </summary>
+                  <p className="mt-2 font-mono text-xs leading-5 text-zinc-400">
+                    {answer}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4">
+            <div className="border border-white/10 bg-white/[0.03] p-5">
+              <p className="font-mono text-xs uppercase tracking-[0.24em] text-lime-200">
+                style files
+              </p>
+              <ul className="mt-4 grid gap-2 font-mono text-xs uppercase leading-5 text-zinc-400">
+                {[
+                  "baggy jeans",
+                  "black cargos",
+                  "zip hoodie layer",
+                  "skate shoes",
+                  "silver jewelry",
+                ].map((item) => (
+                  <li key={item}>/ {item}</li>
+                ))}
+              </ul>
+            </div>
+            <ReplayClubSignup
+              compact
+              placement={`product_${product.slug}`}
+              source="product_page"
+              title="NOT READY?"
+              copy="join replay club for hidden discounts and future artifact alerts."
+            />
           </div>
         </div>
       </section>
@@ -292,6 +307,44 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </section>
       ) : null}
+
+      <SignalSurvey
+        delayMs={20000}
+        options={["shirt", "nostalgia", "logo", "instagram", "just looking"]}
+        placement={`product_${product.slug}`}
+        question="what made you open this file?"
+        questionId={`product_click_reason_${product.slug}`}
+      />
+
+      <section className="border-t border-white/10 bg-black px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1600px]">
+          <p className="font-mono text-xs uppercase tracking-[0.24em] text-blue-300">
+            related archive files
+          </p>
+          <h2 className="mt-2 text-4xl font-black uppercase leading-none text-white sm:text-6xl">
+            complete the file
+          </h2>
+          <div className="mt-5 grid gap-3 md:grid-cols-3">
+            {archiveFiles.slice(0, 3).map((file) => (
+              <Link
+                key={file.id}
+                href={`/archive/${file.id}`}
+                className="border border-white/10 bg-white/[0.03] p-4 transition hover:border-lime-300/50"
+              >
+                <p className="font-mono text-[0.68rem] uppercase tracking-[0.18em] text-lime-200">
+                  {file.id} / {file.status ?? file.rarity}
+                </p>
+                <p className="mt-3 text-2xl font-black uppercase leading-none text-white">
+                  {file.title}
+                </p>
+                <p className="mt-3 line-clamp-3 font-mono text-xs leading-5 text-zinc-500">
+                  {file.description}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
     </>
   );
 }

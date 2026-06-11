@@ -1,0 +1,2 @@
+order_id,order_date,channel,product_handle,product_name,variant,quantity,gross_sales_usd,discount_usd,shipping_usd,tax_usd,refund_usd,net_sales_usd,customer_country,source_post_id,utm_campaign,checkout_started,notes
+TEMPLATE,,,,AR-001 Galaxy tee,,0,0,0,0,0,0,0,,,,,Replace this row with Shopify export rows or manual order totals.

@@ -10,8 +10,10 @@ import {
 } from "lucide-react";
 import { FloatingDropShowcase } from "@/components/floating-drop-showcase";
 import { HeroSection } from "@/components/hero-section";
+import { ReplayClubSignup } from "@/components/replay-club-signup";
 import { archiveFiles } from "@/data/config/archive-files";
 import { brandSlogans } from "@/data/config/brand";
+import { signalLog } from "@/data/signal-log";
 import { getCatalogProducts } from "@/lib/catalog";
 
 export const metadata: Metadata = {
@@ -26,6 +28,48 @@ export default async function Home() {
   return (
     <>
       <HeroSection products={products} />
+
+      <section className="border-b border-lime-300/20 bg-black px-4 py-8 sm:px-6">
+        <div className="mx-auto grid max-w-7xl gap-4 lg:grid-cols-[1fr_24rem] lg:items-start">
+          <div className="border border-white/10 bg-white/[0.03] p-5">
+            <p className="font-mono text-xs uppercase tracking-[0.24em] text-lime-200">
+              signal log / real shopify data
+            </p>
+            <h2 className="mt-2 text-4xl font-black uppercase leading-none text-white sm:text-6xl">
+              spike-based curiosity detected
+            </h2>
+            <p className="mt-4 max-w-2xl font-mono text-sm leading-6 text-zinc-400">
+              306 sessions from May 10 to June 9. The archive does not have
+              steady traffic yet. It has windows when people suddenly care.
+            </p>
+            <div className="mt-5 grid gap-2 md:grid-cols-4">
+              {signalLog.map((entry) => (
+                <Link
+                  key={entry.date}
+                  href={entry.href ?? "/signal-log"}
+                  className="border border-white/10 bg-black/50 p-3 transition hover:border-lime-300/50"
+                >
+                  <p className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-zinc-500">
+                    {entry.date}
+                  </p>
+                  <p className="mt-2 font-mono text-3xl text-white">
+                    {entry.sessions}
+                  </p>
+                  <p className="mt-2 font-mono text-[0.68rem] uppercase leading-5 text-lime-100">
+                    {entry.signal}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+          <ReplayClubSignup
+            placement="homepage_signal_log"
+            source="homepage"
+            title="JOIN REPLAY CLUB"
+            copy="hidden codes, early files, private drops. the next spike should not disappear."
+          />
+        </div>
+      </section>
 
       <section className="hero-system relative overflow-hidden px-4 py-12 sm:px-6 sm:py-16">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(22rem,0.55fr)] lg:items-end">

@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { ShoppingCart } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Ruler, ShoppingCart, X } from "lucide-react";
 import {
   isPurchasableProduct,
   productActionLabel,
   productStateLabels,
   type Product,
 } from "@/lib/brand-data";
+import { trackEvent } from "@/lib/analytics/events";
+import { trackSizeGuideOpen } from "@/lib/analytics/microConversions";
 import { GALAXY_TEE_SLUG } from "@/lib/shopify-galaxy-tee";
 import { useCart } from "./cart-context";
 
@@ -19,6 +21,7 @@ export function ProductDetailActions({ product }: { product: Product }) {
   const { addItem, addPair, errorMessage, isMutating } = useCart();
   const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
+  const [isSizeGuideOpen, setSizeGuideOpen] = useState(false);
   const selectedVariant = product.shopifyVariants?.find(
     (variant) =>
       normalizedOption(variant.size) === normalizedOption(selectedSize) &&
@@ -31,6 +34,31 @@ export function ProductDetailActions({ product }: { product: Product }) {
     Boolean(selectedVariant) &&
     selectedVariant?.availableForSale !== false;
   const canAddPair = product.slug === GALAXY_TEE_SLUG && canAddToCart;
+
+  useEffect(() => {
+    trackEvent({
+      name: "view_item",
+      product_id: product.id,
+      product_title: product.title,
+    });
+  }, [product.id, product.title]);
+
+  function openSizeGuide() {
+    setSizeGuideOpen(true);
+    trackSizeGuideOpen(product.id);
+  }
+
+  async function addSelectedItem() {
+    trackEvent({
+      name: "add_to_cart",
+      product_id: product.id,
+      variant_id:
+        selectedVariant?.id ??
+        `${product.slug}:${selectedSize}:${selectedColor.name}`,
+      value: product.price,
+    });
+    await addItem(product, selectedSize, selectedColor);
+  }
 
   return (
     <div className="mt-4 grid gap-4 sm:mt-6 sm:gap-5">
@@ -55,6 +83,14 @@ export function ProductDetailActions({ product }: { product: Product }) {
             </button>
           ))}
         </div>
+        <button
+          type="button"
+          onClick={openSizeGuide}
+          className="mt-3 inline-flex items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-sky-200 underline underline-offset-4"
+        >
+          <Ruler size={14} />
+          size guide
+        </button>
       </div>
 
       <div>
@@ -87,7 +123,7 @@ export function ProductDetailActions({ product }: { product: Product }) {
 
       <button
         type="button"
-        onClick={() => void addItem(product, selectedSize, selectedColor)}
+        onClick={() => void addSelectedItem()}
         disabled={!canAddToCart || isMutating}
         className="flex h-14 w-full items-center justify-center gap-2 border border-violet-300 bg-white px-4 font-mono text-sm font-black uppercase tracking-[0.16em] text-black shadow-[0_0_34px_rgba(255,255,255,0.16)] transition hover:bg-violet-400 hover:text-black disabled:cursor-not-allowed disabled:border-white/15 disabled:bg-white/10 disabled:text-zinc-500"
       >
@@ -123,6 +159,71 @@ export function ProductDetailActions({ product }: { product: Product }) {
         <p className="font-mono text-xs leading-5 text-fuchsia-200">
           {errorMessage}
         </p>
+      ) : null}
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-lime-300/30 bg-black/92 p-3 backdrop-blur md:hidden">
+        <button
+          type="button"
+          onClick={() => void addSelectedItem()}
+          disabled={!canAddToCart || isMutating}
+          className="flex min-h-12 w-full items-center justify-center gap-2 border border-lime-300 bg-lime-300 px-4 font-mono text-xs font-black uppercase tracking-[0.14em] text-black disabled:cursor-not-allowed disabled:border-white/15 disabled:bg-white/10 disabled:text-zinc-500"
+        >
+          <ShoppingCart size={16} />
+          {isMutating ? "queueing..." : "extract file"}
+        </button>
+      </div>
+
+      {isSizeGuideOpen ? (
+        <div
+          className="fixed inset-0 z-[80] grid place-items-center bg-black/80 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="size-guide-title"
+        >
+          <button
+            type="button"
+            aria-label="Close size guide"
+            onClick={() => setSizeGuideOpen(false)}
+            className="absolute inset-0"
+          />
+          <div className="relative w-full max-w-lg border border-sky-300/40 bg-[#03040a] p-5 text-white shadow-[0_0_80px_rgba(56,189,248,0.18)]">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-sky-200">
+                  size file / approximate
+                </p>
+                <h2 id="size-guide-title" className="mt-2 text-3xl font-black uppercase">
+                  boxy fit guide
+                </h2>
+              </div>
+              <button
+                type="button"
+                aria-label="Close size guide"
+                onClick={() => setSizeGuideOpen(false)}
+                className="grid size-9 place-items-center border border-white/15"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div className="mt-5 grid gap-2 font-mono text-xs uppercase text-zinc-300">
+              {[
+                ["S", "body 26.5 / chest 18.5"],
+                ["M", "body 28 / chest 20.5"],
+                ["L", "body 29.5 / chest 22"],
+                ["XL", "body 31 / chest 24"],
+                ["XXL", "body 32 / chest 26"],
+              ].map(([size, measure]) => (
+                <div key={size} className="grid grid-cols-[4rem_1fr] border border-white/10 bg-white/[0.03] p-3">
+                  <span className="text-lime-200">{size}</span>
+                  <span>{measure}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 font-mono text-[0.68rem] uppercase leading-5 text-zinc-500">
+              check your favorite tee before ordering. size issue? email support
+              before the file gets too far into extraction.
+            </p>
+          </div>
+        </div>
       ) : null}
     </div>
   );

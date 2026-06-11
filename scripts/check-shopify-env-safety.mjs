@@ -29,6 +29,7 @@ const bundleSecretBlocks = [
   /shpat_[A-Za-z0-9]+/,
   /shpca_[A-Za-z0-9]+/,
   /SHOPIFY_PRIVATE_STOREFRONT_ACCESS_TOKEN/,
+  /SHOPIFY_ADMIN_ACCESS_TOKEN/,
   /SHOPIFY_CLIENT_SECRET/,
 ];
 

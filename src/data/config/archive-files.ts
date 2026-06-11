@@ -2,15 +2,93 @@ export type ArchiveFile = {
   id: string;
   fileName: string;
   title: string;
+  status?: "public" | "locked" | "corrupted" | "sold_out" | "coming_soon";
+  accessTier?: "open" | "replay_club" | "admin";
+  classification?: string;
+  releaseDate?: string;
+  productHandle?: string;
   timestamp: string;
   rarity: "COMMON" | "UNCOMMON" | "RARE" | "GLITCH" | "FORBIDDEN";
   checksum: string;
   description: string;
+  systemNote?: string;
+  corruptionLevel?: number;
+  tags?: string[];
   recoveryNotes: string[];
   thumbnailTone: "blue" | "violet" | "silver" | "magenta" | "green";
 };
 
-export const archiveFiles = [
+export const archiveFiles: readonly ArchiveFile[] = [
+  {
+    id: "AR-001",
+    fileName: "AR_001",
+    title: "GALAXY TEE",
+    status: "public",
+    accessTier: "open",
+    classification: "wearable artifact",
+    releaseDate: "2026-05-21",
+    productHandle: "action-replay-galaxy-tee",
+    timestamp: "2026-05-21 02:14:07",
+    rarity: "RARE",
+    checksum: "AR-001-GAL",
+    description:
+      "First public garment recovered from the replay archive. White and black file variants share the same damaged Galaxy source.",
+    systemNote: "don't cheat the player, cheat the game.",
+    corruptionLevel: 12,
+    tags: ["ds-era", "cheat-code", "galaxy", "artifact"],
+    recoveryNotes: [
+      "public release file survived first archive window",
+      "pairs with AR-003 poster without changing checkout path",
+      "source export still reports wrong purple",
+    ],
+    thumbnailTone: "blue",
+  },
+  {
+    id: "AR-002",
+    fileName: "AR_002",
+    title: "[DATA CORRUPTED]",
+    status: "locked",
+    accessTier: "replay_club",
+    classification: "unknown",
+    timestamp: "2026-06-09 00:00:02",
+    rarity: "FORBIDDEN",
+    checksum: "AR-002-LOCK",
+    description:
+      "File exists but cannot be opened without Replay Club clearance.",
+    systemNote: "access request required. do not restore in public grid yet.",
+    corruptionLevel: 87,
+    tags: ["locked", "future-drop", "replay-club"],
+    recoveryNotes: [
+      "preview image intentionally missing",
+      "filename changed twice after midnight",
+      "email clearance should capture first and last touch source",
+    ],
+    thumbnailTone: "green",
+  },
+  {
+    id: "AR-003",
+    fileName: "AR_003",
+    title: "CORRUPTED PROMO POSTER",
+    status: "public",
+    accessTier: "open",
+    classification: "print artifact",
+    releaseDate: "2026-05-21",
+    productHandle: "ar-003-corrupted-promo-poster",
+    timestamp: "2026-05-21 03:03:33",
+    rarity: "GLITCH",
+    checksum: "AR-003-PRNT",
+    description:
+      "Oversized Galaxy promo poster recovered from the darker export.",
+    systemNote: "same file family, different surface.",
+    corruptionLevel: 34,
+    tags: ["poster", "wrong-purple", "pair-credit"],
+    recoveryNotes: [
+      "magenta channel kept slightly wrong",
+      "pair credit appears when queued with AR-001",
+      "print file should not become too clean",
+    ],
+    thumbnailTone: "magenta",
+  },
   {
     id: "file-001",
     fileName: "FILE_001",
@@ -91,4 +169,4 @@ export const archiveFiles = [
     ],
     thumbnailTone: "violet",
   },
-] as const satisfies readonly ArchiveFile[];
+];

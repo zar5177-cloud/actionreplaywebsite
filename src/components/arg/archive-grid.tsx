@@ -1,8 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { ReplayClubSignup } from "@/components/replay-club-signup";
 import type { ArchiveFile } from "@/data/config/archive-files";
 import { archiveResidueByFileId } from "@/data/residue";
+import { trackArchiveUnlockClick } from "@/lib/analytics/microConversions";
 import {
   DuplicateFileNotice,
   FileStamp,
@@ -43,7 +46,10 @@ export function ArchiveGrid({ files }: ArchiveGridProps) {
             <button
               key={file.id}
               type="button"
-              onClick={() => setSelectedFile(file)}
+              onClick={() => {
+                trackArchiveUnlockClick(file.id, "archive_grid");
+                setSelectedFile(file);
+              }}
               className="group min-w-0 border border-white/12 bg-black/60 p-3 text-left transition hover:-translate-y-1 hover:border-sky-300/60 hover:bg-sky-950/25 focus-visible:-translate-y-1"
             >
               <div
@@ -54,7 +60,9 @@ export function ArchiveGrid({ files }: ArchiveGridProps) {
               </div>
               <div className="mt-3 flex items-center justify-between gap-2 font-mono text-[0.65rem] uppercase tracking-[0.16em]">
                 <span className="text-zinc-500">{file.timestamp}</span>
-                <span className="text-lime-200">{file.rarity}</span>
+                <span className="text-lime-200">
+                  {file.status ?? file.rarity}
+                </span>
               </div>
               <h2 className="mt-3 min-h-14 text-xl font-black uppercase leading-none text-white">
                 {file.fileName}: {file.title}
@@ -62,6 +70,17 @@ export function ArchiveGrid({ files }: ArchiveGridProps) {
               <p className="mt-3 line-clamp-3 font-mono text-xs leading-5 text-zinc-400">
                 {file.description}
               </p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {file.classification ? (
+                  <FileStamp label="class" value={file.classification} />
+                ) : null}
+                {file.accessTier ? (
+                  <FileStamp label="access" value={file.accessTier} />
+                ) : null}
+                {typeof file.corruptionLevel === "number" ? (
+                  <FileStamp label="corrupt" value={`${file.corruptionLevel}%`} />
+                ) : null}
+              </div>
               {residue ? (
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   <FileStamp label="rev" value={residue.revision} />
@@ -136,6 +155,46 @@ export function ArchiveGrid({ files }: ArchiveGridProps) {
             <p className="mt-4 font-mono text-sm leading-6 text-zinc-300">
               {selectedFile.description}
             </p>
+            <div className="mt-5 grid gap-2 sm:grid-cols-2">
+              {[
+                ["file id", selectedFile.id],
+                ["classification", selectedFile.classification ?? "untyped"],
+                ["status", selectedFile.status ?? selectedFile.rarity],
+                ["access tier", selectedFile.accessTier ?? "open"],
+                [
+                  "corruption",
+                  typeof selectedFile.corruptionLevel === "number"
+                    ? `${selectedFile.corruptionLevel}%`
+                    : "unlogged",
+                ],
+                ["release", selectedFile.releaseDate ?? "timestamp conflict"],
+              ].map(([label, value]) => (
+                <div key={label} className="border border-white/10 bg-white/[0.03] p-3">
+                  <p className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-zinc-600">
+                    {label}
+                  </p>
+                  <p className="mt-1 font-mono text-xs uppercase text-zinc-200">
+                    {value}
+                  </p>
+                </div>
+              ))}
+            </div>
+            {selectedFile.systemNote ? (
+              <p className="mt-4 border-l-2 border-lime-300/60 bg-lime-300/10 p-3 font-mono text-xs uppercase leading-5 text-lime-100">
+                system note: {selectedFile.systemNote}
+              </p>
+            ) : null}
+            {selectedFile.status === "locked" ? (
+              <div className="mt-5">
+                <ReplayClubSignup
+                  compact
+                  placement={`archive_locked_${selectedFile.id}`}
+                  source="archive"
+                  title="REQUEST CLEARANCE"
+                  copy="some files require replay club access before the preview restores."
+                />
+              </div>
+            ) : null}
             {(() => {
               const residue = archiveResidueByFileId[selectedFile.id];
 
@@ -217,6 +276,18 @@ export function ArchiveGrid({ files }: ArchiveGridProps) {
             >
               close file
             </button>
+            {selectedFile.productHandle ? (
+              <Link
+                href={`/shop/${selectedFile.productHandle}`}
+                className="ui-button ui-button-hot mt-5 sm:ml-2"
+              >
+                view artifact
+              </Link>
+            ) : (
+              <Link href={`/archive/${selectedFile.id}`} className="ui-button mt-5 sm:ml-2">
+                open detail
+              </Link>
+            )}
           </article>
         </div>
       ) : null}

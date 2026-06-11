@@ -8,6 +8,7 @@ import {
   normalizeCode,
   type CheatCode,
 } from "@/data/config/cheat-codes";
+import { trackHiddenCodeAttempt } from "@/lib/analytics/microConversions";
 
 type UnlockStatus =
   | { kind: "idle"; message: string }
@@ -83,6 +84,7 @@ export function SecretCodeConsole() {
     const match = cheatCodes.find((code) => code.code === normalized);
 
     if (!match) {
+      trackHiddenCodeAttempt(normalized, false);
       setStatus({
         kind: "error",
         message: "code rejected. no matching event flag.",
@@ -91,6 +93,7 @@ export function SecretCodeConsole() {
     }
 
     if (unlocked.includes(match.code)) {
+      trackHiddenCodeAttempt(match.code, true);
       setStatus({ kind: "repeat", code: match });
       setInput("");
       return;
@@ -98,6 +101,7 @@ export function SecretCodeConsole() {
 
     persist([...unlocked, match.code]);
     void reportUnlock(match.code);
+    trackHiddenCodeAttempt(match.code, true);
     setStatus({ kind: "success", code: match });
     setInput("");
   }

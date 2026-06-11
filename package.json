@@ -16,6 +16,8 @@
     "start": "next start",
     "lint": "eslint",
     "check:shopify-env": "node scripts/check-shopify-env-safety.mjs",
+    "shopify:metafields:plan": "node scripts/shopify-sync-action-replay-metafields.mjs --dry-run",
+    "shopify:metafields:sync": "node scripts/shopify-sync-action-replay-metafields.mjs",
     "shopify:scopes": "node scripts/check-shopify-admin-scopes.mjs",
     "verify:shopify": "node scripts/verify-shopify-storefront.mjs",
     "verify:checkout": "node scripts/verify-live-shopify-checkout.mjs",

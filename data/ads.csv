@@ -1,0 +1,2 @@
+campaign_id,start_date,end_date,platform,account,objective,creative_post_id,creative_title,status,daily_budget_usd,total_spend_usd,views,reach,profile_visits,follows,website_clicks,add_to_cart,checkout_reached,purchases,cost_per_profile_visit,source,notes
+ig-boost-001,unknown,unknown,instagram,actionreplay.studio,profile_visits,ig-post-001,AR Mewtwo-style poster / launch graphic,completed,,,3981,3471,298,,,,,, ,operator_prompt,"Boost created useful exposure/profile visits but did not prove direct sales efficiency."

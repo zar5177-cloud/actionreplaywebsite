@@ -1,0 +1,3 @@
+post_id,post_date,platform,account,title,format,pillar,organic_or_paid,views,reach,non_follower_reach_pct,likes,comments,shares,sends,shares_sends_combined,saves,profile_visits,follows,website_clicks,email_signups,add_to_cart,purchases,spend_usd,source,notes
+ig-post-001,unknown,instagram,actionreplay.studio,AR Mewtwo-style poster / launch graphic,post,artifact_drops,organic,21212,,,"1400",139,,,751,667,,, ,,, ,0,operator_prompt,"Profile activity about 3053. Approximate early signal; reach unavailable."
+ig-post-002,unknown,instagram,actionreplay.studio,Action Replay Drop #001 carousel,carousel,artifact_drops,organic,32701,12413,84.2,2400,88,887,704,,239,113,19,,,,,0,operator_prompt,"Stronger paid candidate; product ecosystem and non-follower discovery."

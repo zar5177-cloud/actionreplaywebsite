@@ -173,6 +173,11 @@ export type StorefrontCartLineInput = {
   quantity: number;
 };
 
+export type StorefrontCartAttributeInput = {
+  key: string;
+  value: string;
+};
+
 export type StorefrontCartLine = {
   id: string;
   quantity: number;
@@ -547,7 +552,13 @@ export async function getStorefrontCart(cartId: string) {
   return mapCart(data.cart);
 }
 
-export async function createStorefrontCart(lines: StorefrontCartLineInput[]) {
+export async function createStorefrontCart({
+  attributes,
+  lines,
+}: {
+  attributes?: StorefrontCartAttributeInput[];
+  lines: StorefrontCartLineInput[];
+}) {
   const data = await storefrontFetch<{
     cartCreate: {
       cart: ShopifyCartNode | null;
@@ -569,7 +580,7 @@ export async function createStorefrontCart(lines: StorefrontCartLineInput[]) {
       }
     `,
     variables: {
-      input: { lines },
+      input: { attributes, lines },
     },
   });
 
@@ -578,6 +589,46 @@ export async function createStorefrontCart(lines: StorefrontCartLineInput[]) {
   const cart = mapCart(data.cartCreate.cart);
   if (!cart) {
     throw new Error("Shopify did not return a cart.");
+  }
+
+  return cart;
+}
+
+export async function updateStorefrontCartAttributes({
+  attributes,
+  cartId,
+}: {
+  attributes: StorefrontCartAttributeInput[];
+  cartId: string;
+}) {
+  const data = await storefrontFetch<{
+    cartAttributesUpdate: {
+      cart: ShopifyCartNode | null;
+      userErrors: ShopifyUserError[];
+    };
+  }>({
+    query: `#graphql
+      ${CART_FRAGMENT}
+      mutation UpdateCartAttributes($attributes: [AttributeInput!]!, $cartId: ID!) {
+        cartAttributesUpdate(attributes: $attributes, cartId: $cartId) {
+          cart {
+            ...CartFields
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `,
+    variables: { attributes, cartId },
+  });
+
+  assertNoUserErrors(data.cartAttributesUpdate.userErrors);
+
+  const cart = mapCart(data.cartAttributesUpdate.cart);
+  if (!cart) {
+    throw new Error("Shopify did not return an attributed cart.");
   }
 
   return cart;

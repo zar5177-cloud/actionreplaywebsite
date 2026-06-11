@@ -1,0 +1,125 @@
+{
+  "namespace": "action_replay",
+  "ownerType": "PRODUCT",
+  "access": {
+    "storefront": "PUBLIC_READ"
+  },
+  "fields": [
+    {
+      "key": "file_id",
+      "name": "Action Replay File ID",
+      "description": "Public-facing file number used by Action Replay catalog systems. Keep it short, collectible, and stable after release.",
+      "type": "single_line_text_field",
+      "pin": true,
+      "validations": [
+        {
+          "name": "regex",
+          "value": "^AR-[0-9]{3,4}$"
+        }
+      ],
+      "example": "AR-001"
+    },
+    {
+      "key": "release_code",
+      "name": "Action Replay Release Code",
+      "description": "Drop or release identifier used for catalog sorting, receipt text, and old-system file labels.",
+      "type": "single_line_text_field",
+      "pin": true,
+      "validations": [
+        {
+          "name": "regex",
+          "value": "^[A-Z0-9][A-Z0-9._-]{1,31}$"
+        }
+      ],
+      "example": "DROP-001"
+    },
+    {
+      "key": "archive_status",
+      "name": "Action Replay Archive Status",
+      "description": "Current catalog state for the product as an Action Replay file.",
+      "type": "single_line_text_field",
+      "pin": true,
+      "validations": [
+        {
+          "name": "choices",
+          "value": "[\"LIVE\",\"ARCHIVED\",\"LOCKED\",\"HIDDEN\",\"SOLD_OUT\",\"SAMPLE\"]"
+        }
+      ],
+      "example": "LIVE"
+    },
+    {
+      "key": "classification",
+      "name": "Action Replay Classification",
+      "description": "System-style object class. Use this to make product pages feel like loaded files instead of generic listings.",
+      "type": "single_line_text_field",
+      "pin": true,
+      "validations": [
+        {
+          "name": "choices",
+          "value": "[\"GARMENT_OBJECT\",\"PRINT_FILE\",\"ACCESSORY\",\"DIGITAL_FILE\",\"STICKER_PACK\",\"SYSTEM_OBJECT\"]"
+        }
+      ],
+      "example": "GARMENT_OBJECT"
+    },
+    {
+      "key": "system_note",
+      "name": "Action Replay System Note",
+      "description": "Short note written like a catalog terminal found the product. Keep it specific and human, not marketing copy.",
+      "type": "multi_line_text_field",
+      "pin": true,
+      "validations": [
+        {
+          "name": "max",
+          "value": "500"
+        }
+      ],
+      "example": "first live file after the access gate. sleeve mark survived the bad export."
+    },
+    {
+      "key": "drop_window",
+      "name": "Action Replay Drop Window",
+      "description": "Loose release window for the file. Prefer YYYY-MM, TBA, or CLOSED.",
+      "type": "single_line_text_field",
+      "pin": true,
+      "validations": [
+        {
+          "name": "regex",
+          "value": "^([0-9]{4}-(0[1-9]|1[0-2])|TBA|CLOSED)$"
+        }
+      ],
+      "example": "2026-05"
+    },
+    {
+      "key": "access_tier",
+      "name": "Action Replay Access Tier",
+      "description": "Access state for future shop/account rules. This is not a marketing tier; it is a system gate label.",
+      "type": "single_line_text_field",
+      "pin": true,
+      "validations": [
+        {
+          "name": "choices",
+          "value": "[\"PUBLIC\",\"CLUB\",\"CODE_ONLY\",\"STAFF\",\"ARCHIVE_ONLY\"]"
+        }
+      ],
+      "example": "PUBLIC"
+    },
+    {
+      "key": "artifact_index",
+      "name": "Action Replay Artifact Index",
+      "description": "Numeric order for artifact/file sorting across catalog, archive, account, and future drops.",
+      "type": "number_integer",
+      "pin": true,
+      "validations": [
+        {
+          "name": "min",
+          "value": "1"
+        },
+        {
+          "name": "max",
+          "value": "9999"
+        }
+      ],
+      "example": "1"
+    }
+  ]
+}

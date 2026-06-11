@@ -6,7 +6,16 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/admin/", "/operator", "/operator/", "/api/", "/secret/"],
+        disallow: [
+          "/admin",
+          "/admin/",
+          "/api/",
+          "/content-lab",
+          "/content-lab/",
+          "/operator",
+          "/operator/",
+          "/secret/",
+        ],
       },
     ],
     sitemap: "https://shopactionreplay.com/sitemap.xml",

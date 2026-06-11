@@ -15,9 +15,12 @@ import {
   X,
 } from "lucide-react";
 import { assetById } from "@/lib/assets-manifest";
+import { trackEvent } from "@/lib/analytics/events";
 import type { Product } from "@/lib/brand-data";
 import { formatUsdPrice } from "@/lib/money";
+import { ReplayClubSignup } from "./replay-club-signup";
 import { CartProvider, useCart } from "./cart-context";
+import { SystemMessageBar } from "./system-message-bar";
 
 type SiteShellProps = {
   children: React.ReactNode;
@@ -27,6 +30,7 @@ type SiteShellProps = {
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
+  { label: "Codes", href: "/codes" },
   { label: "Catalog", href: "/catalog" },
   { label: "Account", href: "/account" },
   { label: "Missions", href: "/missions" },
@@ -280,6 +284,7 @@ function CartDrawer() {
       return;
     }
 
+    trackEvent({ name: "begin_checkout", cart_value: total || subtotal });
     window.location.href = checkoutUrl;
   }
 
@@ -297,9 +302,9 @@ function CartDrawer() {
         <div className="flex items-center justify-between gap-4 border-b border-white/10 p-4">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.24em] text-blue-300">
-              Your bag
+              extraction queue
             </p>
-            <h2 className="mt-1 text-3xl font-black uppercase">Checkout</h2>
+            <h2 className="mt-1 text-3xl font-black uppercase">Queued files</h2>
           </div>
           <button
             type="button"
@@ -389,10 +394,10 @@ function CartDrawer() {
               <div>
                 <LockKeyhole className="mx-auto text-zinc-500" size={30} />
                 <p className="mt-3 font-mono text-sm uppercase text-zinc-400">
-                  Your bag is empty
+                  no artifacts queued
                 </p>
                 <Link href="/shop" onClick={closeCart} className="ui-button mt-5">
-                  Shop the drop
+                  find artifact
                 </Link>
               </div>
             </div>
@@ -441,7 +446,7 @@ function CartDrawer() {
             className="mt-4 flex h-12 w-full items-center justify-center gap-2 border border-lime-300 bg-lime-300 px-4 font-mono text-xs font-black uppercase tracking-[0.16em] text-black transition hover:bg-white disabled:cursor-not-allowed disabled:border-white/15 disabled:bg-white/10 disabled:text-zinc-500"
           >
             <ShoppingCart size={16} />
-            {isMutating ? "Updating..." : "Checkout"}
+            {isMutating ? "Updating..." : "Extract file"}
           </button>
         </div>
       </aside>
@@ -455,9 +460,10 @@ export function SiteShell({ children, searchProducts }: SiteShellProps) {
       <div className="relative flex min-h-dvh flex-col overflow-hidden bg-background text-foreground">
         <div className="crt-overlay" aria-hidden="true" />
         <Header searchProducts={searchProducts} />
+        <SystemMessageBar />
         <main className="relative z-10 flex-1">{children}</main>
         <footer className="relative z-10 border-t border-white/10 bg-black/70 px-4 py-8 sm:px-6">
-          <div className="mx-auto grid max-w-[1600px] gap-5 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="mx-auto grid max-w-[1600px] gap-5 lg:grid-cols-[1fr_28rem] lg:items-start">
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.24em] text-blue-300">
                 Action Replay / current capsule
@@ -475,6 +481,13 @@ export function SiteShell({ children, searchProducts }: SiteShellProps) {
                 SECURE CHECKOUT
               </span>
             </div>
+            <ReplayClubSignup
+              compact
+              placement="footer"
+              source="footer"
+              title="JOIN REPLAY CLUB"
+              copy="get cheat codes before everyone else."
+            />
           </div>
         </footer>
         <CartDrawer />

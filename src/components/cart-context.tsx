@@ -13,6 +13,7 @@ import {
   type Product,
   type ProductColor,
 } from "@/lib/brand-data";
+import { attributionToFormFields } from "@/lib/analytics/utm";
 
 const CART_STORAGE_KEY = "action-replay-shopify-cart-id";
 
@@ -294,6 +295,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         try {
           const updatedCart = await requestCart({
             action: "add",
+            attribution: attributionToFormFields(),
             cartId: cart?.id ?? readPersistedCartId(),
             productSlug: product.slug,
             size,
@@ -319,6 +321,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         try {
           const updatedCart = await requestCart({
             action: "addPair",
+            attribution: attributionToFormFields(),
             cartId: cart?.id ?? readPersistedCartId(),
             size,
             color: color.name,

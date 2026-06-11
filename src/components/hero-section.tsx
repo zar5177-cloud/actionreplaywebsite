@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, BadgeCheck, LockKeyhole } from "lucide-react";
+import { Archive, ArrowUpRight, BadgeCheck, LockKeyhole, Radio } from "lucide-react";
 import {
   products as fallbackProducts,
   type Product,
@@ -61,24 +61,38 @@ export function HeroSection({
               don&apos;t cheat the player, cheat the game
             </p>
             <h1 className="mt-4 max-w-[11ch] break-words text-6xl font-black uppercase leading-[0.76] text-white sm:text-8xl lg:text-[8.5rem] xl:text-[10rem]">
-              Galaxy drop
+              Action Replay
             </h1>
             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-200 sm:text-lg">
-              A washed tee and oversized promo poster from the same damaged
-              Galaxy export. Buy them together and the 15% pair credit applies
-              automatically.
+              AR-001 // Galaxy Tee. First wearable artifact recovered from the
+              replay archive. A corrupted DS-era cheat-code file that learned
+              how to be clothing.
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+          <div className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr] sm:items-end">
             <Link
-              href="/shop"
+              href={tee ? `/shop/${tee.slug}` : "/shop"}
               className="inline-flex h-14 items-center justify-center gap-2 border border-blue-300 bg-blue-600 px-5 font-mono text-sm font-black uppercase tracking-[0.16em] text-white shadow-[0_0_38px_rgba(37,99,235,0.34)] transition hover:border-lime-300 hover:bg-violet-600"
             >
-              Shop the drop
+              Shop AR-001
               <ArrowUpRight size={17} />
             </Link>
-            <div className="grid grid-cols-5 border border-white/15 bg-black/70">
+            <Link
+              href="/archive"
+              className="inline-flex h-14 items-center justify-center gap-2 border border-white/15 bg-black/70 px-4 font-mono text-xs font-black uppercase tracking-[0.14em] text-white transition hover:border-sky-300 hover:text-sky-100"
+            >
+              <Archive size={16} />
+              Enter archive
+            </Link>
+            <Link
+              href="/replay-club"
+              className="inline-flex h-14 items-center justify-center gap-2 border border-lime-300/70 bg-lime-300/10 px-4 font-mono text-xs font-black uppercase tracking-[0.14em] text-lime-100 transition hover:bg-lime-300 hover:text-black"
+            >
+              <Radio size={16} />
+              Join Replay Club
+            </Link>
+            <div className="grid grid-cols-5 border border-white/15 bg-black/70 sm:col-span-3">
               {cities.map((city) => (
                 <span
                   key={city}

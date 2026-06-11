@@ -2,13 +2,30 @@ export type CheatCode = {
   code: string;
   label: string;
   message: string;
-  unlockType: "event" | "social" | "page" | "manifesto";
+  unlockType: "event" | "discount" | "content_unlock" | "redirect" | "message" | "page" | "manifesto";
   href?: string;
+  discountCode?: string;
+  unlockedFileId?: string;
 };
 
 export const localStorageUnlockKey = "ar-unlocked-codes";
 
-export const cheatCodes = [
+export const cheatCodes: readonly CheatCode[] = [
+  {
+    code: "SHINY",
+    label: "hidden discount",
+    message: "SHINY CODE ACCEPTED. hidden discount unlocked.",
+    unlockType: "discount",
+    discountCode: "REPLAY10",
+  },
+  {
+    code: "GALAXY001",
+    label: "file expanded",
+    message: "FILE AR-001 EXPANDED. galaxy file preview restored.",
+    unlockType: "content_unlock",
+    unlockedFileId: "AR-001",
+    href: "/archive/AR-001",
+  },
   {
     code: "SHINY50",
     label: "rare encounter",
@@ -18,8 +35,20 @@ export const cheatCodes = [
   {
     code: "RUNIT",
     label: "entry flag",
-    message: "comment #RUNIT + #CHEATTHEGAME to activate entry.",
-    unlockType: "social",
+    message: "REPLAY MODE ACTIVE.",
+    unlockType: "message",
+  },
+  {
+    code: "CHEATTHEGAME",
+    label: "brand phrase",
+    message: "don't cheat the player. cheat the game.",
+    unlockType: "message",
+  },
+  {
+    code: "SYSTEM32",
+    label: "system note",
+    message: "old system path accepted. no file should still be here.",
+    unlockType: "message",
   },
   {
     code: "MEMORYCARD",
@@ -35,7 +64,7 @@ export const cheatCodes = [
     unlockType: "manifesto",
     href: "/manifesto",
   },
-] as const satisfies readonly CheatCode[];
+];
 
 export function normalizeCode(value: string) {
   return value.trim().replace(/\s+/g, "").toUpperCase();

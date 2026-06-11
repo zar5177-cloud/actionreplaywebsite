@@ -1,4 +1,5 @@
 import { assetById } from "./assets-manifest";
+import type { ActionReplayProductMetafields } from "./action-replay-metafields";
 
 export type NavLink = {
   label: string;
@@ -46,6 +47,7 @@ export type Product = {
   description: string;
   archiveCode?: string;
   stateNote?: string;
+  actionReplay?: ActionReplayProductMetafields;
   source?: "local" | "shopify";
   shopifyProductId?: string;
   shopifyHandle?: string;

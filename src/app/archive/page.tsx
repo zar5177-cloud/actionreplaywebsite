@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArchiveGrid } from "@/components/arg/archive-grid";
 import { SecretCodeConsole } from "@/components/arg/secret-code-console";
+import { ReplayClubSignup } from "@/components/replay-club-signup";
 import { archiveFiles } from "@/data/config/archive-files";
 
 export const metadata: Metadata = {
@@ -35,6 +36,14 @@ export default function ArchivePage() {
 
         <div className="mt-7">
           <ArchiveGrid files={archiveFiles} />
+        </div>
+        <div className="mt-7">
+          <ReplayClubSignup
+            placement="archive_page_bottom"
+            source="archive"
+            title="REQUEST REPLAY CLUB CLEARANCE"
+            copy="some locked files do not open from the public grid. save your contact before the next window closes."
+          />
         </div>
       </div>
     </section>

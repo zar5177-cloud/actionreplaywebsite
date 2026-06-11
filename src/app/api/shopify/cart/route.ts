@@ -6,9 +6,11 @@ import {
   getStorefrontProductVariantForOptions,
   getStorefrontCart,
   removeStorefrontCartLines,
+  updateStorefrontCartAttributes,
   updateStorefrontCartDiscountCodes,
   updateStorefrontCartLines,
   type StorefrontCart,
+  type StorefrontCartAttributeInput,
 } from "@/lib/shopify-storefront";
 import {
   GALAXY_TEE_SLUG,
@@ -27,6 +29,7 @@ export const dynamic = "force-dynamic";
 
 type AddCartRequest = {
   action: "add";
+  attribution?: unknown;
   cartId?: unknown;
   productSlug?: unknown;
   size?: unknown;
@@ -36,6 +39,7 @@ type AddCartRequest = {
 
 type AddPairCartRequest = {
   action: "addPair";
+  attribution?: unknown;
   cartId?: unknown;
   size?: unknown;
   color?: unknown;
@@ -79,6 +83,60 @@ function quantityValue(value: unknown) {
 
 function configuredPairDiscountCode() {
   return process.env.SHOPIFY_TEE_POSTER_DISCOUNT_CODE?.trim() ?? "";
+}
+
+const CART_ATTRIBUTE_KEYS = [
+  "anonymous_id",
+  "first_touch_source",
+  "first_touch_medium",
+  "first_touch_campaign",
+  "first_touch_content",
+  "first_touch_term",
+  "first_touch_landing_page",
+  "first_touch_timestamp",
+  "last_touch_source",
+  "last_touch_medium",
+  "last_touch_campaign",
+  "last_touch_content",
+  "last_touch_term",
+  "last_touch_landing_page",
+  "last_touch_timestamp",
+] as const;
+
+function cartAttributesFromAttribution(
+  attribution: unknown,
+): StorefrontCartAttributeInput[] {
+  if (!attribution || typeof attribution !== "object") {
+    return [];
+  }
+
+  return CART_ATTRIBUTE_KEYS.flatMap((key) => {
+    const value = (attribution as Record<string, unknown>)[key];
+    const cleanValue = stringValue(value);
+
+    return cleanValue
+      ? [
+          {
+            key: `ar_${key}`,
+            value: cleanValue.slice(0, 255),
+          },
+        ]
+      : [];
+  });
+}
+
+async function applyCartAttributes(
+  cart: StorefrontCart,
+  attributes: StorefrontCartAttributeInput[],
+) {
+  if (!attributes.length) {
+    return cart;
+  }
+
+  return updateStorefrontCartAttributes({
+    attributes,
+    cartId: cart.id,
+  });
 }
 
 function cartHasPair(cart: StorefrontCart) {
@@ -210,6 +268,7 @@ export async function POST(request: Request) {
   try {
     if (body.action === "add") {
       const cartId = stringValue(body.cartId);
+      const attributes = cartAttributesFromAttribution(body.attribution);
       const merchandiseId = await resolveMerchandiseId(body);
       const line = {
         merchandiseId,
@@ -217,19 +276,30 @@ export async function POST(request: Request) {
       };
       const cart = cartId
         ? await addStorefrontCartLines({ cartId, lines: [line] })
-        : await createStorefrontCart([line]);
+        : await createStorefrontCart({ attributes, lines: [line] });
 
-      return NextResponse.json({ cart: await syncPairDiscountCode(cart) });
+      return NextResponse.json({
+        cart: await applyCartAttributes(
+          await syncPairDiscountCode(cart),
+          cartId ? attributes : [],
+        ),
+      });
     }
 
     if (body.action === "addPair") {
       const cartId = stringValue(body.cartId);
+      const attributes = cartAttributesFromAttribution(body.attribution);
       const lines = await resolvePairLines(body);
       const cart = cartId
         ? await addStorefrontCartLines({ cartId, lines })
-        : await createStorefrontCart(lines);
+        : await createStorefrontCart({ attributes, lines });
 
-      return NextResponse.json({ cart: await syncPairDiscountCode(cart) });
+      return NextResponse.json({
+        cart: await applyCartAttributes(
+          await syncPairDiscountCode(cart),
+          cartId ? attributes : [],
+        ),
+      });
     }
 
     if (body.action === "update") {

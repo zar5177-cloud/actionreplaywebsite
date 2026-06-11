@@ -1,0 +1,2 @@
+experiment_id,start_date,end_date,owner,hypothesis,channel,creative_post_id,tactic,budget_usd,success_metric,baseline,target,result,status,next_action,notes
+exp-001,,,,Drop #001 carousel can produce higher-quality profile visits than the launch graphic,instagram,ig-post-002,boost organic winner carousel,40,profile_visits_and_follows_per_reach,,,"",planned,Confirm profile/link/shop readiness before spend,Use $8-12/day for 4 days before any bigger test.

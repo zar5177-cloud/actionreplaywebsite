@@ -1,5 +1,10 @@
 import type { Product, ProductVariant } from "@/lib/brand-data";
 import {
+  actionReplayStorefrontMetafieldIdentifiers,
+  mapActionReplayMetafields,
+  type StorefrontActionReplayMetafield,
+} from "@/lib/action-replay-metafields";
+import {
   GALAXY_TEE_SHOPIFY_PRODUCT_ID,
   GALAXY_TEE_SLUG,
   GALAXY_TEE_STOREFRONT_HANDLE,
@@ -27,6 +32,14 @@ const PRODUCT_FRAGMENT = `#graphql
         amount
         currencyCode
       }
+    }
+    metafields(identifiers: [
+      ${actionReplayStorefrontMetafieldIdentifiers()}
+    ]) {
+      namespace
+      key
+      type
+      value
     }
     images(first: 10) {
       edges {
@@ -81,6 +94,7 @@ type ShopifyProductNode = {
   priceRange: {
     minVariantPrice: ShopifyMoney;
   };
+  metafields: (StorefrontActionReplayMetafield | null)[] | null;
   images: {
     edges: {
       node: {
@@ -375,6 +389,7 @@ function mapShopifyProduct(node: ShopifyProductNode): Product | null {
     }),
   );
   const images = node.images.edges.map(({ node: image }) => image.url);
+  const actionReplay = mapActionReplayMetafields(node.metafields);
 
   return {
     id: node.id,
@@ -403,11 +418,14 @@ function mapShopifyProduct(node: ShopifyProductNode): Product | null {
     productState: node.availableForSale ? "live" : "sold_out",
     description: productDescription(liveKind, title, node.description),
     archiveCode:
-      liveKind === "promo-poster" ? "AR003-PRINT-WPURPLE" : "AR001-GALAXY",
+      actionReplay.release_code ??
+      (liveKind === "promo-poster" ? "AR003-PRINT-WPURPLE" : "AR001-GALAXY"),
     stateNote:
-      liveKind === "promo-poster"
+      actionReplay.system_note ??
+      (liveKind === "promo-poster"
         ? "loaded from Shopify print mirror"
-        : "loaded from Shopify collection mirror",
+        : "loaded from Shopify collection mirror"),
+    actionReplay,
     source: "shopify",
     shopifyProductId: node.id,
     shopifyHandle: node.handle,

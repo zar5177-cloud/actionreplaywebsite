@@ -10,6 +10,7 @@ import {
   productStateLabels,
   type Product,
 } from "@/lib/brand-data";
+import { trackEvent } from "@/lib/analytics/events";
 import { formatUsdPrice } from "@/lib/money";
 import { useCart } from "./cart-context";
 
@@ -55,7 +56,14 @@ export function ProductCard({
       <button
         type="button"
         aria-label={`Cycle product image for ${product.title}`}
-        onClick={() => setImageIndex((imageIndex + 1) % product.images.length)}
+        onClick={() => {
+          trackEvent({
+            name: "product_image_click",
+            image_index: imageIndex,
+            product_id: product.id,
+          });
+          setImageIndex((imageIndex + 1) % product.images.length);
+        }}
         className="relative block h-80 w-full overflow-hidden bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.22),rgba(9,9,14,0.94)_62%)] text-left sm:h-[26rem]"
       >
         <Image
@@ -169,7 +177,17 @@ export function ProductCard({
 
         <button
           type="button"
-          onClick={() => void addItem(product, selectedSize, selectedColor)}
+          onClick={() => {
+            trackEvent({
+              name: "add_to_cart",
+              product_id: product.id,
+              variant_id:
+                selectedVariant?.id ??
+                `${product.slug}:${selectedSize}:${selectedColor.name}`,
+              value: product.price,
+            });
+            void addItem(product, selectedSize, selectedColor);
+          }}
           disabled={!canAddToCart || isMutating}
           className="flex h-11 w-full items-center justify-center gap-2 border border-violet-300 bg-white px-3 font-mono text-xs font-black uppercase tracking-[0.16em] text-black transition hover:bg-violet-300 hover:text-black disabled:cursor-not-allowed disabled:border-white/15 disabled:bg-white/10 disabled:text-zinc-500"
         >
