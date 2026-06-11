@@ -1,7 +1,7 @@
 import type { ProductColor, ProductVariant } from "@/lib/brand-data";
 
 export const GALAXY_TEE_SLUG = "action-replay-galaxy-tee";
-export const GALAXY_TEE_STOREFRONT_HANDLE = "enzyme-washed-t-shirt";
+export const GALAXY_TEE_STOREFRONT_HANDLE = "orbit-logo-washed-tee";
 export const IGNORED_GALAXY_TEE_HANDLE = "action-replay-mewtwo-tee";
 
 export const GALAXY_TEE_SIZES = ["S", "M", "L", "XL", "XXL"] as const;
@@ -25,7 +25,7 @@ type GalaxyTeeSize = (typeof GALAXY_TEE_SIZES)[number];
 type GalaxyTeeColor = (typeof GALAXY_TEE_COLORWAYS)[number];
 
 export const GALAXY_TEE_SHOPIFY_PRODUCT_ID =
-  "gid://shopify/Product/9456112664832";
+  "gid://shopify/Product/9455777906944";
 
 function normalizeOption(value: string) {
   return value.trim().toLowerCase().replace(/\s+/g, " ");

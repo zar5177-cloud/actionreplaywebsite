@@ -250,7 +250,7 @@ Read these first:
 Current source of truth:
 - Merged release PR #1: https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
 - Branch: main for release state; create a new `codex/<short-task-name>` branch for follow-up changes
-- Product handle: enzyme-washed-t-shirt
+- Product handle: orbit-logo-washed-tee
 - Hidden duplicate handle: action-replay-mewtwo-tee
 
 Rules:

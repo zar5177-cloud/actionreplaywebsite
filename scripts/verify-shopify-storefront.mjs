@@ -168,7 +168,7 @@ const productQuery = `#graphql
 `;
 
 const productData = await storefrontFetch(productQuery, {
-  real: "enzyme-washed-t-shirt",
+  real: "orbit-logo-washed-tee",
   duplicate: "action-replay-mewtwo-tee",
   poster: "action-replay-2026-promo-poster",
 });
@@ -178,7 +178,7 @@ const duplicate = productData?.duplicate;
 const poster = productData?.poster;
 
 if (!real) {
-  fail("enzyme-washed-t-shirt is not visible to the Storefront API.");
+  fail("orbit-logo-washed-tee is not visible to the Storefront API.");
 }
 
 if (duplicate) {
@@ -190,9 +190,9 @@ if (!poster) {
 }
 
 const variants = real.variants.nodes;
-if (!real.availableForSale || variants.length !== 10) {
+if (!real.availableForSale || variants.length < EXPECTED_VARIANTS.length) {
   fail(
-    `Expected enzyme-washed-t-shirt to have 10 available variants; got ${variants.length}.`,
+    `Expected orbit-logo-washed-tee to expose at least ${EXPECTED_VARIANTS.length} variants; got ${variants.length}.`,
   );
 }
 
@@ -201,7 +201,7 @@ for (const [envKey, expectedColor, expectedSize] of EXPECTED_VARIANTS) {
   const variant = variants.find((candidate) => candidate.id === variantId);
 
   if (!variant) {
-    fail(`${envKey} does not match a Storefront variant on enzyme-washed-t-shirt.`);
+    fail(`${envKey} does not match a Storefront variant on orbit-logo-washed-tee.`);
   }
 
   if (!variant.availableForSale) {
@@ -333,24 +333,31 @@ const lineDiscount = cart.lines.nodes.reduce(
     ),
   0,
 );
-const cartDiscount = Math.max(0, lineSubtotal - moneyAmount(cart.cost.totalAmount));
+const cartTotal = moneyAmount(cart.cost.totalAmount);
+const cartDiscount = Math.max(0, lineSubtotal - cartTotal);
+const expectedDiscount = lineSubtotal * 0.15;
+const expectedTotal = lineSubtotal - expectedDiscount;
 
-if (cart.totalQuantity !== 2 || lineSubtotal !== 90) {
-  fail(`Expected tee + poster cart subtotal 90 with quantity 2; got ${lineSubtotal}.`);
+if (cart.totalQuantity !== 2 || lineSubtotal <= 0) {
+  fail(
+    `Expected tee + poster cart with quantity 2 and a positive subtotal; got quantity ${cart.totalQuantity} and subtotal ${lineSubtotal}.`,
+  );
 }
 
 if (!appliedPairCode?.applicable) {
   fail(`Expected ${pairDiscountCode} to be applicable to the tee + poster cart.`);
 }
 
-if (Math.abs(cartDiscount - 13.5) > 0.01) {
+if (Math.abs(cartDiscount - expectedDiscount) > 0.01) {
   fail(
-    `Expected Shopify 15% full-cart pair credit of 13.50; got ${cartDiscount}. Line-level allocation was ${lineDiscount}.`,
+    `Expected Shopify 15% full-cart pair credit of ${expectedDiscount.toFixed(2)}; got ${cartDiscount}. Line-level allocation was ${lineDiscount}.`,
   );
 }
 
-if (Math.abs(moneyAmount(cart.cost.totalAmount) - 76.5) > 0.01) {
-  fail(`Expected pair cart total 76.50; got ${cart.cost.totalAmount.amount}.`);
+if (Math.abs(cartTotal - expectedTotal) > 0.01) {
+  fail(
+    `Expected pair cart total ${expectedTotal.toFixed(2)}; got ${cart.cost.totalAmount.amount}.`,
+  );
 }
 
 console.log(

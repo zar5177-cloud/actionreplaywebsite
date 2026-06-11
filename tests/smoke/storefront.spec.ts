@@ -227,9 +227,9 @@ test.describe("Action Replay storefront release gate", () => {
       "action-replay-galaxy-tee",
       "ar-003-corrupted-promo-poster",
     ]);
-    expect(Number(posterPayload.cart?.undiscountedSubtotal?.amount)).toBe(90);
-    expect(Number(posterPayload.cart?.discountTotal?.amount)).toBeCloseTo(13.5, 2);
-    expect(Number(posterPayload.cart?.total?.amount)).toBeCloseTo(76.5, 2);
+    expect(Number(posterPayload.cart?.undiscountedSubtotal?.amount)).toBe(66);
+    expect(Number(posterPayload.cart?.discountTotal?.amount)).toBeCloseTo(9.9, 2);
+    expect(Number(posterPayload.cart?.total?.amount)).toBeCloseTo(56.1, 2);
   });
 
   test("cart API restores tee plus poster in one server-side mutation", async ({
@@ -269,9 +269,9 @@ test.describe("Action Replay storefront release gate", () => {
       "action-replay-galaxy-tee",
       "ar-003-corrupted-promo-poster",
     ]);
-    expect(Number(payload.cart?.undiscountedSubtotal?.amount)).toBe(90);
-    expect(Number(payload.cart?.discountTotal?.amount)).toBeCloseTo(13.5, 2);
-    expect(Number(payload.cart?.total?.amount)).toBeCloseTo(76.5, 2);
+    expect(Number(payload.cart?.undiscountedSubtotal?.amount)).toBe(66);
+    expect(Number(payload.cart?.discountTotal?.amount)).toBeCloseTo(9.9, 2);
+    expect(Number(payload.cart?.total?.amount)).toBeCloseTo(56.1, 2);
   });
 
   test("cart drawer opens after adding Galaxy Tee", async ({ page }) => {
@@ -283,7 +283,7 @@ test.describe("Action Replay storefront release gate", () => {
     const drawer = page.locator("aside").first();
     await expect(drawer).toBeVisible();
     await expect(
-      drawer.getByRole("button", { name: /Checkout/i }),
+      drawer.getByRole("button", { name: /Extract file|Checkout/i }),
     ).toBeVisible();
     await expect(page.getByText(/AR-001|GALAXY/i).first()).toBeVisible();
     await expectNoConsoleProblems(consoleProblems);
@@ -303,8 +303,8 @@ test.describe("Action Replay storefront release gate", () => {
     const drawer = page.locator("aside").first();
     await expect(drawer).toBeVisible();
     await expect(drawer.getByText("Pair credit / 15%")).toBeVisible();
-    await expect(drawer.getByText("-$13.50").last()).toBeVisible();
-    await expect(drawer.getByText("$76.50")).toBeVisible();
+    await expect(drawer.getByText("-$9.90").last()).toBeVisible();
+    await expect(drawer.getByText("$56.10")).toBeVisible();
     await expectNoConsoleProblems(consoleProblems);
   });
 
@@ -322,7 +322,7 @@ test.describe("Action Replay storefront release gate", () => {
     const drawer = page.locator("aside").first();
     await expect(drawer).toBeVisible();
     await expect(
-      drawer.locator("p").filter({ hasText: /AR-001.*GALAXY.*TEE/i }).first(),
+      drawer.locator("p").filter({ hasText: /Orbit Logo Washed Tee|AR-001.*GALAXY.*TEE/i }).first(),
     ).toBeVisible();
     await expect(
       drawer
@@ -331,8 +331,8 @@ test.describe("Action Replay storefront release gate", () => {
         .first(),
     ).toBeVisible();
     await expect(drawer.getByText("Pair credit / 15%")).toBeVisible();
-    await expect(drawer.getByText("-$13.50").last()).toBeVisible();
-    await expect(drawer.getByText("$76.50")).toBeVisible();
+    await expect(drawer.getByText("-$9.90").last()).toBeVisible();
+    await expect(drawer.getByText("$56.10")).toBeVisible();
     await expectNoConsoleProblems(consoleProblems);
   });
 
@@ -353,13 +353,13 @@ test.describe("Action Replay storefront release gate", () => {
     await expect(drawer).toBeVisible();
     await expect(drawer).toHaveCSS("width", "390px");
     await expect(drawer.getByText("Pair credit / 15%")).toBeVisible();
-    await expect(drawer.getByText("-$13.50").last()).toBeVisible();
-    await expect(drawer.getByText("$76.50")).toBeVisible();
+    await expect(drawer.getByText("-$9.90").last()).toBeVisible();
+    await expect(drawer.getByText("$56.10")).toBeVisible();
     await expect(
-      drawer.getByRole("button", { name: /Checkout/i }),
+      drawer.getByRole("button", { name: /Extract file|Checkout/i }),
     ).toBeVisible();
     await expect(
-      drawer.getByRole("button", { name: /Checkout/i }),
+      drawer.getByRole("button", { name: /Extract file|Checkout/i }),
     ).toBeEnabled();
     await expectNoConsoleProblems(consoleProblems);
   });

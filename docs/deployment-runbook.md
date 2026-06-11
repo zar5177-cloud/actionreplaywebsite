@@ -12,7 +12,7 @@ Production source of truth:
 - Temporary verified Vercel alias until DNS cutover:
   https://actionreplaywebsite.vercel.app/shop
 - Merged release PR: https://github.com/zar5177-cloud/actionreplaywebsite/pull/1
-- Shopify product handle: `enzyme-washed-t-shirt`
+- Shopify product handle: `orbit-logo-washed-tee`
 - Duplicate handle that must stay hidden: `action-replay-mewtwo-tee`
 - Checkout path: app cart drawer -> `/api/shopify/cart` -> Shopify `checkoutUrl`
 
@@ -54,7 +54,7 @@ The release guard checks:
 - local browser smoke tests
 - live cart API creates a Shopify checkout URL
 - live tee + poster cart receives the Shopify 15% full-cart pair credit
-- live Shopify checkout page opens with the tee, poster, $13.50 credit, and $76.50 total
+- live Shopify checkout page opens with the tee, poster, current 15% pair credit, and current pair total
 
 ## Required Environment Variables
 
@@ -150,7 +150,7 @@ Current Vercel state, verified 2026-05-21:
 - Public DNS points to Vercel. Apex and `www` both resolve to `76.76.21.21`.
 - Live checkout verification currently proves the one-click tee + poster
   `addPair` route, server-applied `REPLAY15`, Shopify checkout handoff, and
-  $13.50 full-cart pair credit.
+  live 15% full-cart pair credit.
 
 ## GitHub Actions Vercel CLI Deploys
 
@@ -335,11 +335,11 @@ IONOS DNS cutover section instead.
 ```text
 Verify the Action Replay storefront product setup.
 
-Do not touch product handle enzyme-washed-t-shirt.
+Do not touch product handle orbit-logo-washed-tee.
 
 Confirm:
-1. product(handle: "enzyme-washed-t-shirt") is visible to the Storefront API.
-2. It has exactly 10 available variants.
+1. product(handle: "orbit-logo-washed-tee") is visible to the Storefront API.
+2. It exposes at least the 10 available variants used by the storefront.
 3. Colorways are Retro Black and White.
 4. Sizes are S, M, L, XL, and 2XL.
 5. Each variant GID matches the deployment env vars named SHOPIFY_GALAXY_TEE_VARIANT_BLACK_* and SHOPIFY_GALAXY_TEE_VARIANT_WHITE_*.
@@ -347,7 +347,7 @@ Confirm:
 7. action-replay-mewtwo-tee is unpublished from Headless/Storefront and archived.
 8. product(handle: "action-replay-2026-promo-poster") is visible to the Storefront API.
 9. Its 24 x 36 variant matches SHOPIFY_PROMO_POSTER_VARIANT_24X36 and is available for sale.
-10. A cart containing one Retro Black / S Galaxy tee and one 24 x 36 promo poster totals $76.50 from a $90.00 line subtotal, reflecting the Shopify 15% full-cart pair credit.
+10. A cart containing one Retro Black / S Galaxy tee and one 24 x 36 promo poster receives the Shopify 15% full-cart pair credit against the live Shopify subtotal.
 
 Return only pass/fail plus any mismatched variant IDs by env var name. Do not print token values.
 ```
@@ -365,7 +365,7 @@ Preserve:
 - cart drawer
 - /api/shopify/cart route
 - private Storefront token header: Shopify-Storefront-Private-Token
-- product handle enzyme-washed-t-shirt
+- product handle orbit-logo-washed-tee
 - hidden duplicate handle action-replay-mewtwo-tee
 - env-based Galaxy Tee variant IDs
 - no NEXT_PUBLIC_SHOPIFY_* variables
@@ -400,7 +400,7 @@ Already configured:
 
 Do not create NEXT_PUBLIC_SHOPIFY_* variables.
 Do not create SHOPIFY_API_VERSION or SHOPIFY_ADMIN_CLIENT_* variables.
-Do not change the Shopify product handle enzyme-washed-t-shirt.
+Do not change the Shopify product handle orbit-logo-washed-tee.
 
 Connect the GitHub repository to the existing Vercel project. If Vercel says it lacks access, grant the Vercel GitHub app access to zar5177-cloud/actionreplaywebsite and retry.
 

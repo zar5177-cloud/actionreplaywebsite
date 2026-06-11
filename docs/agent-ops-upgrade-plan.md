@@ -222,9 +222,9 @@ npm run go-live:check
 Current live behavior is correct for Action Replay UI checkout:
 
 ```text
-$50 tee + $40 poster = $90 subtotal
-REPLAY15 = $13.50 discount
-total = $76.50 before shipping/tax
+$38 tee + $28 poster = $66 subtotal
+REPLAY15 = $9.90 discount at current tee + poster pricing
+total = $56.10 before shipping/tax at current tee + poster pricing
 ```
 
 For abuse-proof pair-only rules, replace the normal code discount with a
@@ -272,7 +272,7 @@ After updating scopes, make sure the app is reinstalled or the new permissions
 are approved so client-credentials Admin API tokens include the new scopes.
 
 Also confirm the live products are:
-- enzyme-washed-t-shirt published to the headless/storefront channel
+- orbit-logo-washed-tee published to the headless/storefront channel
 - action-replay-2026-promo-poster published to the headless/storefront channel
 - action-replay-mewtwo-tee unpublished/archived/hidden from Storefront API
 

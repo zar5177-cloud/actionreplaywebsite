@@ -131,7 +131,7 @@ export const products: Product[] = [
     title: "AR-001 \"GALAXY\" TEE",
     japaneseTitle: "ギャラクシー Tシャツ",
     category: "tees",
-    price: 48,
+    price: 38,
     sizes: ["S", "M", "L", "XL", "XXL"],
     colors: [
       { name: "Retro Black", hex: "#050505" },
@@ -150,8 +150,8 @@ export const products: Product[] = [
       "Enzyme-washed cotton tee with the Galaxy graphic, sleeve mark, and soft broken-in weight. Available in Retro Black and White.",
     archiveCode: "AR001-GALAXY",
     stateNote: "pairs with the promo poster for 15% off",
-    shopifyProductId: "gid://shopify/Product/9456112664832",
-    shopifyHandle: "enzyme-washed-t-shirt",
+    shopifyProductId: "gid://shopify/Product/9455777906944",
+    shopifyHandle: "orbit-logo-washed-tee",
     shopifyVariants: [],
   },
   {
@@ -186,7 +186,7 @@ export const products: Product[] = [
     title: "AR-003 \"CORRUPTED PROMO\" POSTER",
     japaneseTitle: "破損プロモ ポスター",
     category: "accessories",
-    price: 42,
+    price: 28,
     sizes: ["24 x 36"],
     colors: [
       { name: "Wrong Purple", hex: "#8B5CF6" },
